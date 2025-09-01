@@ -1,0 +1,10 @@
+{
+    "INPUT_HDF": [
+            "C:/Users/ouymc2/Desktop/plotly_55/hdf_DB/hdf_streams/input.h5"
+
+    ],
+    "OUTPUT_HDF": [
+        "C:/Users/ouymc2/Desktop/plotly_55/hdf_DB/hdf_streams/output.h5"
+
+    ]
+}
