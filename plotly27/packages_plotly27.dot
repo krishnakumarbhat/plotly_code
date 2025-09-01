@@ -1,0 +1,30 @@
+digraph "packages_plotly27" {
+rankdir=BT
+charset="utf-8"
+"plotly27" [color="black", label=<plotly27>, shape="box", style="solid"];
+"plotly27.a_config_layer" [color="black", label=<plotly27.a_config_layer>, shape="box", style="solid"];
+"plotly27.a_config_layer.allsensor_json_parser" [color="black", label=<plotly27.a_config_layer.allsensor_json_parser>, shape="box", style="solid"];
+"plotly27.a_config_layer.json_parser_factory" [color="black", label=<plotly27.a_config_layer.json_parser_factory>, shape="box", style="solid"];
+"plotly27.a_config_layer.persensor_json_parser" [color="black", label=<plotly27.a_config_layer.persensor_json_parser>, shape="box", style="solid"];
+"plotly27.a_config_layer.xml_config_parser" [color="black", label=<plotly27.a_config_layer.xml_config_parser>, shape="box", style="solid"];
+"plotly27.b_db_layer" [color="black", label=<plotly27.b_db_layer>, shape="box", style="solid"];
+"plotly27.b_db_layer.Persensor_hdf_parser_wrapper" [color="black", label=<plotly27.b_db_layer.Persensor_hdf_parser_wrapper>, shape="box", style="solid"];
+"plotly27.b_db_layer.allsensor_hdf_parser_wrapper" [color="black", label=<plotly27.b_db_layer.allsensor_hdf_parser_wrapper>, shape="box", style="solid"];
+"plotly27.b_db_layer.data_mapper" [color="black", label=<plotly27.b_db_layer.data_mapper>, shape="box", style="solid"];
+"plotly27.b_db_layer.hdf_parser" [color="black", label=<plotly27.b_db_layer.hdf_parser>, shape="box", style="solid"];
+"plotly27.b_db_layer.hdf_processor_factory" [color="black", label=<plotly27.b_db_layer.hdf_processor_factory>, shape="box", style="solid"];
+"plotly27.c_business_layer" [color="black", label=<plotly27.c_business_layer>, shape="box", style="solid"];
+"plotly27.c_business_layer.data_model" [color="black", label=<plotly27.c_business_layer.data_model>, shape="box", style="solid"];
+"plotly27.c_business_layer.data_prep" [color="black", label=<plotly27.c_business_layer.data_prep>, shape="box", style="solid"];
+"plotly27.c_business_layer.front_end" [color="black", label=<plotly27.c_business_layer.front_end>, shape="box", style="solid"];
+"plotly27.d_presentation_layer" [color="black", label=<plotly27.d_presentation_layer>, shape="box", style="solid"];
+"plotly27.d_presentation_layer.plot_generator" [color="black", label=<plotly27.d_presentation_layer.plot_generator>, shape="box", style="solid"];
+"plotly27.d_presentation_layer.plotlyapi" [color="black", label=<plotly27.d_presentation_layer.plotlyapi>, shape="box", style="solid"];
+"plotly27.main" [color="black", label=<plotly27.main>, shape="box", style="solid"];
+"plotly27.main" -> "plotly27.a_config_layer.json_parser_factory" [arrowhead="open", arrowtail="none"];
+"plotly27.main" -> "plotly27.a_config_layer.xml_config_parser" [arrowhead="open", arrowtail="none"];
+"plotly27.main" -> "plotly27.b_db_layer.hdf_processor_factory" [arrowhead="open", arrowtail="none"];
+"plotly27.main" -> "plotly27.c_business_layer.data_model" [arrowhead="open", arrowtail="none"];
+"plotly27.main" -> "plotly27.c_business_layer.data_prep" [arrowhead="open", arrowtail="none"];
+"plotly27.main" -> "plotly27.d_presentation_layer.plot_generator" [arrowhead="open", arrowtail="none"];
+}
