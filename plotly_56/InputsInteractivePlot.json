@@ -1,0 +1,11 @@
+{
+    "INPUT_HDF": [
+            "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/input.h5"
+
+
+    ],
+    "OUTPUT_HDF": [
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/output.h5"
+
+    ]
+}
