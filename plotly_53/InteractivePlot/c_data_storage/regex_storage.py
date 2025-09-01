@@ -1,0 +1,148 @@
+# Dictionary of signal patterns with their aliases and plot types
+Gen7V1_v2 = {
+    'ran': {
+        'aliases': ['ran', 'detection_range'],
+        'call':['Range'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+        'unit':'meters',
+        'range_to_be_accepted':[0,500]
+    },
+    'num_af_det': {
+        'aliases': ['num_af_det', 'af_det'],
+        'call':['num_af_det'],
+        'plot_types': ['scatter_with_in_out','scatter_mismatch_scanindex','create_diff_box_plot','create_diff_scatter_plot']    ,
+        'unit':'meters',
+        'range_to_be_accepted':[0,500]
+    },
+    'theta': {
+        'aliases': ['theta', 'azimuth'],
+        'call':['Azimuth'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+        'unit':'radiance',
+        'range_to_be_accepted':[-80,80]
+    },
+    'phi': {
+        'aliases': ['phi', 'elevation'],
+        'call':['elevation'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+        'unit':'radiance',
+        'range_to_be_accepted':[-120,120]
+    
+    },
+    'amplitude': {
+        'aliases': ['amplitude', 'amplitude_val'],
+        'call':['amplitude'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+        'unit':'meters',
+        'range_to_be_accepted':[0,1000]
+    },
+    'snr': {
+        'aliases': ['snr', 'signal_to_noise_ratio'],
+        'call':['signal_to_noise_ratio'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+        'unit':'DB',
+        'range_to_be_accepted':[0,100]
+    },
+    'rcs': {
+        'aliases': ['rcs', 'radar_cross_section'],
+        'call':['radar_cross_section'],
+        'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+    },
+    'f_bistatic': {
+        'aliases': ['f_bistatic', 'bistatic_count'],
+        'call':['bistatic_count'],
+        'plot_types': ['cal_num_af_det_with_bfstat_hist:']
+    },
+    'f_superres': {
+        'aliases': ['f_superres', 'super_res_target'],
+        'call':['super_res_target'],
+        'plot_types': ['scatter_with_in_out','scatter_mismatch_scanindex', 'cal_f_superres']
+    },
+
+    'pow':{
+        'aliases': ['f_superres', 'super_res_target'],
+        'call':['Power'],
+        'plot_types': ['scatter_with_in_out','scatter_mismatch_scanindex', 'cal_f_superres']
+    }
+    # 'vel': {
+    #     'aliases': ['vel', 'velocity'],
+    #     'call':['Rangerate'],
+    #     'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count']
+    # },
+    
+    # 'rangerate': {
+    #     'aliases': ['rangerate', 'range_rate'],
+    #     'call':['Range_rate'],
+    #     'plot_types': ['create_match_mismatch_pie','scatter_with_in_out','scatter_mismatch_scanindex','histogram_with_count'],
+    #     'unit':'meters',
+    #     'range_to_be_accepted':[0,500]
+    # },
+
+    # , 'histogram','call: cal_rcs'
+    # 'histogram', 'call: cal_rangerate'
+    # 'box_with_value', 'cal_num_af_det'
+
+    # 'f_signal_target': {
+    #     'aliases': ['f_signal_target', 'isinletar'],
+    #     'plot_types': ['scatter_with_scanindex', 'call: cal_f_signal_target']
+    # },
+}
+
+
+sequance_of_plot = [
+            'Range:create_match_mismatch_pie',
+            'Rangerate:create_match_mismatch_pie',
+            'Azimuth:create_match_mismatch_pie',
+            'elevation:create_match_mismatch_pie',
+            'amplitude:create_match_mismatch_pie',
+            'radar_cross_section:create_match_mismatch_pie',
+            'f_superres:create_match_mismatch_pie',
+            'signal_to_noise_ratio:create_match_mismatch_pie',
+
+            'Range:scatter_with_in_out',
+            'Range:scatter_mismatch_scanindex',
+
+            'Rangerate:scatter_with_in_out',
+            'Rangerate:scatter_mismatch_scanindex',
+
+            'Azimuth:scatter_with_in_out',
+            'Azimuth:scatter_mismatch_scanindex',
+
+            'elevation:scatter_with_in_out',
+            'elevation:scatter_mismatch_scanindex',
+
+            'amplitude:scatter_with_in_out',
+            'amplitude:scatter_mismatch_scanindex',
+
+            'radar_cross_section:scatter_with_in_out',
+            'radar_cross_section:scatter_mismatch_scanindex',
+
+            'f_superres:scatter_with_in_out',
+            'f_superres:scatter_mismatch_scanindex',
+
+            'signal_to_noise_ratio:scatter_with_in_out',
+            'signal_to_noise_ratio:scatter_mismatch_scanindex',
+
+            'Range:histogram_with_count',
+            'Rangerate:histogram_with_count',
+            'Azimuth:histogram_with_count',
+            'elevation:histogram_with_count',
+            'amplitude:histogram_with_count',
+            'radar_cross_section:histogram_with_count',
+            'signal_to_noise_ratio:histogram_with_count',
+
+            'f_bistatic:cal_num_af_det_with_bfstat_hist',
+            'f_superres:cal_f_superres',
+
+            'Range:scatter_with_scanindex'
+            
+            #vse_stream
+            # speed,yawreate,string anlw 
+            # float32_t   veh_speed;
+            # float32_t   veh_steering_angle;
+            # float32_t   veh_yaw;
+            
+            # ----------------
+            # float32_t   veh_pitch;
+            # float32_t   veh_roll;
+            ]
