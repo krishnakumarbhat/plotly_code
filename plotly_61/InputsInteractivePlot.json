@@ -1,0 +1,22 @@
+{
+    "INPUT_HDF": [
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/R11.h5",
+
+        "C:/Users/ouymc2/Desktop/CCA_9010_3100099_GPO_Gen7_20250523_123446_0007_ORCAS.mf4",
+
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/607_wup.h5",
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R607_in.h5" ,
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R604_in.h5" ,
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R11_in.h5"
+
+
+    ],
+    "OUTPUT_HDF": [
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/R11_ou.h5",
+        "C:/Users/ouymc2/Desktop/CCA_9010_3100099_GPO_Gen7_20250523_123446_0007_ORCAS1.mf4",
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/607_wup_out.h5",
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R607_out.h5",
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R604_out.h5",
+        "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/hdf_all/R11_out.h5"
+    ]
+}
