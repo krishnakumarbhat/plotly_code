@@ -1,8 +1,0 @@
-240
-REPEAT236
-unsigned8_T Calibration_data
-END_REPEAT
-unsigned8_T Calib_Logging_Hdr.unused
-unsigned8_T Calib_Logging_Hdr.Total_Chunk_Cnt
-unsigned8_T Calib_Logging_Hdr.Cal_Running_Cnt
-unsigned8_T Calib_Logging_Hdr.Cal_Source

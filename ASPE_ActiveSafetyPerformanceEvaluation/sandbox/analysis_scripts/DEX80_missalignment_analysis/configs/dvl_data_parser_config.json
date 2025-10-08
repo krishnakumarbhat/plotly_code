@@ -1,8 +1,0 @@
-{
-	"DvlDataParserConfig":
-	{
-		"message_sets_config_path": "configs\\configuration_file.json",
-		"dbc_channels": ["4"],
-		"dbc_paths":["configs\\RT_range_target_merged_working.dbc"]
-	}
-}

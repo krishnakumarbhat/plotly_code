@@ -1,8 +1,0 @@
-aptivdataextractors>=0.0.1
-numpy
-pandas
-matplotlib
-jupyterlab
-pytest
-scipy
-uncertainties
