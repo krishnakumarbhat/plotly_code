@@ -1,2 +1,0 @@
-ResimHTMLReport.exe HTMLConfig.xml HTMLInputs.json C:\RELEASE\RELEASE_HTML_2.1\CONTINUOUS_MODE_TESTING
-pause
