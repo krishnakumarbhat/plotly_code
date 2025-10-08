@@ -1,0 +1,7 @@
+matplotlib
+pandas
+numpy
+pdfkit
+jinja2
+tqdm
+seaborn

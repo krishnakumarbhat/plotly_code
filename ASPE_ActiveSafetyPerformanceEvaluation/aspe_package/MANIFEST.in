@@ -1,0 +1,2 @@
+recursive-include aspe/report_generator/templates *.html *.png
+recursive-include aspe/report_generator/CSS *.css

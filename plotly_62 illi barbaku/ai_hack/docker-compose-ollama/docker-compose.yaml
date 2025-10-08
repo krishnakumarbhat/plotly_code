@@ -1,0 +1,16 @@
+services:
+
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+      - ./model.sh:/model.sh
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: always
+    ports:
+      - ${OLLAMA_WEBAPI_PORT-11434}:11434
+    image: ollama/ollama:latest
+    entrypoint: ["/usr/bin/bash", "/model.sh"]
+volumes:
+  ollama: {}

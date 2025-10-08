@@ -1,0 +1,19 @@
+{
+	"DataPreprocessingConfig":
+	{
+		"InterpolationConfig":
+		{
+			"ti_diff":5,
+			"f_is_consistent":"True"
+		},
+		
+		"EventToTimeMappingConfig":
+		{
+			"mapping_method":"direct",
+			"reference_global_index_name":"scan_index_timestamp",
+			"reference_object_index_name":"timestamp",
+			"estimated_global_index_name":"scan_index",
+			"estimated_object_index_name":"scan_index"
+		}
+	}
+}

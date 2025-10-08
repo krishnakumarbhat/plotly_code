@@ -1,0 +1,86 @@
+29284
+unsigned16_T Z7A_Z7B_Logging_Hdr.Sec_Checksum
+unsigned16_T Z7A_Z7B_Logging_Hdr.Sec_Compatibility
+unsigned32_T Z7A_Z7B_Logging_Hdr.Sec_Size
+u32p0_T TimeStamp
+u16p0_T ScanIndex
+u16p0_T LookIndex
+u8p0_T Look_ID
+u8p0_T LookType
+u8p0_T source_Identifier
+unsigned8_T f_FOV_target
+u8p0_T fr_protocol_major
+u8p0_T fr_protocol_minor
+u8p8_T rdd_range_coverage
+s7p8_T rdd_doppler_coverage
+unsigned16_T rdd_2ndpass_number_of_targets
+u8p0_T K_UNUSED4_1
+u8p0_T rdd_look_type
+unsigned8_T minimum_chirp_scaling
+unsigned8_T BV_Size
+u16p16_T rbin_res
+s19p12_T dbin_res
+s10p21_T Vua
+u16p0_T K_UNUSED3_2
+unsigned16_T scrub_array_mean
+REPEAT108
+unsigned16_T max_per_range_bin
+END_REPEAT
+REPEAT108
+unsigned16_T signal_thold_first_pass
+END_REPEAT
+REPEAT108
+unsigned16_T NF_est
+END_REPEAT
+REPEAT108
+unsigned16_T cfar_threshold
+END_REPEAT
+REPEAT108
+unsigned32_T Sensitivity_Thold
+END_REPEAT
+REPEAT108
+unsigned32_T CR_Resp
+END_REPEAT
+u16p0_T K_UNUSED2_2
+REPEAT150
+unsigned8_T second_pass_fail_flag
+END_REPEAT
+REPEAT150
+s10p21_T first_pass_rdd_output.range_rate
+END_REPEAT
+REPEAT150
+s10p21_T first_pass_rdd_output.range
+END_REPEAT
+REPEAT1200
+s15p0_T first_pass_rdd_output.Beam_Vector.Q_data
+s15p0_T first_pass_rdd_output.Beam_Vector.I_data
+END_REPEAT
+REPEAT150
+s31p0_T first_pass_rdd_output.dbinest
+END_REPEAT
+REPEAT150
+s31p0_T first_pass_rdd_output.rbinest
+END_REPEAT
+u16p0_T first_pass_rdd_output.K_UNUSED1_2
+unsigned16_T first_pass_rdd_output.first_pass_num_of_targets
+REPEAT150
+unsigned16_T first_pass_rdd_output.rdop_amp
+END_REPEAT
+REPEAT150
+unsigned16_T first_pass_rdd_output.rindx
+END_REPEAT
+REPEAT150
+unsigned16_T first_pass_rdd_output.dindx
+END_REPEAT
+REPEAT4800
+s15p0_T rdd_adjascent_bv_ipc.Q_data
+s15p0_T rdd_adjascent_bv_ipc.I_data
+END_REPEAT
+REPEAT10
+unsigned32_T STM_Timer
+END_REPEAT
+u8p0_T K_UNUSED1_1
+REPEAT10
+unsigned8_T Timing_Info
+END_REPEAT
+unsigned8_T Stack_Usage_Z7A

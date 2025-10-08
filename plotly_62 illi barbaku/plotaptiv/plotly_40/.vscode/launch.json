@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+    // /home/nroot/Desktop/plotly_34/InteractivePlot/InputsPerSensorInteractivePlot.json
+    // /home/nroot/Desktop/plotly_34/InteractivePlot/InputsInteractivePlot.json
+    // config_path = os.getenv('CONFIG_PATH')
+    // input_path = os.getenv('INPUT_PATH')
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": ["/home/nroot/Desktop/plotly_40/ConfigInteractivePlots.xml",
+            "/home/nroot/Desktop/plotly_40/InputsInteractivePlot.json"]
+
+        }
+    ]
+}

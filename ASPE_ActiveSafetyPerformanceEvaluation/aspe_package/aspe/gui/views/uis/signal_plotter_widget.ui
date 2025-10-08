@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SignalPloterWidget</class>
+ <widget class="QWidget" name="SignalPloterWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>764</width>
+    <height>237</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="8,5">
+   <item>
+    <widget class="QWidget" name="axes_widget" native="true">
+     <layout class="QVBoxLayout" name="axes_vlayout"/>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="right_panel_widget" native="true">
+     <layout class="QVBoxLayout" name="righ_panel_vlayout">
+      <item>
+       <widget class="QTableWidget" name="signal_info_table">
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>10</number>
+        </attribute>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>85</number>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>source</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>signature</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>value</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

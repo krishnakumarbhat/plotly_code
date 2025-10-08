@@ -1,0 +1,19 @@
+{
+		
+	
+	"INPUT_MF4" : 
+	["/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/TRATON_SRR6P_MAN_5432_20241009_508_JSA_FRONT_UDP_001.mf4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/TRATON_SRR6P_MAN_5432_20241009_508_JSA_FRONT_UDP2_001.mf4"
+	
+	],
+	
+	"OUTPUT_MF4" : 
+	["/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/TRATON_SRR6P_MAN_5432_20241009_508_JSA_FRONT_UDP_001_r00010100.mf4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/TRATON_SRR6P_MAN_5432_20241009_508_JSA_FRONT_UDP2_001_r00010100.mf4"
+	
+	]
+	
+
+}
+
+

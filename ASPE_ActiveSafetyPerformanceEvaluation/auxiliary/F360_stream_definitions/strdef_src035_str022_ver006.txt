@@ -1,0 +1,18 @@
+57
+uint8_t input_faults.core_info.time_us_no_increase
+uint8_t input_faults.core_info.cnt_loops_no_increase
+uint8_t input_faults.core_info.elapsed_time_below_lower_limit
+uint8_t input_faults.core_info.elapsed_time_above_upper_limit
+REPEAT12
+uint8_t input_faults.sensors_calibs.mounting_pos_is_invalid
+uint8_t input_faults.sensors_calibs.polarity_is_invalid
+END_REPEAT
+REPEAT12
+uint8_t input_faults.sensors.look_index_no_increase
+uint8_t input_faults.sensors.sensor_vs_tracker_timestamp_divergence
+END_REPEAT
+uint8_t output_faults.f_track_positions_faulty
+uint8_t output_faults.f_track_velocities_faulty
+uint8_t output_faults.f_track_accelerations_faulty
+uint8_t scl_output_faults.tracker_fault_status
+uint8_t scl_output_faults.should_reset

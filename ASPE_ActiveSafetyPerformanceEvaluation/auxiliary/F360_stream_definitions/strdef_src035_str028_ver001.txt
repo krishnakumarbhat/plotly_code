@@ -1,0 +1,4 @@
+32000
+REPEAT8000
+float gru_states
+END_REPEAT

@@ -1,0 +1,177 @@
+/* Main html formatting */
+html {
+    font-family: Helvetica;
+    font-size: 14px;
+    font-weight: normal;
+}
+/* End of Main html formatting */
+
+/* Title content */
+.title {
+    font-size:300.5%;
+    text-align: center;
+    content:"\a";
+    white-space: pre;
+}
+
+.title::after {
+    content:"\a";
+    white-space: pre;
+}
+
+.main {
+    font-size:200.5%;
+}
+/* End of Title content */
+
+/* Headers and Texts content */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight:bold;
+    -pdf-outline: true;
+    -pdf-outline-open: false;
+}
+
+h1 {
+    /*18px via YUI Fonts CSS foundation*/
+    font-size:200.5%;
+    -pdf-outline-level: 0;
+    page-break-before:always;
+}
+
+h2 {
+    /*16px via YUI Fonts CSS foundation*/
+    font-size:120.1%;
+    -pdf-outline-level: 1;
+}
+
+h3 {
+    /*14px via YUI Fonts CSS foundation*/
+    font-size:90%;
+    -pdf-outline-level: 2;
+}
+
+h4 {
+    -pdf-outline-level: 3;
+}
+
+h5 {
+    -pdf-outline-level: 4;
+}
+
+h6 {
+    -pdf-outline-level: 5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+hr {
+    margin:1em 0;
+}
+
+address,
+blockquote,
+body,
+center,
+dl,
+dir,
+div,
+fieldset,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+isindex,
+menu,
+noframes,
+noscript,
+ol,
+p,
+pre,
+table,
+th,
+tr,
+td,
+ul,
+li,
+dd,
+dt,
+pdftoc {
+    display: block;
+}
+
+.text {
+    -pdf-outline: false;
+    display: block;
+}
+
+.new_line::before {
+    content: "\A";
+    white-space: pre;
+}
+
+/* End of Headers and Texts content */
+
+/* Figures content */
+.fig {
+    display: block;
+    -pdf-outline: false;
+}
+/* End of Figures */
+
+
+/* Tables content */
+.table {
+    display: block;
+    page-break-before:auto;
+    -pdf-outline: false;
+    vertical-align: middle;
+    text-align: center;
+}
+
+tr:nth-child(2) {
+  color: lime;
+}
+
+tr,
+th,
+td {
+    page-break-before:auto;
+    vertical-align: middle;
+    width: auto;
+    text-align: center;
+}
+
+th {
+    text-align: center;
+    font-weight: bold;
+}
+/* End of Tables content */
+
+/* Others */
+center {
+    text-align: center;
+}
+
+big {
+    font-size: 125%;
+}
+
+small {
+    font-size: 75%;
+}
+/* End of Others */

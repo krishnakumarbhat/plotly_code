@@ -1,6 +1,0 @@
-# Core dependencies
-plotly
-h5py
-lxml
-numpy
-pandas

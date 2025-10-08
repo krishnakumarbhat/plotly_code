@@ -1,0 +1,62 @@
+body {
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1cm;
+}
+
+#aptiv-logo {
+    width: 40%;
+}
+
+h2, h3 {
+    margin-top: 1.2cm;
+}
+
+#log-list li {
+    margin-bottom: 2mm;
+}
+
+.no-page-break {
+    page-break-inside: avoid;
+}
+
+.table {
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #eee;
+}
+
+.table th,
+.table td {
+    border: 1px solid lightgray;
+    padding: 2mm 4mm;
+}
+
+.inline-block {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 7mm;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.ok {
+    text-align: center;
+    color: limegreen;
+}
+
+.nok {
+    text-align: center;
+    color: red;
+}
+
+footer {
+    margin-top: 1cm;
+}

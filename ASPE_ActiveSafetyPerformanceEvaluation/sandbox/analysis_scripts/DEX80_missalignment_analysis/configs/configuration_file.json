@@ -1,0 +1,30 @@
+{
+    "_comments": 
+	[
+        "For this config file if you want to put path in this file manualy do this in ' '",
+        "Fill channels_configuration with channels you want to parse",
+        "If you dont want to parse data, leave channels_configuration filed blank",
+        "path and dbc are optional, you can put these as arguments",
+		"parsing_id should hex"
+    ],
+    "channels_configuration": 
+	{
+        "4":{
+			"Host":{
+					"master_frame_id": "300",
+					"slave_frame_id": ["600","601","603","604","607","608"],
+					"parse_method": "master_ts_to_next_master_ts"
+					},
+			"Target1":{
+					   "master_frame_id": "5b5",
+					   "slave_frame_id": ["700","704","707","708","7b0","7b1"],
+					   "parse_method": "master_ts_to_next_master_ts"
+					  },
+			"Target2":{
+					   "master_frame_id": "5c5",
+					   "slave_frame_id": ["720","724","727","728","7c0","7c1"],
+					   "parse_method": "master_ts_to_next_master_ts"
+					  }
+			}
+    }
+}

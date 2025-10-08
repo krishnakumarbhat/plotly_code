@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\algebra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\fruchterman_reingold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\kamada_kawai.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\nodesoup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\algebra.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\fruchterman_reingold.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\kamada_kawai.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\src\layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\nodesoup\include\nodesoup.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\ApplicationProjects\ResimHTMLReport\MATPLOT\matplotcpplib\source\3rd_party\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9EF6E231-ED03-3354-BFC5-387EEE6D9FDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{74E00B4C-60E8-3A0B-8780-1659FB26A8DA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

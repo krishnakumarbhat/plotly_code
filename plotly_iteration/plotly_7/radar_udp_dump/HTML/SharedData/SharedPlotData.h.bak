@@ -1,0 +1,12 @@
+
+#include<iostream>
+
+class DataProxy
+{
+
+public:
+	DataProxy() = default;
+	void PrintDataProxy();
+	
+
+};

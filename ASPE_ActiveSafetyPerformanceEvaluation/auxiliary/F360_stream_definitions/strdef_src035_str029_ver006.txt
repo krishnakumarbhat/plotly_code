@@ -1,0 +1,23 @@
+832
+uint8_t version_major
+uint8_t version_minor
+uint8_t version_patch
+uint8_t padding1_0
+uint16_t num_active_objs
+uint16_t tracker_index
+uint64_t timestamp_us
+uint64_t prev_timestamp_us
+REPEAT35
+uint8_t lifetime_counter
+END_REPEAT
+uint8_t integrity_flag
+REPEAT35
+uint16_t track_id
+END_REPEAT
+uint16_t padding2_0
+REPEAT140
+float class_probabilities
+END_REPEAT
+REPEAT35
+float confidence
+END_REPEAT

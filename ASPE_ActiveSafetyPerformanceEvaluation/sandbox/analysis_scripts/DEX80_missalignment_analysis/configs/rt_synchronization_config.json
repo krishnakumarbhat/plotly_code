@@ -1,0 +1,7 @@
+{
+	"RtDataSynchronizationConfig":
+	{
+		"reference_channel": 4,
+		"rt_offset": -35000
+	}
+}
