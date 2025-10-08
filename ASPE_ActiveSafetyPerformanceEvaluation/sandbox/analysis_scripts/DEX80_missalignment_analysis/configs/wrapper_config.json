@@ -1,0 +1,53 @@
+{
+	"WrapperConfig":
+	{
+		"config_paths":
+		{
+			"dvl_parser_conf_path":"configs\\dvl_data_parser_config.json",
+			"mudp_parser_conf_path": "configs\\mudp_data_parser_config.json",
+			"ref_extraction_conf_path":"configs\\dvl_rt_reference_extractor_config.json",
+			"ref_synchro_conf_path":"configs\\rt_synchronization_config.json",
+			"ref_preprocess_conf_path":"configs\\data_preprocessing_config.json",
+			"est_extraction_conf_path":"configs\\est_objects_extractor_config.json",
+			"relevancy_filters_conf_path":"configs\\relevancy_filter_config.json",
+			"association_conf_path":"configs\\association_config.json",
+			"binary_class_conf_path":"configs\\bin_class_config.json",
+			"deviation_calc_conf_path":"configs\\deviation_calculation_config.json"
+		},
+		"files_suffixes": 
+		{
+			"dvl_parsed_data_pickle":"_DVL_Extraction.pickle",
+			"mudp":".mudp",
+			"mudp_pickle":"_mudp.pickle",
+			"ref_data_sync_pickle":"_RT_data_sync.pickle",
+			"ref_objects_data_pickle":"_RT_Data_raw.pickle",
+			"est_objects_data_pickle":"_est.pickle",
+			"interpolated_ref_objects_pickle":"_RT_Data_interp_ref.pickle",
+			"interpolated_est_objects_pickle":"_interp_est.pickle",
+			"perf_eval_pickle":"_PerfEvalData.pickle",
+			"ref_post_processing":"_Ref_Evaluated.pickle",
+			"est_post_processing":"_Est_Evaluated.pickle",
+			"aggregated_ref_data":"_aggRefData.pickle",
+			"aggregated_est_data":"_aggEstData.pickle"
+		},
+		"steps_flags":
+		{
+			"f_parse_dvl_file":false,
+			"f_parse_mudp_file":false,
+			"f_synchronize_ref_data":true,
+			"f_extract_ref_data":true,
+			"f_extract_est_data":true,
+			"f_preprocess_ref_data":true,
+			"f_calc_rel_filters":true,
+			"f_calc_association":true,
+			"f_calc_binary_class":true,
+			"f_calc_dev_calculation":true
+		},
+		"f_save_pickle_files":false,
+		"f_save_mat_files":true,
+		"kpis_save_path":"C:\\\\wkspaces\\\\ASPE0000_00_Common\\\\.private\\\\kpis",
+		"path_phrase_required":["rRf360"],
+		"path_phrase_restricted":["_no_allin", "FUN_AVA", "l1"]
+		
+	}
+}

@@ -1,0 +1,1 @@
+/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/config/HTMLInputs_GPO_GEN7.json

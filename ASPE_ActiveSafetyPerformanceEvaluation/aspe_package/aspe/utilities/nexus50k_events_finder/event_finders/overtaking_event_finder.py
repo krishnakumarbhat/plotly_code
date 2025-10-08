@@ -1,0 +1,30 @@
+from typing import Tuple
+
+import numpy as np
+
+from aspe.evaluation.RadarObjectsEvaluation.Nexus50kEvaluationConfig import Nexus50kEvaluationConfig
+from aspe.extractors.Nexus.NexusExtractedData import NexusExtractedData
+from aspe.utilities.nexus50k_events_finder.event_finders.base_event_finder import BaseNexusEventFinder
+
+
+class OvertakingEventFinder(BaseNexusEventFinder):
+    def __init__(self, config: Nexus50kEvaluationConfig):
+        super().__init__(config, 'overtaking')
+
+    def find_event(self, extracted_data: NexusExtractedData) -> Tuple[float, float]:
+        host = extracted_data.host.signals
+        auto_gt = extracted_data.auto_gt_lidar_cuboids.signals
+        host_filtered = host.query('raw_speed > 15')
+        host_filtered_ts = host_filtered.timestamp
+        event_start_time, event_end_time = np.inf, -np.inf
+
+        if len(host_filtered_ts) > 0:
+            min_ts, max_ts = host_filtered_ts.min(), host_filtered_ts.max()
+            overtaking = auto_gt.query(f'{min_ts} < timestamp & timestamp < {max_ts} & velocity_rel_x > 2')
+
+            for unq_id, obj in overtaking.groupby(by='unique_id'):
+                if np.any(obj.position_x > 0) and np.any(obj.position_x < 0):
+                    event_start_time = min(event_start_time, obj.timestamp.to_numpy()[0])
+                    event_end_time = max(event_end_time, obj.timestamp.to_numpy()[-1])
+
+        return event_start_time, event_end_time

@@ -1,0 +1,22 @@
+
+
+{	
+	"INPUT_HDF" : 
+	
+	[
+		 "InputFile1.HDF",
+		 "InputFile1.HDF",
+		 "InputFile1.HDF"	
+	],
+	
+	"OUTPUT_HDF" : 
+	[
+		 "outputFile1.HDF",
+		 "outputFile2.HDF",
+		 "outputFile3.HDF"	
+
+	]	
+
+}
+
+

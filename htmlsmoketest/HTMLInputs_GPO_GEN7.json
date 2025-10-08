@@ -1,0 +1,23 @@
+{
+		
+	
+	"INPUT_MF4" : 
+	["/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/DEV_X8310_228_SDV_4SRad_20241024_103634_000_ESW-SRad9-1-1_Aptiv.MF4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/DEV_X8310_236_SDV_4SRad_20241021_190153_003_ESW-SRad9.1.1_Aptiv.MF4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/DEV_X8310_236_SDV_4SRad_20241029_101738_009_ESW-SRad9.1.1_Aptiv.MF4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/inputLogs/DEV_X8310_000_SDV_4SRad_20241119_125222_001_ESW-SRad9.1.1_Aptiv.MF4"
+	
+	],
+	
+	"OUTPUT_MF4" : 
+	["/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/DEV_X8310_228_SDV_4SRad_20241024_103634_000_ESW-SRad9-1-1_Aptiv_r000901101.mf4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/DEV_X8310_236_SDV_4SRad_20241021_190153_003_ESW-SRad9.1.1_Aptiv_r000901101.mf4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/DEV_X8310_236_SDV_4SRad_20241029_101738_009_ESW-SRad9.1.1_Aptiv_r000901101.mf4",
+"/mnt/usmidet/projects/STLA-THUNDER/7-Tools/Resim/InternalUpload/HTML_DOCKER/SmokeTest/outputLogs/DEV_X8310_000_SDV_4SRad_20241119_125222_001_ESW-SRad9.1.1_Aptiv_r000901158.mf4"
+	
+	]
+	
+
+}
+
+

@@ -1,0 +1,32 @@
+{
+	"EstimatedDataExtractorConfig":
+	{
+		"EstimatedHostDataConfig":
+		{
+			"host_length":4.8,
+            "host_width":2.0
+		},
+		
+		"sensor_mounting_locations":
+		{
+			"F360_MOUNTING_LOCATION_UNKNOWN":-1,
+			"F360_MOUNTING_LOCATION_LEFT_FORWARD":0,
+			"F360_MOUNTING_LOCATION_LEFT_SIDE1":8,
+			"F360_MOUNTING_LOCATION_LEFT_SIDE2":16,
+			"F360_MOUNTING_LOCATION_LEFT_REAR":24,
+			"F360_MOUNTING_LOCATION_CENTER_FORWARD":1,
+			"F360_MOUNTING_LOCATION_CENTER_REAR":25,
+			"F360_MOUNTING_LOCATION_RIGHT_FORWARD":2,
+			"F360_MOUNTING_LOCATION_RIGHT_SIDE1":10,
+			"F360_MOUNTING_LOCATION_RIGHT_SIDE2":18,
+			"F360_MOUNTING_LOCATION_RIGHT_REAR":26,
+			"F360_MOUNTING_LOCATION_CENTER2_FORWARD":3,
+			"F360_MOUNTING_LOCATION_CENTER2_REAR":27
+		},
+		
+		"objects_stream":6,
+		"sensors_stream":3,
+		"tracker_info_stream":7,
+		"extract_raw_data":false
+	}
+}

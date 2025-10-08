@@ -1,0 +1,44 @@
+digraph KPI_State_Transitions {
+    rankdir=LR;
+    node [shape=ellipse, style=filled, fontname="Arial"];
+    edge [fontname="Arial"];
+    
+    // State definitions
+    INIT [label="INIT\nModels Created", fillcolor=lightblue];
+    SCAN_EXTRACTED [label="SCAN_EXTRACTED\nScan Index Found", fillcolor=lightcyan];
+    MODELS_INITIALIZED [label="MODELS_INITIALIZED\nData Containers Ready", fillcolor=lightgreen];
+    STREAM_PROCESSING [label="STREAM_PROCESSING\n[{idx}_{stream}]", fillcolor=lightyellow];
+    PARENT_SET [label="PARENT_SET\nCounter: {parent}_None", fillcolor=wheat];
+    INPUT_PARSING [label="INPUT_PARSING\nHDF5 → Parser", fillcolor=lightpink];
+    OUTPUT_PARSING [label="OUTPUT_PARSING\nHDF5 → Parser", fillcolor=lightpink];
+    DATA_STORED [label="DATA_STORED\nSignal Mappings Updated", fillcolor=lightcoral];
+    STREAM_COMPLETE [label="STREAM_COMPLETE\nNext Stream Ready", fillcolor=orange];
+    ALL_STREAMS_DONE [label="ALL_STREAMS_DONE\nKPI Factory Ready", fillcolor=red];
+    KPI_GENERATED [label="KPI_GENERATED\nHTML Report Created", fillcolor=purple];
+    COMPLETE [label="COMPLETE\nResults Returned", fillcolor=gray];
+    
+    // State transitions
+    INIT -> SCAN_EXTRACTED [label="extract_scan_index()"];
+    SCAN_EXTRACTED -> MODELS_INITIALIZED [label="initialize(scan_index)"];
+    MODELS_INITIALIZED -> STREAM_PROCESSING [label="for stream in streams"];
+    
+    STREAM_PROCESSING -> PARENT_SET [label="init_parent([{idx}_{stream}])"];
+    PARENT_SET -> INPUT_PARSING [label="if input_file_exists"];
+    PARENT_SET -> OUTPUT_PARSING [label="if output_file_exists"];
+    
+    INPUT_PARSING -> DATA_STORED [label="KPIHDFParser.parse()"];
+    OUTPUT_PARSING -> DATA_STORED [label="KPIHDFParser.parse()"];
+    
+    DATA_STORED -> STREAM_COMPLETE [label="stream_processed"];
+    STREAM_COMPLETE -> STREAM_PROCESSING [label="more_streams", style=dashed];
+    STREAM_COMPLETE -> ALL_STREAMS_DONE [label="all_streams_done"];
+    
+    ALL_STREAMS_DONE -> KPI_GENERATED [label="KpiDataModel()"];
+    KPI_GENERATED -> COMPLETE [label="close_files()"];
+    
+    // Error states
+    ERROR [label="ERROR\nException Handling", fillcolor=red, shape=octagon];
+    INPUT_PARSING -> ERROR [label="parse_error", style=dotted];
+    OUTPUT_PARSING -> ERROR [label="parse_error", style=dotted];
+    ERROR -> STREAM_COMPLETE [label="continue_next_stream", style=dotted];
+}

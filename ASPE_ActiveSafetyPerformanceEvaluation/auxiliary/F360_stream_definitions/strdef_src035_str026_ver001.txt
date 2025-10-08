@@ -1,0 +1,17 @@
+92
+4
+0
+0
+int debugProbeNameInfo.debugProbeStartIndex
+REPEAT8
+char debugProbeNameInfo.debugProbeType
+END_REPEAT
+REPEAT40
+char debugProbeNameInfo.debugProbeName
+END_REPEAT
+REPEAT40
+char debugProbeNameInfo.moduleName
+END_REPEAT
+REPEATDYN
+int debugProbe
+END_REPEAT

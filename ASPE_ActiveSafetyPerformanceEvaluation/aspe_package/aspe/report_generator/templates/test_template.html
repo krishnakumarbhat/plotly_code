@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ data['title'] }}</title>
+</head>
+
+<body>
+    {% if 'logo' in data %}
+        <img src="{{ data['logo'] }}">
+    {% endif %}
+
+    {% for title in data['titles'] %}
+        <div class="title">{{ title }}</div>
+    {% endfor %}
+
+    <br><br><br>
+    <div class="main">SW versions</div>
+    {% for single_sw in data['software_names'] %}
+        <div class="main">{{ single_sw }}</div>
+    {% endfor %}
+
+    <br><br><br>
+    <div class="main">Tests description:</div>
+    <div class="">{{ data['tests_desc'] }}</div>
+
+    {% for section_name, section_data in data['report_objs'].items() %}
+        <h1> {{ section_name }}
+            {% for element in section_data %}
+                {% if element[3] %}
+                    <div style="page-break-before:always; -pdf-outline: false;"></div>
+                {% endif %}
+
+                <h2> {{ element[1] }}  </h2>
+                {% if 'fig' == element[0] %}
+                <center> <img src="{{ element[2] }}" class="fig"> </center>
+                {% endif %}
+                {% if 'tab' == element[0] %}
+                {{ element[2] }}
+                {% endif %}
+                {% if 'text' == element[0] %}
+                <div class="">{{ element[2] }}</div>
+                {% endif %}
+
+            {% endfor %}
+        </h1>
+    {% endfor %}
+</body>
+</html>

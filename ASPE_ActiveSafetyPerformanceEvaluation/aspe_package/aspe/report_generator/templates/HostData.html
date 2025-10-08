@@ -1,0 +1,16 @@
+<p class="break-before">
+    <h2> Host data</h2>
+    <h3>Host speed data</h3>
+<div class="container">
+    {% for plot in velocity_plots %}
+        <img src="{{ plot }}">
+    {% endfor %}
+</div>
+</p>
+    <h3>Host yaw rate</h3>
+<div class="container">
+    {% for plot in yaw_rate_plots %}
+        <img src="{{ plot }}">
+    {% endfor %}
+</div>
+

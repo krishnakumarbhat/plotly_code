@@ -1,0 +1,78 @@
+58520
+uint16_t hdr.IF_version
+uint16_t hdr.TrPC_version
+uint8_t hdr.N_sens
+uint8_t hdr.reserved1
+uint8_t hdr.reserved2
+uint8_t hdr.reserved3
+REPEAT6
+REPEAT2
+uint8_t detection_list.header.sensor_info.id
+END_REPEAT
+uint16_t detection_list.header.sensor_info.origin.invalid_flags
+float detection_list.header.sensor_info.origin.x
+float detection_list.header.sensor_info.origin.x_std_dev
+float detection_list.header.sensor_info.origin.y
+float detection_list.header.sensor_info.origin.y_std_dev
+float detection_list.header.sensor_info.origin.z
+float detection_list.header.sensor_info.origin.z_std_dev
+float detection_list.header.sensor_info.origin.roll
+float detection_list.header.sensor_info.origin.roll_std_dev
+float detection_list.header.sensor_info.origin.pitch
+float detection_list.header.sensor_info.origin.pitch_std_dev
+float detection_list.header.sensor_info.origin.yaw
+float detection_list.header.sensor_info.origin.yaw_std_dev
+int8_t detection_list.header.sensor_info.origin.polarity
+float detection_list.header.sensor_info.auto_align_yaw
+float detection_list.header.sensor_info.auto_align_pitch
+uint16_t detection_list.header.sensor_info.hw_version
+uint32_t detection_list.header.sensor_info.sw_version
+uint16_t detection_list.header.sensor_info.serial_number
+uint16_t detection_list.header.sensor_info.reserved1
+uint8_t detection_list.header.sensor_info.reserved2
+uint32_t detection_list.header.sensor_status.event_data_qualifier
+uint32_t detection_list.header.sensor_status.extended_qualifier
+uint32_t detection_list.header.sensor_status.time_stamp.fractional_seconds
+uint32_t detection_list.header.sensor_status.time_stamp.seconds
+uint32_t detection_list.header.sensor_status.time_stamp.sync_status
+uint16_t detection_list.header.sensor_status.scan_index
+uint16_t detection_list.header.sensor_status.look_index
+uint8_t detection_list.header.sensor_status.look_id
+uint8_t detection_list.header.sensor_status.look_type
+REPEAT2
+float detection_list.header.sensor_status.range_rate_ambiguity_domain
+END_REPEAT
+uint8_t detection_list.header.sensor_status.overheat_error
+uint8_t detection_list.header.sensor_status.range_perf_error
+uint8_t detection_list.header.sensor_status.comm_error
+uint8_t detection_list.header.sensor_status.internal_error
+uint8_t detection_list.header.sensor_status.xcvr_operational
+uint64_t detection_list.header.sensor_status.active_faults_array
+uint64_t detection_list.header.sensor_status.latched_faults_array
+uint64_t detection_list.header.sensor_status.mux_array
+float detection_list.header.sensor_status.echo_speed
+float detection_list.header.sensor_status.echo_yaw
+uint8_t detection_list.header.sensor_status.reserved1
+REPEAT200
+uint8_t detection_list.detections.invalid_flags
+float detection_list.detections.distance
+float detection_list.detections.distance_std_dev
+float detection_list.detections.angle_azimuth
+float detection_list.detections.angle_azimuth_std_dev
+float detection_list.detections.radial_velocity
+float detection_list.detections.radial_velocity_std_dev
+float detection_list.detections.rcs
+float detection_list.detections.snr
+uint32_t detection_list.detections.detection_id
+uint8_t detection_list.detections.positive_predictive_value
+uint8_t detection_list.detections.classification
+float detection_list.detections.angle_elevation
+uint8_t detection_list.detections.scanindex_2LSB
+uint8_t detection_list.detections.confidence_azimuth
+uint8_t detection_list.detections.confidence_elevation
+uint8_t detection_list.detections.classification_flags
+uint8_t detection_list.detections.reserved1
+END_REPEAT
+uint32_t detection_list.number_of_detections
+uint32_t detection_list.reserved1
+END_REPEAT

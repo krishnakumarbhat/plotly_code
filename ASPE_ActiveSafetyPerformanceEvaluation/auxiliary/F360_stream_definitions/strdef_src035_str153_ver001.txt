@@ -1,0 +1,25 @@
+144
+REPEAT3
+float state_height_can_pass
+END_REPEAT
+REPEAT3
+float state_height_is_likely_to_pass
+END_REPEAT
+REPEAT3
+float state_height_can_not_pass_upper
+END_REPEAT
+REPEAT3
+float state_height_can_not_pass_lower
+END_REPEAT
+REPEAT6
+float state_RCS_slope_can_pass
+END_REPEAT
+REPEAT6
+float state_RCS_slope_is_likely_to_pass
+END_REPEAT
+REPEAT6
+float state_RCS_slope_can_not_pass_upper
+END_REPEAT
+REPEAT6
+float state_RCS_slope_can_not_pass_lower
+END_REPEAT

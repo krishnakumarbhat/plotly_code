@@ -1,0 +1,45 @@
+30776
+uint64_t Fus.timestamp
+uint32_t Fus.fusion_index
+uint32_t Fus.radar_index
+uint32_t Fus.lidar_index
+uint32_t Fus.vision_index
+uint32_t Fus.visobs_index
+uint32_t Fus.vehicle_index
+uint8_t Fus.fusion_ver_major
+uint8_t Fus.fusion_ver_minor
+uint16_t Fus.fusion_ver_changeset
+REPEAT265
+float Fus.Fusion_output.vcs_longposn
+float Fus.Fusion_output.vcs_latposn
+float Fus.Fusion_output.vcs_longvel
+float Fus.Fusion_output.vcs_latvel
+float Fus.Fusion_output.speed
+float Fus.Fusion_output.tang_accel
+float Fus.Fusion_output.vcs_heading
+float Fus.Fusion_output.vcs_pointing
+float Fus.Fusion_output.curvature
+float Fus.Fusion_output.length
+float Fus.Fusion_output.width
+float Fus.Fusion_output.time_created
+float Fus.Fusion_output.time_last_detected
+int32_t Fus.Fusion_output.id
+int32_t Fus.Fusion_output.age
+int32_t Fus.Fusion_output.num_rdrTrks
+int32_t Fus.Fusion_output.num_ldrTrks
+int32_t Fus.Fusion_output.rdrTrkID
+int32_t Fus.Fusion_output.ldrTrkID
+int32_t Fus.Fusion_output.visTrkID
+int32_t Fus.Fusion_output.visTrkUniqueID
+float Fus.Fusion_output.quality
+OBJ_STATUS Fus.Fusion_output.status
+CENTROID Fus.Fusion_output.centroid_mode
+OBJECT_CLASS Fus.Fusion_output.object_class
+TRKFLTR Fus.Fusion_output.track_filter_type
+boolean_T Fus.Fusion_output.f_stationary
+boolean_T Fus.Fusion_output.f_moveable
+boolean_T Fus.Fusion_output.f_vehicle
+boolean_T Fus.Fusion_output.f_fast_moveable
+SLOW_MOVING Fus.Fusion_output.slow_moving
+TRK_MOTION_DIR Fus.Fusion_output.trk_motion_direction
+END_REPEAT
