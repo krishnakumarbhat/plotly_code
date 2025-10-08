@@ -1,0 +1,12 @@
+{
+	"AssociationConfig":
+	{
+		"method":"NEAREST_NEIGHBOR",
+		"nearest_neighbor_assoc_config":
+		{
+			"distance_metric":"POSITION_ONLY_CARTESIAN_DISTANCE",
+			"max_distance_to_assoc":5.0,
+			"initial_distance":1.0e6
+		}
+	}
+}

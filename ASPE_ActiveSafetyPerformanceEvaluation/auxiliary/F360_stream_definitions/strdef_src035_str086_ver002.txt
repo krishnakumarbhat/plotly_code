@@ -1,0 +1,16 @@
+36
+float trailer_length
+float trailer_width
+float trailer_angle
+float trailer_angle_rate
+float trailer_HV_gap
+uint32_t radar_detection_timer
+uint32_t stationary_timer
+uint8_t trailer_detection_status
+uint8_t trailer_presence
+uint8_t trailer_length_conf
+uint8_t trailer_presence_conf
+uint8_t trailer_width_conf
+uint8_t trailer_angle_conf
+uint8_t trailer_angle_rate_conf
+uint8_t padding

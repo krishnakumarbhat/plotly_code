@@ -1,0 +1,9 @@
+{
+    "INPUT_HDF": [
+        "/home/nroot/Desktop/hsf1.h5"
+
+    ],
+    "OUTPUT_HDF": [
+        "/home/nroot/Desktop/hsf1_out.h5"
+    ]
+}

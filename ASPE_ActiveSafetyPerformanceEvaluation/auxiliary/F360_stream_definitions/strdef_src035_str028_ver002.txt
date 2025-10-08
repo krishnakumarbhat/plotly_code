@@ -1,0 +1,33 @@
+64400
+REPEAT8000
+float gru_states
+END_REPEAT
+REPEAT1968
+float old_dets_amplitude
+END_REPEAT
+REPEAT1968
+float old_dets_vcs_x
+END_REPEAT
+REPEAT1968
+float old_dets_vcs_y
+END_REPEAT
+REPEAT1968
+float old_dets_rngrate_comp
+END_REPEAT
+uint32_t old_number_of_valid_detections
+REPEAT250
+uint16_t old_ids
+END_REPEAT
+REPEAT25
+uint16_t prio_objectlist
+END_REPEAT
+REPEAT25
+uint16_t old_prio_objectlist
+END_REPEAT
+uint16_t num_old_active_objs
+REPEAT250
+uint8_t iteration
+END_REPEAT
+REPEAT56
+uint8_t unused
+END_REPEAT

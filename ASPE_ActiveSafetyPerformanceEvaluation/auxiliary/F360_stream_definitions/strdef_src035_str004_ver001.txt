@@ -1,0 +1,19 @@
+64
+float world_x
+float world_y
+float raw_speed
+float abs_raw_speed
+float speed_correction_factor
+float speed
+float acceleration
+float yawrate
+float heading
+float vcs_speed
+float vcs_lat_acceleration
+float vcs_long_acceleration
+float vcs_sideslip
+float curvature_rear
+float dist_rear_axle_to_vcs
+uint8_t prndl
+uint8_t f_reverse_gear
+PADDING2

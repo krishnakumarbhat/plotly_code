@@ -1,0 +1,17 @@
+680
+uint8_t version_major
+uint8_t version_minor
+uint8_t version_patch
+PADDING1
+uint16_t num_active_objs
+uint16_t tracker_index
+uint64_t timestamp_us
+uint64_t prev_timestamp_us
+REPEAT25
+uint16_t track_id
+END_REPEAT
+PADDING2
+REPEAT150
+float class_probabilities
+END_REPEAT
+PADDING4

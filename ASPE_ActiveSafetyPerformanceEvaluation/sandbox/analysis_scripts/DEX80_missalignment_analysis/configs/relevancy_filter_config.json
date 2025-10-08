@@ -1,0 +1,14 @@
+{
+	"RelevancyFilterConfig":
+	{
+		"relevancy_method":"SIMPLE",
+		"method_simple_relevancy_config":
+		{
+			"max_radius":90,
+			"min_abs_vel":2,
+			"min_cons_ti":3,
+			"min_exist_prob":0.95,
+			"stationary_nrel":true
+		}
+	}
+}

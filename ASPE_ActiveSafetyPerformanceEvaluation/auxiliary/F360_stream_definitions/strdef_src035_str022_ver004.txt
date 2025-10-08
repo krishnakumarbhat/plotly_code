@@ -1,0 +1,37 @@
+352
+double diagnostics_header.timestamp
+double diagnostics_header.prev_timestamp
+uint32_t diagnostics_header.tracker_index
+unsigned char diagnostics_header.tracker_version.sw_version_major
+unsigned char diagnostics_header.tracker_version.sw_version_minor
+unsigned char diagnostics_header.tracker_version.dll_version_major
+unsigned char diagnostics_header.tracker_version.dll_version_minor
+bool tracker_diagnostics.f_tracker_index_frozen
+bool tracker_diagnostics.f_inconsistent_downselection
+bool tracker_diagnostics.f_elapsed_time_ok
+bool tracker_diagnostics.f_bad_vehicle_signals
+REPEAT8
+float radar_diagnostics.sensor_info.vcs_long_posn
+float radar_diagnostics.sensor_info.vcs_lat_posn
+float radar_diagnostics.sensor_info.vcs_height_offset_m
+float radar_diagnostics.sensor_info.vcs_boresight_az_angle
+float radar_diagnostics.sensor_info.vcs_boresight_elev_angle
+uint8_t radar_diagnostics.sensor_info.sensorID
+int8_t radar_diagnostics.sensor_info.sensor_type
+int8_t radar_diagnostics.sensor_info.mount_location
+PADDING1
+uint32_t radar_diagnostics.sensor_info.sensor_sw_version
+bool radar_diagnostics.f_lookIndexIsFrosen
+bool radar_diagnostics.f_notAllScanTypes
+bool radar_diagnostics.f_incorrectDopplerInterval
+bool radar_diagnostics.f_incorrectRangeInterval
+bool radar_diagnostics.f_fullBlockage
+bool radar_diagnostics.f_azimuth_aligned
+bool radar_diagnostics.f_elevation_aligned
+bool radar_diagnostics.f_blockagePartial
+bool radar_diagnostics.f_bad_vehicle_signals
+bool radar_diagnostics.f_internal_error
+bool radar_diagnostics.f_temperature_warning
+PADDING1
+END_REPEAT
+PADDING4

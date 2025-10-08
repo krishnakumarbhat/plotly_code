@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\radar_udp_plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\radar_udp_logger_latch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\gen5_radar_udp_logger_latch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\gen7_radar_udp_logger_latch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CommonFiles\helper\VerboseLogUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CommonFiles\helper\compute.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\radar_udp_logger_latch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\gen5_radar_udp_logger_latch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\gen7_radar_udp_logger_latch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\radar_udp_plugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CommonFiles\inc\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CommonFiles\inc\calib_logging_structure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CommonFiles\udp_headers\udp_sources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Plastic\10030156_03_Analysis_Framework_Suite\ResimulationTool\SOURCE\CoreLibraryProjects\mudp_decoder\CMake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9EF6E231-ED03-3354-BFC5-387EEE6D9FDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{74E00B4C-60E8-3A0B-8780-1659FB26A8DA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

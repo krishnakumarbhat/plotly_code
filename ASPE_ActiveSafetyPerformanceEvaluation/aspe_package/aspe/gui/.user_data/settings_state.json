@@ -1,0 +1,1753 @@
+{
+  "drawers_settings": [
+    {
+      "name": "F360CoreDrawer",
+      "is_enabled": true,
+      "log_index": 0,
+      "children_states": {
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#ff5500",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#d89e2a",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#ffa459",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#ff5500",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#ff4000",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#ff7e14",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#d86c24",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "F360CoreDrawer",
+      "log_index": 1,
+      "is_enabled": true,
+      "children_states": {
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#aaaaff",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#0055ff",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#5500ff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#55aaff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#00aaff",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#3f3fbe",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 20,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#3f3fbe",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#6464C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "F360CoreDrawer",
+      "log_index": 2,
+      "is_enabled": true,
+      "children_states": {
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#3daa2d",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#00ff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#55ff00",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#00ff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#aaff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#55aa7f",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#00aa00",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#91ffb6",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#b4ff69",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "F360XtrkDrawer",
+      "log_index": 0,
+      "is_enabled": true,
+      "children_states": {
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#ff5500",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "DetToClustersAssoc": {
+          "is_enabled": true,
+          "color": "#ff7154",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "symbol": "d",
+              "symbol_size": 5
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#d89e2a",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#ffa459",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_x"
+            },
+            "AssocGatesMovable": {
+              "is_enabled": true,
+              "color": "#d1952f",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "AssocGatesNonMovable": {
+              "is_enabled": true,
+              "color": "#d1952f",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "PredictedPosition": {
+              "is_enabled": true,
+              "color": "#ff5500",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "PredictedVelocity": {
+              "is_enabled": true,
+              "color": "#ff8000",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PseudoMeasurement": {
+              "is_enabled": true,
+              "color": "#aa5500",
+              "symbol": "x",
+              "symbol_size": 8
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#c80000",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#dc3e2f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Clusters": {
+          "name": "Clusters",
+          "is_enabled": true,
+          "children_states": {
+            "ClusterPoint": {
+              "is_enabled": true,
+              "color": "#ff5e00",
+              "symbol": "s",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#ff5e00",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#fafafa",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "azimuth"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "F360XtrkDrawer",
+      "log_index": 1,
+      "is_enabled": true,
+      "children_states": {
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#aaaaff",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "DetToClustersAssoc": {
+          "is_enabled": true,
+          "color": "#00ffff",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#0055ff",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#5500ff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#55aaff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 20,
+              "labeled_signal": "acceleration_rel_y"
+            },
+            "AssocGatesMovable": {
+              "is_enabled": true,
+              "color": "#369ccc",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "AssocGatesNonMovable": {
+              "is_enabled": true,
+              "color": "#369ccc",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "PredictedPosition": {
+              "is_enabled": true,
+              "color": "#a1f7ff",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "PredictedVelocity": {
+              "is_enabled": true,
+              "color": "#3ce5ff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PseudoMeasurement": {
+              "is_enabled": true,
+              "color": "#6bffff",
+              "symbol": "x",
+              "symbol_size": 8
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#3f3fbe",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#6464C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Clusters": {
+          "name": "Clusters",
+          "is_enabled": true,
+          "children_states": {
+            "ClusterPoint": {
+              "is_enabled": true,
+              "color": "#83e4ff",
+              "symbol": "s",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#78edff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#fafafa",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "azimuth"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "F360XtrkDrawer",
+      "log_index": 2,
+      "is_enabled": true,
+      "children_states": {
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "DetToObjAssoc": {
+          "is_enabled": true,
+          "color": "#3daa2d",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "DetToClustersAssoc": {
+          "is_enabled": true,
+          "color": "#00FA46",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "AllObjects": {
+          "name": "AllObjects",
+          "is_enabled": true,
+          "only_reduced_objects": false,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#00ff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#55ff00",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#00ff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#aaff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            },
+            "AssocGatesMovable": {
+              "is_enabled": true,
+              "color": "#00ff9d",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "AssocGatesNonMovable": {
+              "is_enabled": true,
+              "color": "#00ff9d",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "PredictedPosition": {
+              "is_enabled": true,
+              "color": "#55aa00",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "PredictedVelocity": {
+              "is_enabled": true,
+              "color": "#82aa46",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PseudoMeasurement": {
+              "is_enabled": true,
+              "color": "#4f8b2e",
+              "symbol": "x",
+              "symbol_size": 8
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#91ffb6",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#b4ff69",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Clusters": {
+          "name": "Clusters",
+          "is_enabled": true,
+          "children_states": {
+            "ClusterPoint": {
+              "is_enabled": true,
+              "color": "#aaff7f",
+              "symbol": "s",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#aaff7f",
+              "line_style": "--",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#fafafa",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "azimuth"
+            }
+          }
+        },
+        "StatEnv": {
+          "name": "StatEnv",
+          "is_enabled": true,
+          "children_states": {
+            "PolyLines": {
+              "is_enabled": true,
+              "color": "#808080",
+              "line_style": "-",
+              "line_width": 2
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464c8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "age"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "DrawerAspeResults",
+      "log_index": 0,
+      "is_enabled": true,
+      "children_states": {
+        "Estimated": {
+          "name": "Estimated",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffaa00",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#d89e2a",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#ffa459",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#ff5500",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#ff4000",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Reference": {
+          "name": "Reference",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "x",
+              "symbol_size": 7
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#fff47c",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#AA0078",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#ff7e14",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#d86c24",
+              "line_style": "...",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Associations": {
+          "is_enabled": true,
+          "color": "#ff5500",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "NotRelObjects": {
+          "is_enabled": true,
+          "color": "#ffd187",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "BinaryClassification": {
+          "name": "BinaryClassification",
+          "is_enabled": true,
+          "children_states": {
+            "TruePositives": {
+              "is_enabled": true,
+              "color": "#00ff80",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalsePositives": {
+              "is_enabled": true,
+              "color": "#ff0000",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalseNegatives": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "OverSegmentation": {
+              "is_enabled": true,
+              "color": "#ffA500",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "UnderSegmentation": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "symbol": "o",
+              "symbol_size": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "DrawerAspeResults",
+      "log_index": 1,
+      "is_enabled": true,
+      "children_states": {
+        "Estimated": {
+          "name": "Estimated",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#0055ff",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#5500ff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#55aaff",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#00aaff",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#3f3fbe",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Reference": {
+          "name": "Reference",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "x",
+              "symbol_size": 7
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#fff47c",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#AA0078",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#3f3fbe",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#6464c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Associations": {
+          "is_enabled": true,
+          "color": "#aaaaff",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "NotRelObjects": {
+          "is_enabled": true,
+          "color": "#55ffff",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "BinaryClassification": {
+          "name": "BinaryClassification",
+          "is_enabled": true,
+          "children_states": {
+            "TruePositives": {
+              "is_enabled": true,
+              "color": "#00ff80",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalsePositives": {
+              "is_enabled": true,
+              "color": "#ff0000",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalseNegatives": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "OverSegmentation": {
+              "is_enabled": true,
+              "color": "#ffA500",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "UnderSegmentation": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "symbol": "o",
+              "symbol_size": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "DrawerAspeResults",
+      "log_index": 2,
+      "is_enabled": true,
+      "children_states": {
+        "Estimated": {
+          "name": "Estimated",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#00ff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#55ff00",
+              "symbol": "d",
+              "symbol_size": 8
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#00ff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#aaff7f",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "ErrCovPosition": {
+              "is_enabled": false,
+              "color": "#55aa7f",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "ErrCovVelocity": {
+              "is_enabled": false,
+              "color": "#00aa00",
+              "line_style": "--",
+              "line_width": 1,
+              "confidence": 0.9545
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Reference": {
+          "name": "Reference",
+          "is_enabled": true,
+          "children_states": {
+            "BBox": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "line_style": "-",
+              "line_width": 3
+            },
+            "Centroid": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "x",
+              "symbol_size": 7
+            },
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#fff47c",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Acceleration": {
+              "is_enabled": false,
+              "color": "#AA0078",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "acceleration_otg_covariance"
+            }
+          }
+        },
+        "Host": {
+          "name": "Host",
+          "is_enabled": true,
+          "children_states": {
+            "Velocity": {
+              "is_enabled": true,
+              "color": "#3264C8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "PredictedPath": {
+              "is_enabled": true,
+              "color": "#cccc00c8",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "BBox": {
+              "is_enabled": true,
+              "color": "#008080"
+            }
+          }
+        },
+        "Sensors": {
+          "name": "Sensors",
+          "is_enabled": true,
+          "children_states": {
+            "Sensors positions": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "Sensor 1 LEFT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 2 RIGHT_FORWARD": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 3 LEFT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            },
+            "Sensor 4 RIGHT_REAR": {
+              "is_enabled": true,
+              "color": "#66ffff14"
+            }
+          }
+        },
+        "Detections": {
+          "name": "Detections",
+          "is_enabled": true,
+          "children_states": {
+            "DetectionPoint": {
+              "is_enabled": true,
+              "color": "#91ffb6",
+              "symbol": "x",
+              "symbol_size": 8
+            },
+            "RangeRate": {
+              "is_enabled": true,
+              "color": "#b4ff69",
+              "line_style": "-",
+              "line_width": 1
+            },
+            "Labels": {
+              "is_enabled": false,
+              "color": "#6464C8",
+              "show_signal_name": true,
+              "font_size": 8,
+              "labeled_signal": "amplitude"
+            }
+          }
+        },
+        "Associations": {
+          "is_enabled": true,
+          "color": "#3daa2d",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "NotRelObjects": {
+          "is_enabled": true,
+          "color": "#63b68d",
+          "line_style": "--",
+          "line_width": 1
+        },
+        "BinaryClassification": {
+          "name": "BinaryClassification",
+          "is_enabled": true,
+          "children_states": {
+            "TruePositives": {
+              "is_enabled": true,
+              "color": "#00ff80",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalsePositives": {
+              "is_enabled": true,
+              "color": "#ff0000",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "FalseNegatives": {
+              "is_enabled": true,
+              "color": "#ffff00",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "OverSegmentation": {
+              "is_enabled": true,
+              "color": "#ffA500",
+              "symbol": "o",
+              "symbol_size": 8
+            },
+            "UnderSegmentation": {
+              "is_enabled": true,
+              "color": "#0000ff",
+              "symbol": "o",
+              "symbol_size": 8
+            }
+          }
+        }
+      }
+    }
+  ]
+}

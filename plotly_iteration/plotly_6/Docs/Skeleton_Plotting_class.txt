@@ -1,0 +1,34 @@
+
+
+------------------------------------------------------------------
+File: Plotters.py
+
+
+-------------------------------------------------------------------
+class PlotlyInteractive:
+
+'''
+    This class should be scalable for future API's Requested
+
+'''
+     
+	 args =(flx_data, fly_data,f2xy_data,f2y_daa,sensor,title)
+	def scatter_plot(with required arguments):
+	 
+	     //use plotly scatterAPI's
+		 
+		 
+	def box_plot(with required arguments):
+	
+	     //use plotly box_plotAPI's
+	
+	def bar_plot(with required arguments):
+	
+	     //use plotly bar_plotAPI's
+	def pie(with required arguments):
+		//use plotly pie_plotAPI's
+	def histogram(with required arguments):
+		//use plotly histogram_plotAPI's
+
+	
+-------------------------------------------------------------------------

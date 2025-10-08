@@ -1,4 +1,0 @@
-
-plotly==latest
-h5py==latest
-lxml==latest

@@ -1,0 +1,16 @@
+{
+    "INPUT_HDF": [
+        {
+        "Input1": [
+            "C:/Users/user1/Desktop/plotly25/hdf_DB/hdf_per/inputFL.h5"
+        ]
+    }
+],
+    "OUTPUT_HDF": [
+        {
+            "output1": [
+            "C:/Users/user1/Desktop/plotly25/hdf_DB/hdf_per/outputFL.h5"
+            ]
+        }
+    ]
+}

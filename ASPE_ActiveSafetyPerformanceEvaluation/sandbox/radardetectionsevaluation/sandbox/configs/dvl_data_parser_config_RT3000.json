@@ -1,0 +1,8 @@
+{
+	"DvlDataParserConfig":
+	{
+		"message_sets_config_path": "configs\\message_sets_configuration_RT3000.json",
+		"dbc_channels": ["4"],
+		"dbc_paths":["configs\\RT_range_target_merged_working.dbc"]
+	}
+}

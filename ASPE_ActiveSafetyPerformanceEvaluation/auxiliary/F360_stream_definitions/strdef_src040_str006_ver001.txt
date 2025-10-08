@@ -1,0 +1,6 @@
+34
+REPEAT8
+signed16_T iq.Q_Data
+signed16_T iq.I_Data
+END_REPEAT
+uint16_t RngDopIdx.RngDop_Word

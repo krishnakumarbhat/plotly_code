@@ -1,0 +1,18 @@
+{
+	"DvlRtExtractorConfig":
+	{
+		"reference_system":"RT_RANGE",
+		"ReferenceHostDataConfig":
+		{
+			"reference_point_x":1,
+            "reference_point_y":0.5,
+            "reference_point_pos_x":0,
+            "reference_point_pos_y":0
+		},
+		"ReferenceObjectDataConfig":
+		{
+			"reference_point_x":1,
+            "reference_point_y":0.5
+		}	
+	}
+}

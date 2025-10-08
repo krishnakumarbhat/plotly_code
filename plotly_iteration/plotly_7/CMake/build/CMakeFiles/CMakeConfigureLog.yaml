@@ -1,0 +1,709 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      The system is: Windows - 10.0.19045 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 12/9/2024 1:25:26 PM.
+      Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc142.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:11.03
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/3.29.2/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 12/9/2024 1:25:39 PM.
+      Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc142.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\3.29.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:04.37
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/3.29.2/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:64 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-wbmtf0"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-wbmtf0"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-wbmtf0'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_50e63.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:25:44 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-wbmtf0\\cmTC_50e63.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_50e63.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-wbmtf0\\Debug\\".
+          Creating directory "cmTC_50e63.dir\\Debug\\cmTC_50e63.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_50e63.dir\\Debug\\cmTC_50e63.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_50e63.dir\\Debug\\\\" /Fd"cmTC_50e63.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\ouymc2\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\cmake\\data\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CMakeCCompilerABI.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_50e63.dir\\Debug\\\\" /Fd"cmTC_50e63.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\ouymc2\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\cmake\\data\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-wbmtf0\\Debug\\cmTC_50e63.exe" /INCREMENTAL /ILK:"cmTC_50e63.dir\\Debug\\cmTC_50e63.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-wbmtf0/Debug/cmTC_50e63.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-wbmtf0/Debug/cmTC_50e63.lib" /MACHINE:X64  /machine:x64 cmTC_50e63.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_50e63.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-wbmtf0\\Debug\\cmTC_50e63.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_50e63.dir\\Debug\\cmTC_50e63.tlog\\unsuccessfulbuild".
+          Touching "cmTC_50e63.dir\\Debug\\cmTC_50e63.tlog\\cmTC_50e63.lastbuildstate".
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-wbmtf0\\cmTC_50e63.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:02.83
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:170 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'C': C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:207 (cmake_determine_linker_id)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Running the C compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.29.30154.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:64 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-yjznf9"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-yjznf9"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-yjznf9'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_7c9b1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:25:48 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yjznf9\\cmTC_7c9b1.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7c9b1.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yjznf9\\Debug\\".
+          Creating directory "cmTC_7c9b1.dir\\Debug\\cmTC_7c9b1.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7c9b1.dir\\Debug\\cmTC_7c9b1.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_7c9b1.dir\\Debug\\\\" /Fd"cmTC_7c9b1.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Users\\ouymc2\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\cmake\\data\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CMakeCXXCompilerABI.cpp
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_7c9b1.dir\\Debug\\\\" /Fd"cmTC_7c9b1.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Users\\ouymc2\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\cmake\\data\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yjznf9\\Debug\\cmTC_7c9b1.exe" /INCREMENTAL /ILK:"cmTC_7c9b1.dir\\Debug\\cmTC_7c9b1.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-yjznf9/Debug/cmTC_7c9b1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-yjznf9/Debug/cmTC_7c9b1.lib" /MACHINE:X64  /machine:x64 cmTC_7c9b1.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_7c9b1.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yjznf9\\Debug\\cmTC_7c9b1.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_7c9b1.dir\\Debug\\cmTC_7c9b1.tlog\\unsuccessfulbuild".
+          Touching "cmTC_7c9b1.dir\\Debug\\cmTC_7c9b1.tlog\\cmTC_7c9b1.lastbuildstate".
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yjznf9\\cmTC_7c9b1.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:03.59
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:170 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:207 (cmake_determine_linker_id)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/CoreLibraryProjects/CrossPlatform/CMake/CMakeLists.txt:18 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.29.30154.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckFunctionExists.cmake:86 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindBLAS.cmake:372 (check_function_exists)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindBLAS.cmake:416 (check_blas_libraries)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/3rd_party/CMakeLists.txt:96 (find_package)"
+    checks:
+      - "Looking for sgemm_"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-f8gawg"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-f8gawg"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "BLAS_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-f8gawg'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_7edbd.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:25:54 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7edbd.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\Debug\\".
+          Creating directory "cmTC_7edbd.dir\\Debug\\cmTC_7edbd.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7edbd.dir\\Debug\\cmTC_7edbd.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=sgemm_ /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7edbd.dir\\Debug\\\\" /Fd"cmTC_7edbd.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=sgemm_ /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7edbd.dir\\Debug\\\\" /Fd"cmTC_7edbd.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\CheckFunctionExists.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\Debug\\cmTC_7edbd.exe" /INCREMENTAL /ILK:"cmTC_7edbd.dir\\Debug\\cmTC_7edbd.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-f8gawg/Debug/cmTC_7edbd.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-f8gawg/Debug/cmTC_7edbd.lib" /MACHINE:X64  /machine:x64 cmTC_7edbd.dir\\Debug\\CheckFunctionExists.obj
+        CheckFunctionExists.obj : error LNK2019: unresolved external symbol sgemm_ referenced in function main [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj]
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\Debug\\cmTC_7edbd.exe : fatal error LNK1120: 1 unresolved externals [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj]
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          CheckFunctionExists.obj : error LNK2019: unresolved external symbol sgemm_ referenced in function main [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj]
+          C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\Debug\\cmTC_7edbd.exe : fatal error LNK1120: 1 unresolved externals [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-f8gawg\\cmTC_7edbd.vcxproj]
+        
+            0 Warning(s)
+            2 Error(s)
+        
+        Time Elapsed 00:00:03.97
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindBLAS.cmake:468 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/3rd_party/CMakeLists.txt:96 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-2aeodp"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-2aeodp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-2aeodp'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_c7399.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:00 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\cmTC_c7399.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_c7399.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\Debug\\".
+          Creating directory "cmTC_c7399.dir\\Debug\\cmTC_c7399.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_c7399.dir\\Debug\\cmTC_c7399.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c7399.dir\\Debug\\\\" /Fd"cmTC_c7399.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          src.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c7399.dir\\Debug\\\\" /Fd"cmTC_c7399.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\src.c"
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\src.c(1,10): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\cmTC_c7399.vcxproj]
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\cmTC_c7399.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\cmTC_c7399.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\src.c(1,10): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2aeodp\\cmTC_c7399.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.92
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindBLAS.cmake:468 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/3rd_party/CMakeLists.txt:96 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-qxii59"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-qxii59"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-qxii59'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_ed03e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:03 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\cmTC_ed03e.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_ed03e.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\Debug\\".
+          Creating directory "cmTC_ed03e.dir\\Debug\\cmTC_ed03e.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_ed03e.dir\\Debug\\cmTC_ed03e.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ed03e.dir\\Debug\\\\" /Fd"cmTC_ed03e.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ed03e.dir\\Debug\\\\" /Fd"cmTC_ed03e.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\CheckFunctionExists.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\Debug\\cmTC_ed03e.exe" /INCREMENTAL /ILK:"cmTC_ed03e.dir\\Debug\\cmTC_ed03e.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-qxii59/Debug/cmTC_ed03e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-qxii59/Debug/cmTC_ed03e.lib" /MACHINE:X64  /machine:x64 cmTC_ed03e.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\cmTC_ed03e.vcxproj]
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\cmTC_ed03e.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\cmTC_ed03e.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qxii59\\cmTC_ed03e.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:02.32
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindBLAS.cmake:468 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/3rd_party/CMakeLists.txt:96 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-1aiafv"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-1aiafv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-1aiafv'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_7a229.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:06 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\cmTC_7a229.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7a229.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\Debug\\".
+          Creating directory "cmTC_7a229.dir\\Debug\\cmTC_7a229.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7a229.dir\\Debug\\cmTC_7a229.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7a229.dir\\Debug\\\\" /Fd"cmTC_7a229.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7a229.dir\\Debug\\\\" /Fd"cmTC_7a229.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\CheckFunctionExists.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\Debug\\cmTC_7a229.exe" /INCREMENTAL /ILK:"cmTC_7a229.dir\\Debug\\cmTC_7a229.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-1aiafv/Debug/cmTC_7a229.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-1aiafv/Debug/cmTC_7a229.lib" /MACHINE:X64  /machine:x64 cmTC_7a229.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\cmTC_7a229.vcxproj]
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\cmTC_7a229.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\cmTC_7a229.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-1aiafv\\cmTC_7a229.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:02.27
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckIncludeFileCXX.cmake:89 (try_compile)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake/FindFilesystem.cmake:157 (check_include_file_cxx)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/matplot/CMakeLists.txt:2 (find_package)"
+    checks:
+      - "Looking for C++ include filesystem"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-0n1lb9"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-0n1lb9"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /O2"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "_CXX_FILESYSTEM_HAVE_HEADER"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-0n1lb9'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_94e18.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:10 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\cmTC_94e18.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_94e18.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\Debug\\".
+          Creating directory "cmTC_94e18.dir\\Debug\\cmTC_94e18.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_94e18.dir\\Debug\\cmTC_94e18.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /std:c++17 /Fo"cmTC_94e18.dir\\Debug\\\\" /Fd"cmTC_94e18.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\CheckIncludeFile.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckIncludeFile.cxx
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /std:c++17 /Fo"cmTC_94e18.dir\\Debug\\\\" /Fd"cmTC_94e18.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\CheckIncludeFile.cxx"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\Debug\\cmTC_94e18.exe" /INCREMENTAL /ILK:"cmTC_94e18.dir\\Debug\\cmTC_94e18.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-0n1lb9/Debug/cmTC_94e18.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-0n1lb9/Debug/cmTC_94e18.lib" /MACHINE:X64  /machine:x64 cmTC_94e18.dir\\Debug\\CheckIncludeFile.obj
+          cmTC_94e18.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\Debug\\cmTC_94e18.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_94e18.dir\\Debug\\cmTC_94e18.tlog\\unsuccessfulbuild".
+          Touching "cmTC_94e18.dir\\Debug\\cmTC_94e18.tlog\\cmTC_94e18.lastbuildstate".
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0n1lb9\\cmTC_94e18.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:04.28
+        
+      exitCode: 0
+  -
+    kind: "try_run-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/Internal/CheckSourceRuns.cmake:93 (try_run)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckCXXSourceRuns.cmake:52 (cmake_check_source_runs)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake/FindFilesystem.cmake:120 (check_cxx_source_runs)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake/FindFilesystem.cmake:210 (_cmcm_check_cxx_source)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/matplot/CMakeLists.txt:2 (find_package)"
+    checks:
+      - "Performing Test CXX_FILESYSTEM_NO_LINK_NEEDED"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-ucq6t7"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-ucq6t7"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /O2"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "CXX_FILESYSTEM_NO_LINK_NEEDED_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-ucq6t7'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_66188.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:15 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_66188.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\Debug\\".
+          Creating directory "cmTC_66188.dir\\Debug\\cmTC_66188.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_66188.dir\\Debug\\cmTC_66188.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CXX_FILESYSTEM_NO_LINK_NEEDED /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /std:c++17 /Fo"cmTC_66188.dir\\Debug\\\\" /Fd"cmTC_66188.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          src.cxx
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CXX_FILESYSTEM_NO_LINK_NEEDED /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /std:c++17 /Fo"cmTC_66188.dir\\Debug\\\\" /Fd"cmTC_66188.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx"
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'const std::filesystem::path::value_type *' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): message : consider using '%ls' in the format string [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): message : consider using '%lls' in the format string [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): message : consider using '%Ls' in the format string [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): message : consider using '%ws' in the format string [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\Debug\\cmTC_66188.exe" /INCREMENTAL /ILK:"cmTC_66188.dir\\Debug\\cmTC_66188.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-ucq6t7/Debug/cmTC_66188.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-ucq6t7/Debug/cmTC_66188.lib" /MACHINE:X64  /machine:x64 cmTC_66188.dir\\Debug\\src.obj
+          cmTC_66188.vcxproj -> C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\Debug\\cmTC_66188.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_66188.dir\\Debug\\cmTC_66188.tlog\\unsuccessfulbuild".
+          Touching "cmTC_66188.dir\\Debug\\cmTC_66188.tlog\\cmTC_66188.lastbuildstate".
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj" (default targets).
+        
+        Build succeeded.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\src.cxx(6,20): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'const std::filesystem::path::value_type *' [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ucq6t7\\cmTC_66188.vcxproj]
+        
+            1 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:04.90
+        
+      exitCode: 0
+    runResult:
+      variable: "CXX_FILESYSTEM_NO_LINK_NEEDED_EXITCODE"
+      cached: true
+      stdout: |
+        C
+      stderr: |
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "C:/Users/ouymc2/AppData/Local/Programs/Python/Python39/Lib/site-packages/cmake/data/share/cmake-3.29/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/source/matplot/CMakeLists.txt:141 (check_symbol_exists)"
+    checks:
+      - "Looking for __fbufsize"
+    directories:
+      source: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-dc7m9c"
+      binary: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-dc7m9c"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/MATPLOT/matplotcpplib/cmake"
+    buildResult:
+      variable: "HAVE_FBUFSIZE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Plastic/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/CMake/build/CMakeFiles/CMakeScratch/TryCompile-dc7m9c'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe" cmTC_79f61.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 12/9/2024 1:26:21 PM.
+        Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\cmTC_79f61.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_79f61.dir\\Debug\\".
+          Creating directory "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\Debug\\".
+          Creating directory "cmTC_79f61.dir\\Debug\\cmTC_79f61.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_79f61.dir\\Debug\\cmTC_79f61.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_79f61.dir\\Debug\\\\" /Fd"cmTC_79f61.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\CheckSymbolExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30154 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckSymbolExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_79f61.dir\\Debug\\\\" /Fd"cmTC_79f61.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\CheckSymbolExists.c"
+        C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\CheckSymbolExists.c(2,10): fatal error C1083: Cannot open include file: 'stdio_ext.h': No such file or directory [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\cmTC_79f61.vcxproj]
+        Done Building Project "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\cmTC_79f61.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\cmTC_79f61.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\CheckSymbolExists.c(2,10): fatal error C1083: Cannot open include file: 'stdio_ext.h': No such file or directory [C:\\Plastic\\10030156_03_Analysis_Framework_Suite\\ResimulationTool\\SOURCE\\ApplicationProjects\\ResimHTMLReport\\CMake\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dc7m9c\\cmTC_79f61.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.43
+        
+      exitCode: 1
+...
