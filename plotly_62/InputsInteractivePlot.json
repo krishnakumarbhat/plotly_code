@@ -1,9 +1,10 @@
 {
     "INPUT_HDF": [
-        "/home/pope/Desktop/sadfdsaffdsasf/R11/R11_out.h5"
+      "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/607_wup.h5"
+
 
     ],
     "OUTPUT_HDF": [
-      "/home/pope/Desktop/sadfdsaffdsasf/R11/R11.h5"
+      "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/607_wup.h5"
     ]
 }
