@@ -37,7 +37,7 @@ class DetectionMappingKPIHDF:
         self.RADAR_CYCLE_S = self.thresholds["radar_cycle_s"]
         self.MAX_CDC_RECORDS = self.thresholds["max_cdc_records"]
         self.RANGE_SATURATION_THRESHOLD_FRONT = self.thresholds["range_saturation_threshold_front"]
-        self.RANGE_SATURATION_THRESHOLD_CORNER = self.thresholds["range_saturation_threshold_corner"]
+        self.RANGE_SATURATION_THRESHOLD_CORNER =self.thresholds["range_saturation_threshold_corner"]
         self.MAX_NUM_OF_AF_DETS_FRONT = self.thresholds["max_num_af_dets_front"]
         self.MAX_NUM_OF_AF_DETS_CORNER = self.thresholds["max_num_af_dets_corner"]
         self.MAX_NUM_OF_RDD_DETS = self.thresholds["max_num_rdd_dets"]
@@ -70,11 +70,11 @@ class DetectionMappingKPIHDF:
             return False
             
         # Convert to DataFrames
-        det_params = ['rdd_idx', 'ran', 'vel', 'theta', 'phi', 'f_single_target', 'f_superres_target', 'f_bistatic']
+        det_params = ['rdd_idx', 'ran', 'vel', 'theta', 'phi', 'f_single_target', 'f_superres_target', 'f_bistatic','num_af_det']
 
         src = self.data['DETECTION_STREAM']
-        veh_det_df = None
-        sim_det_df = None
+        veh_det_df = {}
+        sim_det_df = {}
 
         for i in det_params:
             veh_det_df[i] = KPI_DataModelStorage.get_value(src['input'],i)
@@ -85,8 +85,8 @@ class DetectionMappingKPIHDF:
             return False
             
         # Filter for non-zero detections
-        veh_det_df = veh_det_df[veh_det_df['num_af_det'] > 0]
-        sim_det_df = sim_det_df[sim_det_df['num_af_det'] > 0]
+        veh_det_df = veh_det_df['num_af_det'] > 0
+        sim_det_df = sim_det_df['num_af_det'] > 0
         input_rdd_data = self.data['RDD']['input']
         output_rdd_data = self.data['RDD']['output']
         # Process RDD data if available

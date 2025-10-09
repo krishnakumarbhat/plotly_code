@@ -254,7 +254,8 @@ class KPI_DataModelStorage:
                 return (round(float(data), 2),)
             except Exception:
                 return (data,)
-    
+
+
     @staticmethod
     def get_value(data, signal_name, grp_name=None):
         """
@@ -271,29 +272,28 @@ class KPI_DataModelStorage:
                 - str: A status string, "success" or an error message.
         """
         
-        unique = data._signal_to_value.get(signal_name)
+        signal_info = data._signal_to_value.get(signal_name)
 
         # Return early if signal not found in either map
-        if not unique:
+        if not signal_info:
             return [], f"Signal '{signal_name}' not found in data model."
 
         storage_key = None
-        if isinstance(unique, str):
-            storage_key = unique
-        elif isinstance(unique, list):
+        if isinstance(signal_info, str):
+            storage_key = signal_info
+        elif isinstance(signal_info, list):
             if grp_name:
-                # Find the specific key for the given group name
-                for item in unique:
+                # Find the key for the specified group
+                for item in signal_info:
                     if grp_name in item:
                         storage_key = item[grp_name]
                         break
-            else:
-                # Default to the first available key if no group name is specified
-                if unique:
-                    storage_key = list(unique[0].values())[0]
+            elif signal_info:
+                # Default to the first available key if no group is specified
+                storage_key = list(signal_info[0].values())[0]
 
         if not storage_key:
-            return [], f"Could not determine storage key for signal '{signal_name}' and group '{grp_name}'."
+            return [], f"Could not find a valid storage key for signal '{signal_name}' with group '{grp_name}'."
 
         try:
             grp_idx, plt_idx = map(int, storage_key.split("_"))
@@ -303,23 +303,43 @@ class KPI_DataModelStorage:
         all_values = []
         scan_indices = list(data._data_container.keys())
         
-        
-        # Process all scan indices at once
+        # for scan_idx, scan_data in data._data_container.items():
+
         for scan_idx in scan_indices:
             scan_data = data._data_container.get(scan_idx)
             if scan_data and grp_idx < len(scan_data):
                 group_data = scan_data[grp_idx]
                 if plt_idx < len(group_data):
                     value = group_data[plt_idx]
-                    # Ensure value is a list for consistent appending
                     if np.isscalar(value):
-                        all_values.append([scan_idx, value])
+                        row = np.array([scan_idx, value])
                     else:
-                        # For arrays/lists, prepend the scan_index
-                        all_values.append([scan_idx] + list(value))
+                        row = np.concatenate(([scan_idx], np.asarray(value).ravel()))
+                    all_values.append(row)
 
-        return all_values, "success"
+        # After the loop
+        if all_values:
+            # Pad rows to same length if needed
+            max_len = max(len(r) for r in all_values)
+            stacked = np.vstack([np.pad(r, (0, max_len - len(r)), constant_values=np.nan) for r in all_values])
+        else:
+            stacked = np.empty((0, 0))
 
+        return stacked, "success"
+
+
+
+# value = group_data[plt_idx]
+# # Ensure value is converted into a 1D sequence, then make a row with scan_idx first
+
+# else:
+
+
+# # After collecting rows, stack into a single 2D numpy array
+# if all_values:
+#     all_values = np.vstack(all_values)
+# else:
+#     all_values = np.empty((0, 0))
 
 
 
