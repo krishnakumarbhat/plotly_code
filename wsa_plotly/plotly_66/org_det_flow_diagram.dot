@@ -1,0 +1,115 @@
+digraph org_det_flow_diagram {
+    rankdir=TB;
+    bgcolor=white;
+    fontname="Arial";
+    fontsize=9;
+    splines=ortho;
+
+    // Start node
+    node [shape=oval, style="filled", fillcolor=green];
+    start [label="START\nScript Execution"];
+
+    // Stage nodes - Core processing pipeline
+    node [shape=box, style="rounded,filled", fillcolor=lightblue];
+
+    // Input/Configuration stage
+    input_config [label="1. Input & Configuration\n- Read command line args\n- Load metadata\n- Initialize session variables"];
+
+    // CSV Reading stage
+    csv_reading [label="2. CSV Data Loading\n- Read DET, RDD, CDC, VSE CSVs\n- Apply column filtering\n- Memory mapping for efficiency"];
+
+    // Data Filtering stage
+    data_filtering [label="3. Data Filtering\n- Remove zero scan indices\n- Filter non-zero detections\n- Remove duplicates"];
+
+    // DET Processing stage
+    det_processing [label="4. DET Stream Processing\n- Merge vehicle & simulation DET data\n- Calculate detection count KPIs\n- Validate data consistency"];
+
+    // RDD Processing stage
+    rdd_processing [label="5. RDD Stream Processing\n- Merge vehicle & simulation RDD data\n- Calculate RDD detection KPIs"];
+
+    // CDC Processing stage
+    cdc_processing [label="6. CDC Stream Processing\n- Read CDC files (if CDC mode)\n- Calculate saturation metrics"];
+
+    // RDD Detection Matching stage
+    rdd_matching [label="6. RDD Detection Matching\n- Match (rindx, dindx) pairs\n- Calculate range/rangerate matches\n- Generate matching statistics"];
+
+    // Data Merging stage
+    data_merging [label="7. Data Merging\n- Combine DET, RDD, CDC data\n- Extract RDD indices to DET data"];
+
+    // Detection Matching stage
+    detection_matching [label="8. AF Detection Matching\n- Match detection parameters (r,v,t,p)\n- Calculate accuracy metrics\n- Generate difference statistics"];
+
+    // KPI Calculation stage
+    kpi_calculation [label="9. KPI Calculation\n- Compute overall accuracy\n- Calculate scan/mileage yields\n- Generate performance metrics"];
+
+    // VSE Processing stage
+    vse_processing [label="10. VSE Data Processing\n- Calculate distance travelled\n- Process vehicle speed data"];
+
+    // Visualization stage
+    visualization [label="11. Visualization Generation\n- Create error distribution plots\n- Generate parameter trend plots\n- Create cross-log comparison plots"];
+
+    // Report Generation stage
+    report_generation [label="12. Report Generation\n- Generate HTML content\n- Create interactive tables\n- Write output files"];
+
+    // End node
+    node [shape=oval, style="filled", fillcolor=red];
+    end [label="END\nScript Complete"];
+
+    // Data flow edges
+    edge [color=darkblue, fontname="Arial", fontsize=8];
+
+    start -> input_config [label="Initialize"];
+    input_config -> csv_reading [label="Load data files"];
+    csv_reading -> data_filtering [label="Filter datasets"];
+    data_filtering -> det_processing [label="Process DET streams"];
+    data_filtering -> rdd_processing [label="Process RDD streams"];
+    data_filtering -> cdc_processing [label="Process CDC streams"];
+
+    det_processing -> rdd_matching [label="RDD stream matching"];
+    rdd_processing -> rdd_matching [label="RDD data for matching"];
+
+    rdd_matching -> data_merging [label="Merge all streams"];
+    cdc_processing -> data_merging [label="CDC data if available"];
+
+    data_merging -> detection_matching [label="AF detection matching"];
+
+    detection_matching -> kpi_calculation [label="Calculate KPIs"];
+    vse_processing -> kpi_calculation [label="VSE data"];
+
+    kpi_calculation -> visualization [label="Create plots"];
+    visualization -> report_generation [label="Generate reports"];
+    report_generation -> end [label="Complete"];
+
+    // Parallel processing paths
+    edge [color=darkgreen, style=dashed];
+    det_processing -> data_merging [label="DET data"];
+    rdd_processing -> data_merging [label="RDD data"];
+
+    // Iterative processing
+    edge [color=purple, style=dotted];
+    report_generation -> input_config [label="Process next log batch"];
+
+    // Legend
+    subgraph cluster_legend {
+        label="Processing Stages";
+        style=dashed;
+        color=gray;
+        fontsize=8;
+
+        node [shape=plaintext, fillcolor=white];
+
+        "Sequential Stages" [shape=plaintext];
+        "Parallel Processing" [shape=plaintext];
+        "Iterative Processing" [shape=plaintext];
+    }
+
+    // Layout organization
+    {rank=same; det_processing; rdd_processing; cdc_processing;}
+    {rank=same; rdd_matching; data_merging;}
+    {rank=same; detection_matching; kpi_calculation; vse_processing;}
+    {rank=same; visualization; report_generation;}
+
+    // Graph title
+    labelloc="t";
+    label="org_det.py Data Processing Pipeline\nComplete Flow from CSV Input to HTML Report Generation";
+}

@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # Allure Report POC service
+  allure-poc:
+    build:
+      context: .
+      target: tester
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./results:/app/results
+      - ./reports:/app/reports
+      - ./tests:/app/tests
+    environment:
+      - ALLURE_RESULTS_DIR=/app/results
+      - ALLURE_REPORTS_DIR=/app/reports
+    command: >
+      sh -c "
+        echo 'Running tests and generating Allure report...' &&
+        go test ./tests/... -v -json | ./allure-poc -results=/app/results -output=/app/reports -debug=true &&
+        echo 'Starting Allure server...' &&
+        allure serve /app/results -h 0.0.0.0 -p 8080
+      "
+
+  # Alternative: Run tests only
+  test-only:
+    build:
+      context: .
+      target: tester
+    volumes:
+      - ./results:/app/results
+      - ./reports:/app/reports
+      - ./tests:/app/tests
+    environment:
+      - ALLURE_RESULTS_DIR=/app/results
+      - ALLURE_REPORTS_DIR=/app/reports
+    command: >
+      sh -c "
+        echo 'Running tests only...' &&
+        go test ./tests/... -v -json | ./allure-poc -results=/app/results -output=/app/reports -debug=true
+      "
+
+  # Alternative: Serve existing report
+  serve-report:
+    build:
+      context: .
+      target: tester
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./results:/app/results
+      - ./reports:/app/reports
+    command: allure serve /app/results -h 0.0.0.0 -p 8080
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      target: tester
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - ./results:/app/results
+      - ./reports:/app/reports
+    environment:
+      - ALLURE_RESULTS_DIR=/app/results
+      - ALLURE_REPORTS_DIR=/app/reports
+    command: >
+      sh -c "
+        echo 'Development mode - watching for changes...' &&
+        while true; do
+          echo 'Running tests...' &&
+          go test ./tests/... -v -json | ./allure-poc -results=/app/results -output=/app/reports -debug=true &&
+          echo 'Tests completed. Press Ctrl+C to stop.' &&
+          sleep 30
+        done
+      "
+
+  # Production build
+  production:
+    build:
+      context: .
+      target: production
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./results:/app/results
+      - ./reports:/app/reports
+    command: ["./allure-poc", "-help"] 

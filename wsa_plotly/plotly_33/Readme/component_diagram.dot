@@ -1,0 +1,54 @@
+digraph G {
+    rankdir=TB;
+    node [shape=component];
+    
+    subgraph cluster_config {
+        label="Configuration Layer";
+        style=filled;
+        color=lightgrey;
+        
+        xml_parser [label="XML Config Parser"];
+        json_factory [label="JSON Parser Factory"];
+        config_files [label="Config Files", shape=folder];
+    }
+    
+    subgraph cluster_db {
+        label="Database Layer";
+        style=filled;
+        color=lightblue;
+        
+        hdf_factory [label="HDF Processor Factory"];
+        hdf_parser [label="HDF Parser"];
+        hdf_files [label="HDF Files", shape=cylinder];
+    }
+    
+    subgraph cluster_business {
+        label="Business Layer";
+        style=filled;
+        color=lightgreen;
+        
+        data_container [label="Data Container"];
+        data_prep [label="Data Preparation"];
+    }
+    
+    subgraph cluster_presentation {
+        label="Presentation Layer";
+        style=filled;
+        color=lightyellow;
+        
+        plot_gen [label="Plot Generator"];
+        html_out [label="HTML Output", shape=note];
+    }
+    
+    // Connections
+    config_files -> xml_parser [label="read"];
+    config_files -> json_factory [label="read"];
+    xml_parser -> hdf_factory [label="hdf_file_type"];
+    json_factory -> hdf_factory [label="io_map"];
+    hdf_factory -> hdf_parser;
+    hdf_files -> hdf_parser [label="read"];
+    hdf_parser -> data_container [label="data"];
+    data_container -> data_prep;
+    data_prep -> plot_gen;
+    plot_gen -> html_out;
+}

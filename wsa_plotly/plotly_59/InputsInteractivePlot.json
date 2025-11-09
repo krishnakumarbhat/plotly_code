@@ -1,0 +1,15 @@
+{
+    "INPUT_HDF": [
+        "C:/Users/ouymc2/Desktop/hdf/Gen7v2_SRR7p_FLR7_sw_v_6_0_4_vehicle_logs_00002_20250416113100_ORCAS.h5",
+        "C:/Users/ouymc2/Desktop/R607/R606/GEN7V2_SRR7P_FLR7_SW_6_0_7_00002_20250424133700_ORCAS.h5",
+        "C:/Users/ouymc2/Desktop/607_WUP/607_WUP/CCA_9010_3100099_GPO_Gen7_20250430_131609_0000.h5"
+
+
+
+    ],
+    "OUTPUT_HDF": [
+        "C:/Users/ouymc2/Desktop/hdf/Gen7v2_SRR7p_FLR7_sw_v_6_0_4_vehicle_logs_00002_20250416113100_ORCAS_r00060005_RDD.h5",
+        "C:/Users/ouymc2/Desktop/R607/R606/GEN7V2_SRR7P_FLR7_SW_6_0_7_00002_20250424133700_ORCAS_r00060005_RDD.h5",
+        "C:/Users/ouymc2/Desktop/607_WUP/607_WUP/CCA_9010_3100099_GPO_Gen7_20250430_131609_0000_r00060005_RDD.h5"
+    ]
+}

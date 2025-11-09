@@ -1,0 +1,576 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.22631 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -Aa 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -D__CLASSIC_C__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -Aa 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -D__CLASSIC_C__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: --target=arm-arm-none-eabi;-mcpu=cortex-m3 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: CMAKE_C_COMPILER-NOTFOUND 
+      Build flags: 
+      Id flags: -c;-I__does_not_exist__ 
+      
+      The output was:
+      no such file or directory
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      clang++: warning: unable to find a Visual Studio installation; try running Clang from a developer command prompt [-Wmsvc-not-found]
+      clang++: error: unable to execute command: program not executable
+      clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+      
+      
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.22631 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: C:/Program Files/LLVM/bin/clang.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      clang: warning: unable to find a Visual Studio installation; try running Clang from a developer command prompt [-Wmsvc-not-found]
+      clang: error: unable to execute command: program not executable
+      clang: error: linker command failed with exit code 1 (use -v to see invocation)
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+      
+      The C compiler identification is Clang, found in:
+        C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/3.29.0-rc3/CompilerIdC/CMakeCCompilerId.o
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting C compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting C compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      clang++: warning: unable to find a Visual Studio installation; try running Clang from a developer command prompt [-Wmsvc-not-found]
+      clang++: error: unable to execute command: program not executable
+      clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+      
+      The CXX compiler identification is Clang, found in:
+        C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/3.29.0-rc3/CompilerIdCXX/CMakeCXXCompilerId.o
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: C:/Program Files/LLVM/bin/clang.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      clang: warning: unable to find a Visual Studio installation; try running Clang from a developer command prompt [-Wmsvc-not-found]
+      clang: error: unable to execute command: program not executable
+      clang: error: linker command failed with exit code 1 (use -v to see invocation)
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+      
+      The C compiler identification is Clang, found in:
+        C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/3.29.0-rc3/CompilerIdC/CMakeCCompilerId.o
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting C compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting C compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      1
+      clang++: warning: unable to find a Visual Studio installation; try running Clang from a developer command prompt [-Wmsvc-not-found]
+      clang++: error: unable to execute command: program not executable
+      clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: C:/Program Files/LLVM/bin/clang++.exe 
+      Build flags: 
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+      
+      The CXX compiler identification is Clang, found in:
+        C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/3.29.0-rc3/CompilerIdCXX/CMakeCXXCompilerId.o
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:1216 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:250 (CMAKE_DETERMINE_MSVC_SHOWINCLUDES_PREFIX)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Detecting CXX compiler /showIncludes prefix:
+        
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:64 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-pwky3c"
+      binary: "C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-pwky3c"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-pwky3c'
+        
+        Run Build Command(s): C:/Users/ouymc2/AppData/Local/Programs/Python/Python313/Scripts/ninja.exe -v cmTC_89366
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\clang.exe   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_89366.dir/CMakeCCompilerABI.c.obj -MF CMakeFiles\\cmTC_89366.dir\\CMakeCCompilerABI.c.obj.d -o CMakeFiles/cmTC_89366.dir/CMakeCCompilerABI.c.obj -c "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeCCompilerABI.c"
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\clang.exe -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -v  -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_89366.dir/CMakeCCompilerABI.c.obj -o cmTC_89366.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_89366.lib -Xlinker /pdb:cmTC_89366.pdb -Xlinker /version:0.0     && cd ."
+        FAILED: cmTC_89366.exe 
+        C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\clang.exe -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -v  -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_89366.dir/CMakeCCompilerABI.c.obj -o cmTC_89366.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_89366.lib -Xlinker /pdb:cmTC_89366.pdb -Xlinker /version:0.0     && cd ."
+        clang version 20.1.7
+        Target: x86_64-pc-windows-msvc
+        Thread model: posix
+        InstalledDir: C:\\Program Files\\LLVM\\bin
+         "C:\\\\Program Files\\\\LLVM\\\\bin\\\\lld-link" -out:cmTC_89366.exe "-libpath:lib\\\\amd64" "-libpath:atlmfc\\\\lib\\\\amd64" "-libpath:C:\\\\Program Files\\\\LLVM\\\\lib\\\\clang\\\\20\\\\lib\\\\windows" -nologo -debug /subsystem:console CMakeFiles/cmTC_89366.dir/CMakeCCompilerABI.c.obj /MANIFEST:EMBED /implib:cmTC_89366.lib /pdb:cmTC_89366.pdb /version:0.0\x0d
+        lld-link: error: could not open 'msvcrtd.lib': no such file or directory\x0d
+        clang: error: linker command failed with exit code 1 (use -v to see invocation)\x0d
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:56 (try_compile)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Check for working C compiler: C:/Program Files/LLVM/bin/clang.exe"
+    directories:
+      source: "C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-2arbye"
+      binary: "C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-2arbye"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "C:/Program Files/LLVM/bin/clang-scan-deps.exe"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_COMPILER_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-2arbye'
+        
+        Run Build Command(s): C:/Users/ouymc2/AppData/Local/Programs/Python/Python313/Scripts/ninja.exe -v cmTC_af6a1
+        [1/2] C:\\PROGRA~1\\LLVM\\bin\\clang.exe   -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -MD -MT CMakeFiles/cmTC_af6a1.dir/testCCompiler.c.obj -MF CMakeFiles\\cmTC_af6a1.dir\\testCCompiler.c.obj.d -o CMakeFiles/cmTC_af6a1.dir/testCCompiler.c.obj -c C:/Users/ouymc2/Desktop/cpp_poc/build/CMakeFiles/CMakeScratch/TryCompile-2arbye/testCCompiler.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\clang.exe -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_af6a1.dir/testCCompiler.c.obj -o cmTC_af6a1.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_af6a1.lib -Xlinker /pdb:cmTC_af6a1.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        FAILED: cmTC_af6a1.exe 
+        C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\LLVM\\bin\\clang.exe -nostartfiles -nostdlib -O0 -g -Xclang -gcodeview -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -Xlinker /subsystem:console  -fuse-ld=lld-link CMakeFiles/cmTC_af6a1.dir/testCCompiler.c.obj -o cmTC_af6a1.exe -Xlinker /MANIFEST:EMBED -Xlinker /implib:cmTC_af6a1.lib -Xlinker /pdb:cmTC_af6a1.pdb -Xlinker /version:0.0   -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames  && cd ."
+        lld-link: error: could not open 'kernel32.lib': no such file or directory
+        lld-link: error: could not open 'user32.lib': no such file or directory
+        lld-link: error: could not open 'gdi32.lib': no such file or directory
+        lld-link: error: could not open 'winspool.lib': no such file or directory
+        lld-link: error: could not open 'shell32.lib': no such file or directory
+        lld-link: error: could not open 'ole32.lib': no such file or directory
+        lld-link: error: could not open 'oleaut32.lib': no such file or directory
+        lld-link: error: could not open 'uuid.lib': no such file or directory
+        lld-link: error: could not open 'comdlg32.lib': no such file or directory\x0d
+        lld-link: error: could not open 'advapi32.lib': no such file or directory\x0d
+        lld-link: error: could not open 'oldnames.lib': no such file or directory\x0d
+        lld-link: error: could not open 'msvcrtd.lib': no such file or directory\x0d
+        clang: error: linker command failed with exit code 1 (use -v to see invocation)\x0d
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+...
