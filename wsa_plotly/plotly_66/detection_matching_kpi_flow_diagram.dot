@@ -1,0 +1,132 @@
+digraph detection_matching_kpi_flow_diagram {
+    rankdir=TB;
+    bgcolor=white;
+    fontname="Arial";
+    fontsize=9;
+    splines=ortho;
+
+    // Start node
+    node [shape=oval, style="filled", fillcolor=green];
+    start [label="START\nKPI Processing"];
+
+    // Main processing nodes
+    node [shape=box, style="rounded,filled", fillcolor=lightblue];
+
+    // Initialization stage
+    initialization [label="1. Initialization\n- Create DetectionMappingKPIHDF instance\n- Load thresholds from config\n- Set sensor-specific parameters"];
+
+    // Data extraction stage
+    data_extraction [label="2. HDF Data Extraction\n- Extract DETECTION_STREAM parameters\n- Extract RDD_STREAM parameters\n- Validate data availability"];
+
+    // RDD processing stage
+    rdd_processing [label="3. RDD Stream Processing\n- Extract scan indices and values\n- Match scan indices between input/output\n- Calculate RDD detection count KPIs"];
+
+    // AF detection processing stage
+    af_processing [label="4. AF Detection Processing\n- Extract AF detection parameters\n- Match scan indices between input/output\n- Calculate detection count statistics"];
+
+    // KPI calculation stage
+    kpi_calculation [label="5. KPI Calculation\n- Calculate accuracy percentages\n- Compute detection matching rates\n- Generate performance metrics"];
+
+    // HTML report generation stage
+    html_generation [label="6. HTML Report Generation\n- Format KPI results\n- Create detailed result sections\n- Include threshold information"];
+
+    // Results return stage
+    results_return [label="7. Results Return\n- Package KPI results\n- Include HTML content\n- Return success status"];
+
+    // End node
+    node [shape=oval, style="filled", fillcolor=red];
+    end [label="END\nKPI Complete"];
+
+    // Data structures
+    node [shape=ellipse, style=filled, fillcolor=lightgreen];
+    data_storage [label="KPI_DataModelStorage\nHDF data container"];
+    kpi_results [label="KPI Results\nCalculated metrics"];
+    html_content [label="HTML Content\nFormatted report"];
+
+    // External dependencies
+    node [shape=diamond, style=filled, fillcolor=lightyellow];
+    config [label="KPI_VALIDATION_RULES\nThreshold configuration"];
+    logger [label="logging\nError tracking"];
+
+    // Data flow edges
+    edge [color=darkblue, fontname="Arial", fontsize=8];
+
+    start -> initialization [label="Initialize processor"];
+    initialization -> data_storage [label="uses"];
+    initialization -> config [label="loads thresholds"];
+
+    initialization -> data_extraction [label="Extract data"];
+    data_extraction -> data_storage [label="reads HDF data"];
+    data_extraction -> logger [label="error handling"];
+
+    // Conditional RDD processing
+    data_extraction -> rdd_processing [label="Process RDD data\n(if available)"];
+    rdd_processing -> data_storage [label="extracts RDD params"];
+    rdd_processing -> logger [label="error handling"];
+
+    // Parallel/sequential processing
+    data_extraction -> af_processing [label="Process AF data"];
+    rdd_processing -> kpi_calculation [label="RDD KPIs"];
+    af_processing -> kpi_calculation [label="AF KPIs"];
+
+    af_processing -> data_storage [label="extracts AF params"];
+    af_processing -> logger [label="error handling"];
+
+    kpi_calculation -> kpi_results [label="stores metrics"];
+    kpi_calculation -> html_generation [label="Generate report"];
+
+    html_generation -> html_content [label="creates HTML"];
+    html_generation -> kpi_results [label="uses results"];
+
+    html_content -> results_return [label="Include in results"];
+    kpi_results -> results_return [label="Return results"];
+    results_return -> end [label="Complete"];
+
+    // Error handling flows
+    edge [color=red, style=dashed];
+    data_extraction -> results_return [label="Error: No data"];
+    rdd_processing -> results_return [label="Error: RDD processing"];
+    af_processing -> results_return [label="Error: AF processing"];
+    html_generation -> results_return [label="Error: HTML generation"];
+
+    // Configuration flow
+    edge [color=darkgreen, style=dotted];
+    config -> initialization [label="Sensor thresholds"];
+    config -> kpi_calculation [label="Validation rules"];
+
+    // Logging throughout
+    edge [color=purple, style=dotted];
+    logger -> initialization [label="Log init"];
+    logger -> data_extraction [label="Log extraction"];
+    logger -> rdd_processing [label="Log RDD"];
+    logger -> af_processing [label="Log AF"];
+    logger -> kpi_calculation [label="Log calculations"];
+    logger -> html_generation [label="Log generation"];
+    logger -> results_return [label="Log results"];
+
+    // Legend
+    subgraph cluster_legend {
+        label="Processing Flow";
+        style=dashed;
+        color=gray;
+        fontsize=8;
+
+        node [shape=plaintext, fillcolor=white];
+
+        "Main Processing Path" [shape=plaintext];
+        "Error Handling Path" [shape=plaintext];
+        "Configuration Flow" [shape=plaintext];
+        "Logging Flow" [shape=plaintext];
+    }
+
+    // Layout organization
+    {rank=same; initialization; data_extraction;}
+    {rank=same; rdd_processing; af_processing;}
+    {rank=same; kpi_calculation; html_generation;}
+    {rank=same; kpi_results; html_content;}
+    {rank=same; config; logger; data_storage;}
+
+    // Graph title
+    labelloc="t";
+    label="Detection Matching KPI Processing Pipeline\nHDF-based Object-Oriented Design";
+}

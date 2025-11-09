@@ -1,0 +1,30 @@
+digraph G {
+    rankdir=LR;
+    node [shape=record, style=filled, fillcolor=lightgray];
+    
+    // Config Layer
+    MainProcessor [label="{MainProcessor|+ xml_file: str\l+ json_file: str\l+ per_sensor_json_file: str\l|+ run()\l}"];
+    XmlConfigParser [label="{XmlConfigParser|+ xml_file: str\l+ hdf_source_selection: str\l+ hdf_file_type: str\l|+ parse()\l+ get_hdf_file_type()\l}"];
+    JSONParserFactory [label="{JSONParserFactory||+ create_parser()\l}"];
+    PersensorJSONParser [label="{PersensorJSONParser|+ json_file: str\l+ io_map: dict\l|+ parse()\l+ get_io_map()\l}"];
+    
+    // DB Layer
+    HdfProcessorFactory [label="{HdfProcessorFactory|+ file_dict: dict\l+ hdf_file_type: str\l|+ process()\l}"];
+    AllsensorHdfParser [label="{AllsensorHdfParser|+ address_map: dict\l+ data_container: dict\l|+ parse()\l}"];
+    
+    // Business Layer
+    DataContainer [label="{DataContainer|+ data_container: dict\l+ val_sig_map_in: dict\l|+ __init__()\l}"];
+    DataPrep [label="{DataPrep|+ parent_tabs: dict\l+ plots_hash: dict\l|+ create_parent_tabs()\l+ generate_html_content()\l}"];
+    
+    // Presentation Layer
+    PlotGenerator [label="{PlotGenerator|+ plots: dict\l+ html_name: str\l|+ generate_html_content()\l+ save_html()\l}"];
+    
+    // Relationships
+    MainProcessor -> XmlConfigParser;
+    MainProcessor -> JSONParserFactory;
+    MainProcessor -> HdfProcessorFactory;
+    JSONParserFactory -> PersensorJSONParser [style=dashed, label="creates"];
+    HdfProcessorFactory -> AllsensorHdfParser [style=dashed, label="creates"];
+    DataContainer -> DataPrep;
+    DataPrep -> PlotGenerator;
+}

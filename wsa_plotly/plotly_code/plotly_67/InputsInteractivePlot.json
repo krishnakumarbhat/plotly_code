@@ -1,0 +1,9 @@
+{
+    "INPUT_HDF": [
+        "/home/pope/Desktop/sadfdsaffdsasf/R11/R11_out.h5"
+
+    ],
+    "OUTPUT_HDF": [
+      "/home/pope/Desktop/sadfdsaffdsasf/R11/R11.h5"
+    ]
+}

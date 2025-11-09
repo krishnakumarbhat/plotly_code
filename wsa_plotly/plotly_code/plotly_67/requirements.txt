@@ -1,0 +1,28 @@
+# Core dependencies
+plotly>=5.17.0
+h5py>=3.8.0
+lxml>=4.9.0
+numpy>=1.24.0
+pandas>=2.0.0
+aiofiles>=23.0.0
+
+# Performance and monitoring
+psutil>=5.9.0  # For memory monitoring
+numba>=0.58.0  # For JIT compilation of numerical functions
+cython>=3.0.0  # For performance-critical sections
+
+# Enhanced logging and debugging
+colorlog>=6.7.0  # For colored console output
+memory-profiler>=0.61.0  # For memory profiling
+
+# UI/UX enhancements
+jinja2>=3.1.0  # For template rendering
+markupsafe>=2.1.0  # For safe HTML rendering
+
+# Development and testing
+pytest>=7.3.0  # For testing
+pytest-asyncio>=0.21.0  # For async testing
+
+# KPI Process Communication
+pyzmq>=25.0.0  # For ZMQ communication
+protobuf>=4.21.0  # For protocol buffer serialization
