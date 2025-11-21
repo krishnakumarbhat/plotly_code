@@ -1,0 +1,10 @@
+# Core runtime dependencies
+plotly>=5.17.0
+h5py>=3.8.0
+lxml>=4.9.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# KPI Process Communication (required for ZMQ server mode)
+pyzmq>=25.0.0
+protobuf>=4.21.0
