@@ -1,0 +1,19 @@
+{
+    "INPUT_HDF": [
+
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/input.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_wup.h5" ,
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_hdf.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_wup.h5" ,
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/607_wup.h5" 
+
+
+    ],
+    "OUTPUT_HDF": [
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/output.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_wup.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_hdf.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/rdd_hdf.h5",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/hdf_DB/607_wup_out.h5"
+    ]
+}
