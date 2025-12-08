@@ -122,10 +122,10 @@ KPI_VALIDATION_RULES = {
     "data_completeness_threshold": 0.95,  # minimum data completeness
     # Detection matching thresholds
     "detection_thresholds": {
-        "range_threshold": 200 + 0.0000001,  # m
-        "velocity_threshold": 200 + 0.0000001,  # m/s
-        "theta_threshold": 200 + 0.0000001,  # rad
-        "phi_threshold": 200 + 0.0000001,  # rad
+        "range_threshold": 2.5 + 0.0000001,  # m
+        "velocity_threshold": 2.5 + 0.0000001,  # m/s
+        "theta_threshold": 2.5 + 0.0000001,  # rad
+        "phi_threshold": 2.5 + 0.0000001,  # rad
         "max_num_af_dets_front": 768,
         "max_num_af_dets_corner": 680,
         "max_num_rdd_dets": 512,

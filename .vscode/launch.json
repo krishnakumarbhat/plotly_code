@@ -1,0 +1,106 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "KPI: ZMQ Server",
+      "type": "python",
+      "request": "launch",
+      "module": "KPI.kpi_server",
+      "args": [
+        "zmq",
+        "5555"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "KPI: JSON Batch",
+      "type": "python",
+      "request": "launch",
+      "module": "KPI.kpi_server",
+      "args": [
+        "KPIPlot.json",
+        "${workspaceFolder}/html"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "KPI: dummoy file",
+      "type": "python",
+      "request": "launch",
+      "module": "KPI.a_persistence_layer.kpi_dummy_hdf_generator",
+      "args": [
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "KPI: HDF Mode",
+      "type": "python",
+      "request": "launch",
+      "module": "KPI.kpi_server",
+      "args": [
+        "${workspaceFolder}hdf_DB/rdd_wup.h5",
+        "${workspaceFolder}hdf_DB/rdd_wup.h5f",
+        "${workspaceFolder}/html_batch"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Python: Tests (pytest)",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q",
+        "tests"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "subProcess": true,
+      "args": [
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/ConfigInteractivePlots.xml",
+        "C:/git/10030156_03_Analysis_Framework_Suite/ResimulationTool/SOURCE/ApplicationProjects/ResimHTMLReport/Interactiveplot/plotly/InputsInteractivePlot.json",
+        "C:/Users/ouymc2/Desktop/plotly_62/html"
+      ]
+    },
+    {
+      "name": "Python Debugger: Attach to KPI Server",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      }
+    }
+  ]
+}

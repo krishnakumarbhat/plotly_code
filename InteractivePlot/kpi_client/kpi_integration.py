@@ -15,6 +15,10 @@ import InteractivePlot.kpi_client.hdf_add_pb2 as hdf_add_pb2
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# Get KPI server connection settings from environment variables (for Docker/Singularity)
+KPI_SERVER_HOST = os.environ.get('KPI_SERVER_HOST', '127.0.0.1')
+KPI_SERVER_PORT = int(os.environ.get('KPI_SERVER_PORT', '5555'))
+
 # -------------------------------
 # Dataclasses for messaging (kept for backward compatibility)
 # -------------------------------
@@ -46,21 +50,24 @@ class kpiIntegration:
         input_file: str,
         output_file: str,
         output_dir: Optional[str] = None,
-        server_port: int = 5555
+        server_host: str = None,
+        server_port: int = None
     ):
         self.base_name = base_name
         self.sensor = sensor
         self.input_file = input_file
         self.output_file = output_file
         self.output_dir = output_dir
-        self.server_port = server_port
+        # Use environment variables as defaults for Docker/Singularity compatibility
+        self.server_host = server_host or KPI_SERVER_HOST
+        self.server_port = server_port or KPI_SERVER_PORT
         self._zmq_con = None
 
         logger.debug(
             f"kpiIntegration initialized with base_name={base_name}, "
             f"sensor={sensor}, input_file={input_file}, "
             f"output_file={output_file}, output_dir={output_dir}, "
-            f"server_port={server_port}"
+            f"server_host={self.server_host}, server_port={self.server_port}"
         )
 
         # Attempt to ensure the server is running and send data
@@ -74,7 +81,7 @@ class kpiIntegration:
         """Create and return a ZeroMQ REQ socket."""
         context = zmq.Context.instance()
         socket = context.socket(zmq.REQ)
-        socket.connect(f"tcp://127.0.0.1:{self.server_port}")
+        socket.connect(f"tcp://{self.server_host}:{self.server_port}")
         return socket
 
     def _is_server_responding(self) -> bool:
@@ -205,12 +212,14 @@ class kpiIntegration:
         #             pass
         
     @staticmethod
-    def receive_html_path_from_kpi_server(server_port: int = 5555) -> Optional[str]:
+    def receive_html_path_from_kpi_server(server_host: str = None, server_port: int = None) -> Optional[str]:
         """Request latest generated KPI HTML path from server."""
+        host = server_host or KPI_SERVER_HOST
+        port = server_port or KPI_SERVER_PORT
         try:
             context = zmq.Context.instance()
             sock = context.socket(zmq.REQ)
-            sock.connect(f"tcp://127.0.0.1:{server_port}")
+            sock.connect(f"tcp://{host}:{port}")
 
             ping = hdf_add_pb2.PingMessage(message_type="request_html")
             sock.send(ping.SerializeToString())

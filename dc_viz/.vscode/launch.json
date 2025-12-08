@@ -1,0 +1,17 @@
+
+
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: main2.py with args",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": ["db/html", "db/video"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
