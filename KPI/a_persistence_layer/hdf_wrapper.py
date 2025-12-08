@@ -146,30 +146,32 @@ class KPIHDFWrapper:
                 'output': KPI_DataModelStorage()
             }
 
-            # Compute missing scan indices on each side and the common intersection
+
+
+            # Convert lists to sets for comparison
             set_in = set(scan_index_in)
             set_out = set(scan_index_out)
-            missing_in = sorted(set_in - set_out)
-            missing_out = sorted(set_out - set_in)
-            common_scan_index = sorted(set_in & set_out)
-            # Get indices of missing scan indices in their original arrays
-            missing_in_indices = [i for i, sid in enumerate(scan_index_in) if sid in missing_in]
-            missing_out_indices = [i for i, sid in enumerate(scan_index_out) if sid in missing_out]
 
+            # Find missing and common scan indices
+            missing = sorted((set_in - set_out) | (set_out - set_in))
+            common_scan_index = sorted(set_in & set_out)
+
+            # Get indices of missing scan indices in their original arrays
+            missing_in_indices = [i for i, sid in enumerate(scan_index_in) if sid in missing]
+            missing_out_indices = [i for i, sid in enumerate(scan_index_out) if sid in missing]
+
+            # Log details for debugging
             logger.debug(
-                f"Stream {stream}: missing_in={missing_in} (indices: {missing_in_indices}), "
-                f"missing_out={missing_out} (indices: {missing_out_indices}), "
+                f"Stream {stream}: missing_in={missing} (indices: {missing_in_indices}), "
+                f"missing_out={missing} (indices: {missing_out_indices}), "
                 f"common_count={len(common_scan_index)}"
             )
-            logger.debug(
-                f"Stream {stream}: missing_in={missing_in}, missing_out={missing_out}, common_count={len(common_scan_index)}"
-            )
-            # missing_idx = missing_in_indices + missing_out_indices
+
             # Initialize models with common scan indices and per-side missing sets
             self.stream_models[stream]['input'].initialize(common_scan_index, sensor, missing_idx=missing_in_indices)
             self.stream_models[stream]['output'].initialize(common_scan_index, sensor, missing_idx=missing_out_indices)
 
-            # Set stream-specific parent
+            # Set stream-specific parent 
             self.stream_models[stream]['input'].init_parent(stream)
             self.stream_models[stream]['output'].init_parent(stream)
 

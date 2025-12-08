@@ -49,55 +49,31 @@ class DetectionMappingKPIHDF:
 
     def process_rdd_matching(self):
         """Process RDD stream matching and pass it Det to calcuate accuracy."""
-        
-        # 1. Fetch all necessary data UP FRONT to avoid repeated lookups
-        # ------------------------------------------------------------------
         rdd_params = ['rdd1_rindx', 'rdd1_dindx', 'rdd2_range', 'rdd2_range_rate', 'rdd1_num_detect']
-        src_rdd = self.data['RDD_STREAM']
-        src_det = self.data['DETECTION_STREAM']
+        src = self.data['RDD_STREAM']
 
-        # Helper to safely get data
-        def get_all_data(source, params):
-            data_map = {}
-            for p in params:
-                val, status = KPI_DataModelStorage.get_value(source, p)
-                if status == "success":
-                    data_map[p] = val
-                else:
-                    logger.warning(f"Failed to get parameter {p}: {status}")
-                    data_map[p] = []
-            return data_map
+        # Initialize dictionaries to store RDD data
+        veh_rdd = {}
+        sim_rdd = {}
 
-        # Fetch RDD data
-        veh_rdd = get_all_data(src_rdd['input'], rdd_params)
-        sim_rdd = get_all_data(src_rdd['output'], rdd_params)
+        # Get RDD parameters
+        for param in rdd_params:
+            veh_result, veh_status = KPI_DataModelStorage.get_value(src['input'], param)
+            sim_result, sim_status = KPI_DataModelStorage.get_value(src['output'], param)
 
-        # Fetch Detection data (needed for matching)
-        det_params = ['rdd_idx', 'ran', 'vel', 'theta', 'phi', 'f_single_target', 
-                      'f_superres_target', 'f_bistatic', 'num_af_det']
-        veh_det = get_all_data(src_det['input'], det_params)
-        sim_det = get_all_data(src_det['output'], det_params)
+            if veh_status == "success" and sim_status == "success":
+                veh_rdd[param] = veh_result
+                sim_rdd[param] = sim_result
+            else:
+                logger.warning(f"Failed to get RDD parameter {param}: veh={veh_status}, sim={sim_status}. Check HDF.")
+                veh_rdd[param] = np.array([])
+                sim_rdd[param] = np.array([])
 
-        # Fetch Scan Indices directly from the container keys
-        # This is the source of truth for what scans exist
-        veh_scan_indices = sorted(list(src_det['input']._data_container.keys()))
-        sim_scan_indices = sorted(list(src_det['output']._data_container.keys()))
-
-        # Create Maps: ScanIndex -> Array Index
-        # Note: KPI_DataModelStorage.get_value returns arrays aligned with sorted keys of _data_container
-        # So we can map the sorted scan indices to the returned array indices.
-        veh_si_map = {si: i for i, si in enumerate(veh_scan_indices)}
-        sim_si_map = {si: i for i, si in enumerate(sim_scan_indices)}
-
-        # 2. Identify Common Scan Indices
-        # ------------------------------------------------------------------
-        common_scan_indices = sorted(list(set(veh_scan_indices) & set(sim_scan_indices)))
+        # Get AF detection counts
+        veh_rdd['num_af_det'], _ = KPI_DataModelStorage.get_value(self.data['DETECTION_STREAM']['input'], 'num_af_det')
+        sim_rdd['num_af_det'], _ = KPI_DataModelStorage.get_value(self.data['DETECTION_STREAM']['output'], 'num_af_det')
         
-        logger.info(f"Vehicle Scans: {len(veh_scan_indices)}, Sim Scans: {len(sim_scan_indices)}")
-        logger.info(f"Common Scans: {len(common_scan_indices)}")
-
-        # 3. Process Matching
-        # ------------------------------------------------------------------
+        # Initialize variables for tracking matches and total detections
         total_matches = 0
         total_detections = 0
         per_scan_accuracy = []
@@ -105,234 +81,331 @@ class DetectionMappingKPIHDF:
         per_scan_matches = []
         per_scan_den = []
 
-        # Prepare arrays for reporting
+
+
+
+        input_keys = list(self.data['DETECTION_STREAM']['input']._data_container.keys())
+        output_keys = list(self.data['DETECTION_STREAM']['output']._data_container.keys())
+
+        # # Get scan_index arrays via KPI_DataModelStorage API (avoid subscripting storage objects directly)
+        input_rdd_key, _ = KPI_DataModelStorage.get_value(self.data['RDD_STREAM']['input'], 'scan_index')
+        output_rdd_key, _ = KPI_DataModelStorage.get_value(self.data['RDD_STREAM']['output'], 'scan_index')
+
+
+        # norm_input_rdd = np.array(input_rdd_key).astype(int).flatten()
+        # norm_output_rdd = np.array(output_rdd_key).astype(int).flatten()
+
+        # # Compute common RDD scan indices between vehicle and simulation
+        # common_ids = set(norm_input_rdd) & set(norm_output_rdd)
+
+        # if not common_ids:
+        #     logger.warning(
+        #         f"No common RDD scan indices for sensor {self.sensor_id}"
+        #     )
+        #     # Skip all scans in this case
+        #     skip_idx = list(range(len(veh_rdd.get('num_af_det', []))))
+        # else:
+        #     # We want to use the continuous overlapping block only, e.g. 640..1467
+        #     min_common = min(common_ids)
+        #     max_common = max(common_ids)
+
+        #     logger.debug(
+        #         f"Common RDD scan index range for sensor {self.sensor_id}: [{min_common}, {max_common}]"
+        #     )
+
+        #     valid_ids = {sid for sid in common_ids if min_common <= sid <= max_common}
+
+        #     # Indices to skip in num_af_det: scans whose RDD scan_index is outside the common block
+        #     skip_idx = [
+        #         i for i, sid in enumerate(norm_input_rdd)
+        #         if sid not in valid_ids
+        #     ]
+
+        # Calculate total detections from vehicle data
+        for i , arr in enumerate(veh_rdd['num_af_det']):
+            # if i in skip_idx:
+            #     continue
+            try:
+                num_detections = int(arr[0]) if isinstance(arr, (list, np.ndarray)) else int(arr)
+                total_detections += num_detections
+            except (TypeError, IndexError, ValueError):
+                continue
+        # Log number of SIs in vehicle and simulation
+        veh_si_count = len(veh_rdd.get('num_af_det', []))
+        sim_si_count = len(sim_rdd.get('num_af_det', []))
+        print(f"Number of SI in (vehicle, simulation): ({veh_si_count}, {sim_si_count})")
+
+        with open("veh.txt", "w") as veh_file, open("sim.txt", "w") as sim_file:
+            for i, arr in enumerate(veh_rdd['num_af_det']):
+                # Reset per-scan maps to avoid cross-scan leakage and reduce memory
+                # if i in skip_idx:
+                #     continue
+                veh_hash = {}
+                store = {}
+                try:
+                    val = int(arr[0]) if isinstance(arr, (list, np.ndarray)) else int(arr)
+                except (TypeError, IndexError, ValueError):
+                    val = 0
+                # First pass: Build the vehicle hash map
+                for j in range(val):
+                    try:
+                        # Check if we have valid indices before accessing
+                        if (i < len(veh_rdd.get('rdd1_rindx', [])) and 
+                            i < len(veh_rdd.get('rdd1_dindx', [])) and 
+                            j < len(veh_rdd['rdd1_rindx'][i]) and 
+                            j < len(veh_rdd['rdd1_dindx'][i])):
+                            
+                            key = (veh_rdd['rdd1_rindx'][i][j], veh_rdd['rdd1_dindx'][i][j])
+                            # veh_file.write(f"{key}\n")
+                            veh_hash.setdefault(key, []).append(j)
+                            veh_file.write(f"{veh_hash}\n")  # Store only detection index
+                        else:
+                            logger.debug(f"Skipping detection {j} in scan {i} - index out of bounds")
+                    except (IndexError, KeyError) as e:
+                        logger.warning(f"Error building vehicle hash at scan {i}, detection {j}: {e}")
+                        continue
+
+            # Second pass: Match with simulated detections
+                if i < len(sim_rdd.get('rdd1_rindx', [])) and i < len(sim_rdd.get('rdd1_dindx', [])):
+                    # num_sim_detections = min(len(sim_rdd['rdd1_rindx'][i]), len(sim_rdd['rdd1_dindx'][i]))
+                    num_sim_detections = val
+                    for j in range(num_sim_detections):
+                        # try:
+
+                        sim_key = (sim_rdd['rdd1_rindx'][i][j], sim_rdd['rdd1_dindx'][i][j])
+                        sim_file.write(f"{sim_key}\n : {j}")
+                        if sim_key in veh_hash:
+                            # if not veh_hash >veh_rdd['num_af_det'] and sim_rdd >veh_rdd['num_af_det'] :
+                            key = tuple(veh_hash[sim_key])
+                            if key not in store:
+                                store[key] = []
+                            store[key].append(j)
+                        # except (IndexError, KeyError) as e:
+                        #     logger.warning(f"Error processing detection at scan {i}, detection {j}: {e}")
+                        #     continue
+
+                # Process detections for current scan
+                if store:  # Only process if we have matches
+                    print(len(store),num_sim_detections )
+                    matches = self.process_detection_matching(i, store)
+                    total_matches += matches
+                    # Per-scan accuracy using vehicle detection count as denominator
+                    try:
+                        den = int(arr[0]) if isinstance(arr, (list, np.ndarray)) else int(arr)
+                    except (TypeError, IndexError, ValueError):
+                        den = 0
+                    acc_i = (matches / den) * 100.0 if den > 0 else None
+                    per_scan_accuracy.append(acc_i)
+                    matched_scan_indices.append(i)
+                    per_scan_matches.append(int(matches))
+                    per_scan_den.append(int(den))
+                    print(f"Detection matching completed {acc_i}, {matches}/{den}, {i}")
+        # Calculate detection matching accuracy
+        detection_accuracy = (total_matches / total_detections) * 100.0 if total_detections > 0 else None
+
+        # Get RDD KPI results if available (not currently used, kept minimal)
+
+        # Prepare and store per-scan arrays and summary metrics
+        scan_indices = input_keys if 'input_keys' in locals() else list(range(len(veh_rdd.get('num_af_det', []))))
+        valid_scan_indices = []
+        for i in matched_scan_indices:
+            try:
+                valid_scan_indices.append(int(scan_indices[i]))
+            except Exception:
+                valid_scan_indices.append(i)
+
+        # AF detections vs scan index arrays (vehicle side)
         af_det_counts = []
         af_det_scanindex = []
-
-        # Iterate over ALL vehicle scans for reporting purposes (denominator)
-        for si in veh_scan_indices:
-            v_idx = veh_si_map[si]
-            
-            # Get num_af_det for this scan
+        for i, a in enumerate(veh_rdd.get('num_af_det', [])):
             try:
-                # Handle potential scalar/array wrapping
-                raw_val = veh_det['num_af_det'][v_idx]
-                num_dets = int(raw_val[0]) if isinstance(raw_val, (list, np.ndarray)) else int(raw_val)
-            except (IndexError, TypeError, ValueError):
-                num_dets = 0
-            
-            total_detections += num_dets
-            af_det_counts.append(num_dets)
-            af_det_scanindex.append(si)
+                af_det_counts.append(int(a[0]) if isinstance(a, (list, np.ndarray)) else int(a))
+            except (TypeError, IndexError, ValueError):
+                af_det_counts.append(0)
+            try:
+                af_det_scanindex.append(int(scan_indices[i]))
+            except Exception:
+                af_det_scanindex.append(i)
 
-            # If this scan exists in Sim, try to match
-            if si in sim_si_map:
-                s_idx = sim_si_map[si]
-                
-                # --- RDD Matching Logic (re-implemented for single scan) ---
-                matches_in_scan = 0
-                
-                # Only proceed if we have valid RDD data for this scan
-                if (v_idx < len(veh_rdd.get('rdd1_rindx', [])) and 
-                    s_idx < len(sim_rdd.get('rdd1_rindx', []))):
-                    
-                    # Build Vehicle Hash: (r_idx, d_idx) -> [list of detection indices]
-                    veh_hash = {}
-                    
-                    # Get RDD indices for this scan
-                    v_r_indices = veh_rdd['rdd1_rindx'][v_idx]
-                    v_d_indices = veh_rdd['rdd1_dindx'][v_idx]
-                    
-                    # Ensure they are lists/arrays
-                    if np.isscalar(v_r_indices): v_r_indices = [v_r_indices]
-                    if np.isscalar(v_d_indices): v_d_indices = [v_d_indices]
-
-                    # Map RDD (r, d) to index in the RDD list (0..N)
-                    # But wait, we need to map to DETECTION index.
-                    # The previous code logic was:
-                    # j is index in RDD list. 
-                    # veh_rdd['rdd1_rindx'][i][j] is the R value.
-                    # It seems 'j' acts as a proxy for detection index if they are 1:1?
-                    # Actually, let's look at process_detection_matching.
-                    # It maps RDD index -> Detection Index using 'rdd_idx' from detection stream.
-                    
-                    # Let's build the map: (r, d) -> [j, j, ...] where j is the index in the RDD arrays
-                    for j, (r, d) in enumerate(zip(v_r_indices, v_d_indices)):
-                        key = (r, d)
-                        veh_hash.setdefault(key, []).append(j)
-
-                    # Find Matches in Sim
-                    store = {} # Key: tuple(veh_j_list), Value: [sim_j_list]
-                    
-                    s_r_indices = sim_rdd['rdd1_rindx'][s_idx]
-                    s_d_indices = sim_rdd['rdd1_dindx'][s_idx]
-                    if np.isscalar(s_r_indices): s_r_indices = [s_r_indices]
-                    if np.isscalar(s_d_indices): s_d_indices = [s_d_indices]
-
-                    for j, (r, d) in enumerate(zip(s_r_indices, s_d_indices)):
-                        key = (r, d)
-                        if key in veh_hash:
-                            veh_j_list = tuple(veh_hash[key])
-                            if veh_j_list not in store:
-                                store[veh_j_list] = []
-                            store[veh_j_list].append(j)
-                    
-                    # Perform detailed detection matching
-                    if store:
-                        matches_in_scan = self.process_detection_matching(
-                            v_idx, s_idx, store, veh_det, sim_det
-                        )
-
-                # Update stats
-                total_matches += matches_in_scan
-                acc_i = (matches_in_scan / num_dets) * 100.0 if num_dets > 0 else None
-                
-                per_scan_accuracy.append(acc_i)
-                matched_scan_indices.append(si)
-                per_scan_matches.append(matches_in_scan)
-                per_scan_den.append(num_dets)
-
-        # 4. Finalize Results
-        # ------------------------------------------------------------------
-        detection_accuracy = (total_matches / total_detections) * 100.0 if total_detections > 0 else None
-        
+        # Summary metrics
         valid_acc_values = [x for x in per_scan_accuracy if x is not None]
         min_acc = (min(valid_acc_values) if valid_acc_values else None)
         max_acc = (max(valid_acc_values) if valid_acc_values else None)
+        scans_processed = int(len(veh_rdd.get('num_af_det', [])))
+        scans_with_matches = int(len(per_scan_matches))
 
+        # Store results for HTML/plots
         self.kpi_results['per_scan_accuracy'] = per_scan_accuracy
-        self.kpi_results['per_scan_scanindex'] = matched_scan_indices
+        self.kpi_results['per_scan_scanindex'] = valid_scan_indices
         self.kpi_results['per_scan_matches'] = per_scan_matches
         self.kpi_results['per_scan_den'] = per_scan_den
         self.kpi_results['af_det_counts'] = af_det_counts
         self.kpi_results['af_det_scanindex'] = af_det_scanindex
-        self.kpi_results['veh_si_count'] = len(veh_scan_indices)
-        self.kpi_results['sim_si_count'] = len(sim_scan_indices)
-        self.kpi_results['scans_processed'] = len(veh_scan_indices)
-        self.kpi_results['scans_with_matches'] = len(matched_scan_indices)
+        self.kpi_results['veh_si_count'] = int(veh_si_count)
+        self.kpi_results['sim_si_count'] = int(sim_si_count)
+        self.kpi_results['scans_processed'] = scans_processed
+        self.kpi_results['scans_with_matches'] = scans_with_matches
         self.kpi_results['min_accuracy'] = min_acc
         self.kpi_results['max_accuracy'] = max_acc
 
+        # Store both accuracies with clear naming
         self.kpi_results['matching_accuracy'] = {
             'matches': int(total_matches),
             'total_detections': int(total_detections),
             'detection_accuracy_percentage': detection_accuracy,
         }
+        
 
+                    
         acc_str = "N/A" if detection_accuracy is None else f"{detection_accuracy:.2f}%"
         print(f"Detection matching completed. Matches: {total_matches}, Total Detections: {total_detections}, Accuracy: {acc_str}")
         
+        # Generate HTML report
         self.generate_html_report()
+        
         return True
-
-    def process_detection_matching(self, v_idx, s_idx, store, veh_det, sim_det):
+        
+    def process_detection_matching(self, scan_gen_idx, store):
         """
-        Process detection matching for a single scan using pre-fetched data.
+        Process detection matching for a single scan using the provided store mapping.
         
         Args:
-            v_idx (int): Vehicle Array Index
-            s_idx (int): Simulation Array Index
-            store (dict): Mapping from Veh RDD indices to Sim RDD indices
-            veh_det (dict): Pre-fetched vehicle detection data
-            sim_det (dict): Pre-fetched simulation detection data
+            scan_gen_idx (int): Current scan index
+            store (dict): Dictionary containing mapping between vehicle and sim detections
             
         Returns:
-            int: Number of matches found
+            int: Number of matches found in this scan
         """
         try:
+            if not self.data:
+                logger.warning("Insufficient detection data for KPI analysis")
+                return 0
+
+            # Define detection parameters to extract
+            det_params = ['rdd_idx', 'ran', 'vel', 'theta', 'phi', 'f_single_target', 
+                         'f_superres_target', 'f_bistatic', 'num_af_det']
+            src = self.data['DETECTION_STREAM']
+            
+            # Initialize detection data structures
+            veh_det = {param: [] for param in det_params}
+            sim_det = {param: [] for param in det_params}
+            
+            # Get detection data for current scan
+            for param in det_params:
+                veh_result, veh_status = KPI_DataModelStorage.get_value(src['input'], param)
+                sim_result, sim_status = KPI_DataModelStorage.get_value(src['output'], param)
+                
+                if veh_status == "success" and scan_gen_idx < len(veh_result):
+                    veh_det[param] = veh_result[scan_gen_idx] if isinstance(veh_result[scan_gen_idx], (list, np.ndarray)) else [veh_result[scan_gen_idx]]
+                if sim_status == "success" and scan_gen_idx < len(sim_result):
+                    sim_det[param] = sim_result[scan_gen_idx] if isinstance(sim_result[scan_gen_idx], (list, np.ndarray)) else [sim_result[scan_gen_idx]]
+            
+            # Initialize match counter
             matches = 0
 
-            # Helper to get specific scan data
-            def get_scan_data(data_dict, idx, param):
-                if param not in data_dict or idx >= len(data_dict[param]):
-                    return []
-                val = data_dict[param][idx]
-                return val if isinstance(val, (list, np.ndarray)) else [val]
+            # Pre-fetch arrays to avoid repeated dict lookups
+            veh_ran_arr = veh_det.get('ran', [])
+            veh_vel_arr = veh_det.get('vel', []) if 'vel' in veh_det else []
+            veh_theta_arr = veh_det.get('theta', []) if 'theta' in veh_det else []
+            veh_phi_arr = veh_det.get('phi', []) if 'phi' in veh_det else []
+            sim_ran_arr = sim_det.get('ran', [])
+            sim_vel_arr = sim_det.get('vel', []) if 'vel' in sim_det else []
+            sim_theta_arr = sim_det.get('theta', []) if 'theta' in sim_det else []
+            sim_phi_arr = sim_det.get('phi', []) if 'phi' in sim_det else []
 
-            # Get arrays for this scan
-            veh_ran = get_scan_data(veh_det, v_idx, 'ran')
-            veh_vel = get_scan_data(veh_det, v_idx, 'vel')
-            veh_theta = get_scan_data(veh_det, v_idx, 'theta')
-            veh_phi = get_scan_data(veh_det, v_idx, 'phi')
-            veh_rdd_idx = get_scan_data(veh_det, v_idx, 'rdd_idx')
-
-            sim_ran = get_scan_data(sim_det, s_idx, 'ran')
-            sim_vel = get_scan_data(sim_det, s_idx, 'vel')
-            sim_theta = get_scan_data(sim_det, s_idx, 'theta')
-            sim_phi = get_scan_data(sim_det, s_idx, 'phi')
-            sim_rdd_idx = get_scan_data(sim_det, s_idx, 'rdd_idx')
-
-            # Build RDD Index -> Detection Index Maps
-            veh_rdd_to_det = {}
-            for i, r_idx in enumerate(veh_rdd_idx):
-                try: veh_rdd_to_det[int(r_idx)] = i
-                except: continue
-
-            sim_rdd_to_det = {}
-            for i, r_idx in enumerate(sim_rdd_idx):
-                try: sim_rdd_to_det[int(r_idx)] = i
-                except: continue
-
-            # Track used indices
+            # Track used indices to enforce one-to-one without mutating lists during iteration
             used_veh = set()
             used_sim = set()
 
-            # Iterate through potential matches from RDD stage
-            for veh_rdd_indices, sim_rdd_indices in store.items():
-                # Convert RDD list indices to Detection indices
-                # Note: store keys/values are indices into the RDD arrays (0..N_RDD)
-                # But we need to know which RDD_IDX that corresponds to?
-                # Wait, the previous logic assumed 'rdd_idx' param maps Detection -> RDD.
-                # But 'store' was built using indices 0..N of the RDD arrays.
-                # Does 'rdd_idx' in detection stream contain the index 0..N of the RDD stream?
-                # YES, usually 'rdd_idx' links a detection back to its source RDD point.
-                
-                # So if veh_rdd_indices contains [0, 1], it means RDD points 0 and 1.
-                # We need to find which Detections point to RDD points 0 and 1.
-                
-                # Let's reverse the map: RDD_Point_Index -> [List of Detection Indices]
-                # Actually, veh_rdd_to_det maps RDD_ID -> Det_ID. 
-                # Is 'rdd_idx' the ID or the Index? 
-                # Usually it's the index in the RDD array. Let's assume that.
-                
-                # Filter valid detections for this RDD match group
-                v_det_candidates = []
-                for r_idx in veh_rdd_indices: # r_idx is index in RDD array
-                    if r_idx in veh_rdd_to_det:
-                        v_det_candidates.append(veh_rdd_to_det[r_idx])
-                
-                s_det_candidates = []
-                for r_idx in sim_rdd_indices:
-                    if r_idx in sim_rdd_to_det:
-                        s_det_candidates.append(sim_rdd_to_det[r_idx])
+            # Build maps from RDD index -> detection index for this scan
+            veh_rdd_idx_arr = veh_det.get('rdd_idx', [])
+            sim_rdd_idx_arr = sim_det.get('rdd_idx', [])
 
-                # Brute force match within this small group
-                for vi in v_det_candidates:
-                    if vi in used_veh: continue
-                    
-                    for si in s_det_candidates:
-                        if si in used_sim: continue
+            veh_rdd_of_det = {}
+            for det_idx, rdd_idx in enumerate(veh_rdd_idx_arr):
+                try:
+                    veh_rdd_of_det[int(rdd_idx)] = det_idx
+                except (TypeError, ValueError):
+                    continue
+
+            sim_rdd_of_det = {}
+            for det_idx, rdd_idx in enumerate(sim_rdd_idx_arr):
+                try:
+                    sim_rdd_of_det[int(rdd_idx)] = det_idx
+                except (TypeError, ValueError):
+                    continue
+
+            # Remap store from RDD indices to detection indices
+            mapped_store = {}
+            for veh_key, sim_indices in store.items():
+                veh_indices_rdd = list(veh_key) if isinstance(veh_key, tuple) else [veh_key]
+                sim_indices_rdd = list(sim_indices) if isinstance(sim_indices, (list, tuple)) else [sim_indices]
+
+                veh_indices_det = []
+                for idx in veh_indices_rdd:
+                    if isinstance(idx, (int, np.integer)) and idx in veh_rdd_of_det:
+                        veh_indices_det.append(veh_rdd_of_det[idx])
+
+                sim_indices_det = []
+                for idx in sim_indices_rdd:
+                    if isinstance(idx, (int, np.integer)) and idx in sim_rdd_of_det:
+                        sim_indices_det.append(sim_rdd_of_det[idx])
+
+                if not veh_indices_det or not sim_indices_det:
+                    continue
+
+                veh_key_det = tuple(veh_indices_det) if len(veh_indices_det) > 1 else veh_indices_det[0]
+                sim_val_det = sim_indices_det if len(sim_indices_det) > 1 else sim_indices_det[0]
+                mapped_store[veh_key_det] = sim_val_det
+
+            # Now process using detection indices
+            for veh_key, sim_indices in mapped_store.items():
+                veh_indices = list(veh_key) if isinstance(veh_key, tuple) else [veh_key]
+                sim_list = list(sim_indices) if isinstance(sim_indices, (list, tuple)) else [sim_indices]
+
+                for vi in veh_indices:
+                    if (not isinstance(vi, (int, np.integer)) or
+                        vi in used_veh or
+                        vi < 0 or vi >= len(veh_ran_arr)):
+                        # print("dontiunesd[adsfasdjfiosd]")
+                        continue
                         
-                        # Check thresholds
-                        try:
-                            # Safe access with bounds checking
-                            if (vi < len(veh_ran) and si < len(sim_ran) and
-                                abs(veh_ran[vi] - sim_ran[si]) <= self.RAN_THRESHOLD and
-                                abs(veh_vel[vi] - sim_vel[si]) <= self.VEL_THRESHOLD and
-                                abs(veh_theta[vi] - sim_theta[si]) <= self.THETA_THRESHOLD and
-                                abs(veh_phi[vi] - sim_phi[si]) <= self.PHI_THRESHOLD):
-                                
-                                matches += 1
-                                used_veh.add(vi)
-                                used_sim.add(si)
-                                break # Match found for this vehicle detection
-                        except Exception:
+                    for si in sim_list:
+                        if (not isinstance(si, (int, np.integer)) or
+                            si in used_sim or
+                            si < 0 or si >= len(sim_ran_arr)):
+                            # print("dontiunesd[adsfasdjfiosd]")
                             continue
 
-            return matches
+                        try:
+                            veh_ran = veh_ran_arr[vi]
+                            sim_ran = sim_ran_arr[si]
+                            veh_vel = veh_vel_arr[vi] if vi < len(veh_vel_arr) else 0
+                            sim_vel = sim_vel_arr[si] if si < len(sim_vel_arr) else 0
+                            veh_theta = veh_theta_arr[vi] if vi < len(veh_theta_arr) else 0
+                            sim_theta = sim_theta_arr[si] if si < len(sim_theta_arr) else 0
+                            veh_phi = veh_phi_arr[vi] if vi < len(veh_phi_arr) else 0
+                            sim_phi = sim_phi_arr[si] if si < len(sim_phi_arr) else 0
 
+                            if (abs(veh_ran - sim_ran) <= self.RAN_THRESHOLD and
+                                abs(veh_vel - sim_vel) <= self.VEL_THRESHOLD and
+                                abs(veh_theta - sim_theta) <= self.THETA_THRESHOLD and
+                                abs(veh_phi - sim_phi) <= self.PHI_THRESHOLD):
+                                    matches += 1
+                                    used_veh.add(vi)
+                                    used_sim.add(si)
+                                    # break  # one match per veh detection
+                        except (IndexError, KeyError, TypeError) as e:
+                            logger.warning(f"Error comparing detections: {e}")
+                            continue
+            
+            logger.debug(f"Scan {scan_gen_idx}: Found {matches} matching detections")
+            return matches
+            
         except Exception as e:
             logger.error(f"Error in process_detection_matching: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return 0
 
     def generate_html_report(self):

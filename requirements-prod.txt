@@ -1,0 +1,21 @@
+# ==============================================================================
+# ResimHTMLReport - Production Requirements (Minimal)
+# ==============================================================================
+# Use this for production/Docker deployments
+# Install: pip install -r requirements-prod.txt
+# ==============================================================================
+
+# Core Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+h5py>=3.8.0
+
+# Visualization
+plotly>=5.17.0
+
+# XML Processing
+lxml>=4.9.0
+
+# KPI Process Communication
+pyzmq>=25.0.0
+protobuf>=4.21.0

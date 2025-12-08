@@ -1,0 +1,45 @@
+# ==============================================================================
+# ResimHTMLReport - Development Requirements
+# ==============================================================================
+# Use this for development environment
+# Install: pip install -r requirements-dev.txt
+# ==============================================================================
+
+# Include production dependencies
+-r requirements-prod.txt
+
+# ------------------------------------------------------------------------------
+# Testing
+# ------------------------------------------------------------------------------
+pytest>=7.4.0                    # Testing framework
+pytest-cov>=4.1.0                # Code coverage
+pytest-asyncio>=0.21.0           # Async test support
+pytest-mock>=3.11.0              # Mock fixtures for pytest
+
+# ------------------------------------------------------------------------------
+# Memory & Performance Profiling
+# ------------------------------------------------------------------------------
+memory-profiler>=0.61.0          # Memory usage profiling
+psutil>=5.9.0                    # System and process utilities
+
+# ------------------------------------------------------------------------------
+# Code Quality
+# ------------------------------------------------------------------------------
+black>=23.0.0                    # Code formatter
+flake8>=6.0.0                    # Linting
+isort>=5.12.0                    # Import sorting
+mypy>=1.4.0                      # Static type checking
+
+# ------------------------------------------------------------------------------
+# Documentation (Optional)
+# ------------------------------------------------------------------------------
+# sphinx>=6.0.0                  # Documentation generator
+# sphinx-rtd-theme>=1.2.0        # Read the Docs theme
+
+# ------------------------------------------------------------------------------
+# Build Tools
+# ------------------------------------------------------------------------------
+setuptools>=61.0.0               # Package building
+wheel>=0.40.0                    # Wheel package format
+# cx-Freeze>=6.15.0              # Executable generation
+# pyinstaller>=5.13.0            # Alternative executable generation
