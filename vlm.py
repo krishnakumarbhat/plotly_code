@@ -1,4 +1,4 @@
-./llama-cli -m Qwen3-VL-2B-Instruct-Q5_K_M.gguf -p "Describe this image" --mmproj mmproj-model-f16.gguf --image test.jpg
+# ./llama-cli -m Qwen3-VL-2B-Instruct-Q5_K_M.gguf -p "Describe this image" --mmproj mmproj-model-f16.gguf --image test.jpg
 
 
 
