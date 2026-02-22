@@ -1,0 +1,39 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%labels
+    Author Core_RESIM_KPI
+    App log-viewer
+    Version 1.0
+
+# NOTE: %files runs BEFORE %post; we copy source first then install deps.
+%files
+    main_html/code /opt/app/main_html/code
+
+%post
+    set -e
+
+    # Install minimal OS packages
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        openssh-client \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install Python deps (requirements file already copied via %files)
+    python -m pip install --no-cache-dir --upgrade pip
+    python -m pip install --no-cache-dir -r /opt/app/main_html/code/requirements-online.txt
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export LOGVIEW_HOST=0.0.0.0
+    export LOGVIEW_PORT=5000
+    export LOGVIEW_NO_BROWSER=1
+
+%runscript
+    cd /opt/app/main_html/code/html_online
+    exec python main.py --no-browser "$@"
+
+%help
+    Log Viewer Singularity image.
+    Run with:  singularity run log_viewer.simg
+    Or:        PORT=8080 singularity run log_viewer.simg

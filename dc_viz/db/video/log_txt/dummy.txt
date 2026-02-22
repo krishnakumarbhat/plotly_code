@@ -1,1 +1,0 @@
-analyze this radar visualization as a perception engineer, where the white ego vehicle tracks green moving targets (cars/trucks) and red static obstacles (guardrails/pedestrians), and identify the specific traffic scenario and relative motion.
