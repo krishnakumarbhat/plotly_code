@@ -1,0 +1,91 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%labels
+    Author kk
+    App ResimHTMLReport
+    Description IPS report generator container
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export MPLBACKEND=Agg
+    export PYTHONPATH=/opt/ips
+
+%post
+    set -eux
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gcc \
+        g++ \
+        libhdf5-dev \
+        libgl1 \
+        libglib2.0-0
+    rm -rf /var/lib/apt/lists/*
+
+    python -m pip install --upgrade pip setuptools wheel
+    python -m pip install --no-cache-dir \
+        numpy \
+        pandas \
+        h5py \
+        plotly \
+        matplotlib \
+        pyzmq
+
+    mkdir -p /opt/ips
+
+%files
+    . /opt/ips
+
+%runscript
+    set -eu
+
+    to_abs() {
+        case "$1" in
+            /*) printf '%s' "$1" ;;
+            *) printf '%s' "$PWD/$1" ;;
+        esac
+    }
+
+    if [ "$#" -ge 3 ]; then
+        config_abs="$(to_abs "$1")"
+        input_abs="$(to_abs "$2")"
+        report_abs="$(to_abs "$3")"
+        mkdir -p "$report_abs"
+
+        python - "$input_abs" "$report_abs" <<'PY'
+import json
+import os
+import sys
+
+input_json = sys.argv[1]
+report_root = sys.argv[2]
+
+try:
+    with open(input_json, "r", encoding="utf-8") as f:
+        cfg = json.load(f)
+except Exception:
+    cfg = {}
+
+inputs = cfg.get("InputHDF")
+if not isinstance(inputs, list):
+    inputs = cfg.get("inputhdffiles")
+if not isinstance(inputs, list):
+    inputs = []
+
+for idx, in_f in enumerate(inputs, start=1):
+    if not isinstance(in_f, str) or not in_f.strip():
+        continue
+    rep_dir = os.path.join(report_root, f"IRep{idx}_{os.path.basename(in_f)}")
+    os.makedirs(os.path.join(rep_dir, "JSON"), exist_ok=True)
+    os.makedirs(os.path.join(rep_dir, "reports"), exist_ok=True)
+PY
+
+        shift 3
+        exec python -m IPS.ResimHTMLReport "$config_abs" "$input_abs" "$report_abs" "$@"
+    fi
+
+    exec python -m IPS.ResimHTMLReport "$@"
+
+%test
+    python -c "import numpy, pandas, h5py, plotly, matplotlib, zmq; print('Dependency check OK')"

@@ -52,13 +52,11 @@ class KPI_DataModelStorage:
                     f"Missing scan indices at this signal {sensor}: {missing_indices}"
                 )
             if duplicates:
-                logging.debug(
-                    f"Duplicate scan indices at {sensor}: {duplicates}"
-                )
-    
+                logging.debug(f"Duplicate scan indices at {sensor}: {duplicates}")
+
         # Use defaultdict to avoid checking if key exists later
         self._data_container = {j: [] for j in scan_index}
-        
+
     def initialize_comp(self, scan_index, sensor, data_cont=None) -> None:
         """
         Compare and validate data container with scan indices for stream processing.
@@ -78,20 +76,22 @@ class KPI_DataModelStorage:
 
         # Convert scan_index to set for efficient lookup
         scan_index_set = set(scan_index)
-        
+
         # Check if scan_index is sorted and sequential
         if len(scan_index) > 0:
             expected_scan_index = list(range(min(scan_index), max(scan_index) + 1))
             freq = {}
             duplicates = []
-            
+
             # Count frequency of each scan index
             for idx in scan_index:
                 freq[idx] = freq.get(idx, 0) + 1
             duplicates = sorted([k for k, v in freq.items() if v > 1])
 
             # Find missing indices in the expected range
-            missing_indices = [i for i in expected_scan_index if i not in scan_index_set]
+            missing_indices = [
+                i for i in expected_scan_index if i not in scan_index_set
+            ]
 
             # Log validation results
             if missing_indices:
@@ -105,7 +105,7 @@ class KPI_DataModelStorage:
 
         # Validate data container keys against scan indices
         data_cont_keys = set(data_cont.keys()) if data_cont else set()
-        
+
         # Find keys in data container that are not in scan_index
         extra_keys = data_cont_keys - scan_index_set
         if extra_keys:
@@ -126,9 +126,8 @@ class KPI_DataModelStorage:
             f"scan_indices={len(scan_index)}, data_keys={len(data_cont_keys)}, "
             f"missing={len(missing_keys)}, extra={len(extra_keys)}"
         )
-        return missing_keys , extra_keys
+        return missing_keys, extra_keys
 
-            
     def init_parent(self, stream_name) -> None:
         """Reset child counter when starting a new parent group."""
         self._parent_counter += 1
@@ -164,8 +163,10 @@ class KPI_DataModelStorage:
             if self._missing_indices:
                 missing_set = set(self._missing_indices)
                 # Filter out missing indices in a single pass
-                dataset = [item for idx, item in enumerate(dataset) if idx not in missing_set]
-            
+                dataset = [
+                    item for idx, item in enumerate(dataset) if idx not in missing_set
+                ]
+
             self._process_dataset(dataset, key_stream, signal_name, key_grp)
 
             return key_stream
@@ -173,7 +174,9 @@ class KPI_DataModelStorage:
         # Filter out missing indices from the dataset before processing
         if self._missing_indices:
             missing_set = set(self._missing_indices)
-            dataset = [item for idx, item in enumerate(dataset) if idx not in missing_set]
+            dataset = [
+                item for idx, item in enumerate(dataset) if idx not in missing_set
+            ]
 
         # Get the length of dataset and data_container
         # dataset_len = len(dataset)- len(getattr(self, "_missing_indices", set())) if dataset is not None else 0
@@ -218,7 +221,6 @@ class KPI_DataModelStorage:
         return key
 
     def _process_dataset(self, dataset, key_stream, signal_name, key_grp):
-
         # Get the length of dataset and data_container
         dataset_len = len(dataset) if dataset is not None else 0
         container_len = len(self._data_container)
@@ -232,11 +234,10 @@ class KPI_DataModelStorage:
 
         # Process all rows in the dataset and store them (dataset is pre-filtered)
         for idx, (row, scanidx) in enumerate(zip(dataset, self._data_container)):
-
-        # """Helper method to process and store dataset for new parent groups."""
+            # """Helper method to process and store dataset for new parent groups."""
             # if idx in getattr(self, "_missing_indices", set()):
             #     continue
-                
+
             if isinstance(row, np.ndarray):
                 rounded_row = np.round(row.astype(float), decimals=2)
                 self._data_container[scanidx].append([rounded_row])
@@ -280,7 +281,6 @@ class KPI_DataModelStorage:
             except Exception:
                 return (data,)
 
-
     @staticmethod
     def get_value(data, signal_name, grp_name=None):
         """
@@ -296,7 +296,7 @@ class KPI_DataModelStorage:
                 - list: A list where each item is a sublist [scan_index, value(s)...].
                 - str: A status string, "success" or an error message.
         """
-        
+
         signal_info = data._signal_to_value.get(signal_name)
 
         # Return early if signal not found in either map
@@ -318,12 +318,18 @@ class KPI_DataModelStorage:
                 storage_key = list(signal_info[0].values())[0]
 
         if not storage_key:
-            return [], f"Could not find a valid storage key for signal '{signal_name}' with group '{grp_name}'."
+            return (
+                [],
+                f"Could not find a valid storage key for signal '{signal_name}' with group '{grp_name}'.",
+            )
 
         try:
             grp_idx, plt_idx = map(int, storage_key.split("_"))
         except (ValueError, AttributeError):
-            return [], f"Invalid storage key format '{storage_key}' for signal '{signal_name}'."
+            return (
+                [],
+                f"Invalid storage key format '{storage_key}' for signal '{signal_name}'.",
+            )
 
         all_values = []
         scan_indices = list(data._data_container.keys())
@@ -349,7 +355,9 @@ class KPI_DataModelStorage:
             for row in all_values:
                 if len(row) < max_len:
                     # Pad with NaN values
-                    padded = np.pad(row, (0, max_len - len(row)), constant_values=np.nan)
+                    padded = np.pad(
+                        row, (0, max_len - len(row)), constant_values=np.nan
+                    )
                 else:
                     padded = row
                 padded_rows.append(padded)
@@ -360,23 +368,16 @@ class KPI_DataModelStorage:
 
         return stacked, "success"
 
+    # value = group_data[plt_idx]
+    # # Ensure value is converted into a 1D sequence, then make a row with scan_idx first
 
+    # else:
 
-# value = group_data[plt_idx]
-# # Ensure value is converted into a 1D sequence, then make a row with scan_idx first
-
-# else:
-
-
-# # After collecting rows, stack into a single 2D numpy array
-# if all_values:
-#     all_values = np.vstack(all_values)
-# else:
-#     all_values = np.empty((0, 0))
-
-
-
-
+    # # After collecting rows, stack into a single 2D numpy array
+    # if all_values:
+    #     all_values = np.vstack(all_values)
+    # else:
+    #     all_values = np.empty((0, 0))
 
     @staticmethod
     def get_data(
