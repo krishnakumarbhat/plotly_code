@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Config>
-    <InputHDF_Folder>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/pcmzxl/html_testing/hdf/in/</InputHDF_Folder>
-    <OutputHDF_Folder>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/pcmzxl/html_testing/hdf/out/</OutputHDF_Folder>
-    <InputJSON_Path>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/pcmzxl/html_testing/hdf/Inputs.json</InputJSON_Path>
-    <HTML_Config_Path>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/pcmzxl/html_testing/hdf/HTMLConfig.xml</HTML_Config_Path>
-    <Singularity_Image_Path>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/8-Users/gzvcb3/resim_tool_html.simg</Singularity_Image_Path>
-    <Output_Path>/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/pcmzxl/html_testing/hdf/output/</Output_Path>
-</Config>
