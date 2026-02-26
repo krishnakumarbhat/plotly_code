@@ -494,6 +494,7 @@ class KpiBusiness:
             "Scans (Output)",
             "Common Scans",
             "Scan Match %",
+            "F1 Score",
             "Det Signals (Input)",
             "Det Signals (Output)",
         ]
@@ -521,6 +522,7 @@ class KpiBusiness:
                     str(len(out_scan)),
                     str(len(common)),
                     f"{pct:.2f}" if not math.isnan(pct) else "NA",
+                    f"{(pct / 100.0):.4f}" if not math.isnan(pct) else "NA",
                     str(in_sigs),
                     str(out_sigs),
                 ]

@@ -85,9 +85,12 @@ class MainProcessor:
         try:
             plot_mode = config_parser.get_plot_mode() or {}
             enable_kpi = '1' if int(plot_mode.get('KPI', 0) or 0) == 1 else '0'
+            enable_rag = '1' if int(plot_mode.get('RAG_DATA_TEXT', 0) or 0) == 1 else '0'
         except Exception:
             enable_kpi = '0'
+            enable_rag = '0'
         os.environ['INTERACTIVE_PLOT_ENABLE_KPI'] = enable_kpi
+        os.environ['INTERACTIVE_PLOT_ENABLE_RAG_TEXT'] = enable_rag
 
         self.logger_setup.log_to_file_only(f"XML parsing complete. HDF file type: {hdf_file_type}")
         return hdf_file_type

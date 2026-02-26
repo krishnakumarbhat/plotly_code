@@ -24,6 +24,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+try:
+    from kpi import sil_radar_validation as sil_kpi
+    from kpi import sil_log_narrative as sil_rag
+except Exception:
+    sil_kpi = None
+    sil_rag = None
+
 
 class KpiMain:
     def __init__(self, business: Optional[KpiBusiness] = None):
@@ -41,6 +48,8 @@ class KpiMain:
         logger.info(f"Output dir: {out_dir}")
 
         cfg = self._json.parse(config_path)
+        enable_kpi = int(cfg.get("KPI", 1) or 0) == 1
+        enable_rag = int(cfg.get("RAG_DATA_TEXT", 0) or 0) == 1
         input_paths: List[str] = cfg.get("INPUT_HDF", [])
         output_paths: List[str] = cfg.get("OUTPUT_HDF", [])
         n_logs = max(len(input_paths), len(output_paths))
@@ -74,6 +83,45 @@ class KpiMain:
                 report_path.write_text(result["html"], encoding="utf-8")
                 logger.info(f"Wrote report to {report_path}")
                 report_files.append((stem, filename))
+
+                if enable_kpi and sil_kpi and in_path and out_path:
+                    try:
+                        pair = sil_kpi.FilePair(
+                            sensor="UNKNOWN",
+                            base_key=Path(in_path).stem,
+                            veh_path=Path(in_path),
+                            resim_path=Path(out_path),
+                        )
+                        kpi_paths = sil_kpi.process_pair(
+                            pair,
+                            output_dir=out_dir,
+                            gate=1.0,
+                            metric="euclidean",
+                            max_sensors=4,
+                        )
+                        for p in kpi_paths:
+                            report_files.append((f"SIL KPI {p.stem}", p.name))
+                    except Exception as exc:
+                        logger.warning(f"SIL KPI generation failed for {stem}: {exc}")
+
+                if enable_rag and sil_rag and sil_kpi and in_path and out_path:
+                    try:
+                        pair = sil_kpi.FilePair(
+                            sensor="UNKNOWN",
+                            base_key=Path(in_path).stem,
+                            veh_path=Path(in_path),
+                            resim_path=Path(out_path),
+                        )
+                        rag_path = sil_rag.process_pair(
+                            pair,
+                            output_dir=out_dir,
+                            gate=1.0,
+                            metric="euclidean",
+                            max_sensors=4,
+                        )
+                        report_files.append((f"Narrative {rag_path.stem}", rag_path.name))
+                    except Exception as exc:
+                        logger.warning(f"SIL narrative generation failed for {stem}: {exc}")
             except Exception as exc:
                 pair_name = f"input={in_path}, output={out_path}"
                 logger.exception(f"Failed report generation for {pair_name}: {exc}")

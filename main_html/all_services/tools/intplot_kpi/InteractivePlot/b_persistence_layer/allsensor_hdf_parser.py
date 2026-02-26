@@ -2,6 +2,8 @@ import h5py
 import os
 import logging
 import time
+import re
+from pathlib import Path
 from typing import Dict, List
 from InteractivePlot.b_persistence_layer import hdf_parser
 from InteractivePlot.d_business_layer.data_prep import DataPrep
@@ -55,6 +57,8 @@ class AllsensorHdfParser(PersensorHdfParser):
             logging.info(f"Found {len(sensor_list)} sensors: {', '.join(sensor_list)}")
             logging.info(f"Found {len(streams)} streams: {', '.join(streams)}")
 
+            self._run_sil_artifacts_once(input_file, output_file, base_name)
+
             # Start KPI service early and notify with required metadata (non-blocking)
 
             total_combinations = len(sensor_list) * len(streams)
@@ -74,9 +78,6 @@ class AllsensorHdfParser(PersensorHdfParser):
             for sensor in sensor_list:
                 html_name = f"{base_name}_{sensor}.html"
                 plot_config = get_plot_config()
-
-                if os.environ.get('INTERACTIVE_PLOT_ENABLE_KPI', '0') == '1':
-                    kpiIntegration(base_name, sensor, input_file, output_file, output_dir=self.output_dir)
 
                 for stream in streams:
                     if stream in plot_config:
@@ -196,3 +197,76 @@ class AllsensorHdfParser(PersensorHdfParser):
                 logging.info(f"Per-base index created: {index_path}")
             except Exception:
                 logging.exception("Failed to create per-base index")
+
+    def _run_sil_artifacts_once(self, input_file: str, output_file: str, base_name: str) -> None:
+        base_folder = Path(self.output_dir) / base_name
+        base_folder.mkdir(parents=True, exist_ok=True)
+
+        enable_kpi = os.environ.get('INTERACTIVE_PLOT_ENABLE_KPI', '0') == '1'
+        enable_rag = os.environ.get('INTERACTIVE_PLOT_ENABLE_RAG_TEXT', '0') == '1'
+        if not enable_kpi and not enable_rag:
+            return
+
+        try:
+            from InteractivePlot.kpi_client import sil_radar_validation as sil_kpi
+            from InteractivePlot.kpi_client import sil_log_narrative as sil_rag
+
+            pair = sil_kpi.FilePair(
+                sensor="UNKNOWN",
+                base_key=base_name,
+                veh_path=Path(input_file),
+                resim_path=Path(output_file),
+            )
+
+            if enable_kpi:
+                kpi_paths = sil_kpi.process_pair(
+                    pair,
+                    output_dir=base_folder,
+                    gate=1.0,
+                    metric="euclidean",
+                    max_sensors=4,
+                )
+                logging.info("SIL KPI HTML generated: %s", [str(p) for p in kpi_paths])
+                self._write_f1_summary(base_folder, kpi_paths)
+
+            if enable_rag:
+                rag_path = sil_rag.process_pair(
+                    pair,
+                    output_dir=base_folder,
+                    gate=1.0,
+                    metric="euclidean",
+                    max_sensors=4,
+                )
+                logging.info("SIL narrative HTML generated: %s", rag_path)
+        except Exception as exc:
+            logging.exception("SIL artifact generation failed for %s: %s", base_name, exc)
+
+    def _write_f1_summary(self, base_folder: Path, kpi_paths: List[Path]) -> None:
+        rows = []
+        pat = re.compile(r"<tr><td>f1_score</td><td>([^<]+)</td></tr>", re.IGNORECASE)
+        for p in kpi_paths:
+            try:
+                txt = p.read_text(encoding="utf-8", errors="ignore")
+                m = pat.search(txt)
+                f1 = m.group(1).strip() if m else "NA"
+                sensor = p.stem.split("_")[-4] if "_sil_validation_report" in p.stem else p.stem
+                rows.append((sensor, f1, p.name))
+            except Exception:
+                rows.append((p.stem, "NA", p.name))
+
+        if not rows:
+            return
+
+        body_rows = "".join(
+            f"<tr><td>{sensor}</td><td>{f1}</td><td><a href=\"{fname}\">{fname}</a></td></tr>"
+            for sensor, f1, fname in rows
+        )
+        html = f"""<!doctype html>
+<html lang=\"en\"><head><meta charset=\"utf-8\"/>
+<title>KPI F1 Summary</title>
+<style>body{{font-family:Arial,sans-serif;background:#0f172a;color:#e2e8f0;margin:24px}}table{{border-collapse:collapse;width:100%}}th,td{{border:1px solid #334155;padding:8px}}th{{background:#1f2937}}</style>
+</head><body>
+<h1>KPI F1 Summary</h1>
+<table><thead><tr><th>Sensor</th><th>F1 Score</th><th>KPI HTML</th></tr></thead><tbody>{body_rows}</tbody></table>
+</body></html>"""
+        (base_folder / "kpi_f1_summary.html").write_text(html, encoding="utf-8")
