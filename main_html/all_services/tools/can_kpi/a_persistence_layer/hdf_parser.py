@@ -70,6 +70,11 @@ class KpiHdfParser:
                 detection = self._reader.extract_detection_signals(
                     sensor_data, allowed_prefixes=self._required_detection_set
                 )
+                time_ns = self._reader.get_absolute_time_ns(
+                    sensor_data=sensor_data,
+                    header_signals=header,
+                    scan_count=len(scan_index),
+                )
 
                 valid_cnt = self._extract_valid_detection_count(header, len(scan_index))
                 scan_dict = self._build_scan_dict(
@@ -92,6 +97,7 @@ class KpiHdfParser:
                 parsed[sensor_id] = {
                     "friendly_name": sensor_data.get("friendly_name", sensor_id),
                     "scan_index": scan_index,
+                    "time_ns": time_ns,
                     "scan_dict": scan_dict,
                     "storage": storage,
                     "header": header,

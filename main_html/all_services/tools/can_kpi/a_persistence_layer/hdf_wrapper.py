@@ -93,6 +93,40 @@ class HdfAttrReader:
     ) -> Dict[str, np.ndarray]:
         return self._extract_flat(sensor_data.get("header", {}))
 
+    def get_absolute_time_ns(
+        self,
+        sensor_data: Dict[str, Any],
+        header_signals: Optional[Dict[str, np.ndarray]] = None,
+        scan_count: Optional[int] = None,
+    ) -> np.ndarray:
+        """Return per-scan absolute sensor time in nanoseconds.
+
+        Preferred source: ``HED_SENSOR_TIME_STAMP_SEC`` + ``HED_SENSOR_TIME_STAMP_NS``.
+        Fallbacks use other plausible header time keys when available.
+        """
+        header = header_signals or self.extract_header_signals(sensor_data)
+
+        sec = header.get("HED_SENSOR_TIME_STAMP_SEC")
+        ns = header.get("HED_SENSOR_TIME_STAMP_NS")
+        if isinstance(sec, np.ndarray) and isinstance(ns, np.ndarray):
+            n = min(len(sec), len(ns))
+            if scan_count is not None:
+                n = min(n, int(scan_count))
+            if n > 0:
+                sec_i64 = np.rint(sec[:n]).astype(np.int64)
+                ns_i64 = np.rint(ns[:n]).astype(np.int64)
+                ns_i64 = np.clip(ns_i64, 0, None)
+                return sec_i64 * np.int64(1_000_000_000) + ns_i64
+
+        for key in ("HED_TRIGGER_TIME", "HED_SENSOR_TIME_STAMP"):
+            arr = header.get(key)
+            if isinstance(arr, np.ndarray) and arr.size > 0:
+                n = len(arr) if scan_count is None else min(len(arr), int(scan_count))
+                if n > 0:
+                    return np.rint(arr[:n]).astype(np.int64)
+
+        return np.array([], dtype=np.int64)
+
     def _read_group_attrs(self, grp: h5py.Group) -> Dict[str, np.ndarray]:
         out: Dict[str, np.ndarray] = {}
         for k in grp.attrs.keys():

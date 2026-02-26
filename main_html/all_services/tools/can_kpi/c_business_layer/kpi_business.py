@@ -33,6 +33,8 @@ class KpiBusiness:
         "DET_ELEVATION": 0.9,
     }
 
+    TIME_MATCH_TOL_NS = 2_000_000
+
     SENSOR_ORDER = ["CEER_FL", "CEER_FLR", "CEER_FR", "CEER_RL", "CEER_RR"]
 
     FRIENDLY = {
@@ -190,17 +192,19 @@ class KpiBusiness:
         sensor_id: str,
     ) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray]]:
         """
-        Compare input vs output detection-by-detection per scan index.
+        Compare input vs output detections per aligned scan.
 
-                For each common scan index:
-                - Detection *i* in input is compared with detection *i* in output.
+                For each aligned scan pair:
+                - Input/output rows are aligned by sensor timestamp.
+                - Detections are paired greedily (nearest multi-signal distance),
+                    so reordered detection indices do not break matching.
                 - A detection counts as "matched" when **all four** parameter diffs
                     (range, range_velocity, azimuth, elevation) are within tolerance.
                 - Values are rounded to 2 decimal places before comparison.
                 - Only detections 1..N are considered, where N comes from the per-scan
                     header signal `HED_NUM_OF_VALID_DETECTIONS`.
-                - Percentage = matched_count / N * 100 (if input/output N differs, the
-                    comparison uses `min(N_in, N_out)` as a safe fallback).
+                - Percentage denominator uses comparable pair capacity:
+                    ``min(valid_input_detections, valid_output_detections)``.
 
         Returns
         -------
@@ -210,7 +214,11 @@ class KpiBusiness:
         """
         in_scan = self._get_scan_index(parsed_by_label, "input", sensor_id)
         out_scan = self._get_scan_index(parsed_by_label, "output", sensor_id)
-        common, in_rows, out_rows = self._aligned_common_rows(in_scan, out_scan)
+        in_time_ns = self._get_time_ns(parsed_by_label, "input", sensor_id)
+        out_time_ns = self._get_time_ns(parsed_by_label, "output", sensor_id)
+        common, in_rows, out_rows = self._aligned_common_rows(
+            in_scan, out_scan, in_time_ns, out_time_ns
+        )
         n = len(common)
         empty_params = {s: np.array([], dtype=np.float16) for s in self.MATCH_SIGNALS}
         if n == 0:
@@ -260,6 +268,11 @@ class KpiBusiness:
 
         in_scan_common = in_scan[in_rows]
         out_scan_common = out_scan[out_rows]
+        scan_mismatch_count = int(np.sum(in_scan_common != out_scan_common))
+        if scan_mismatch_count > 0:
+            logger.info(
+                f"{sensor_id}: timestamp-aligned pairs={n}, scan-id mismatches={scan_mismatch_count}"
+            )
 
         overall_pct = np.zeros(n, dtype=np.float16)
         per_param_pct: Dict[str, np.ndarray] = {
@@ -267,71 +280,183 @@ class KpiBusiness:
         }
 
         for i in range(n):
-            if int(in_scan_common[i]) != int(out_scan_common[i]):
-                logger.warning(
-                    f"{sensor_id}: skip mismatched pair input_scan={int(in_scan_common[i])} "
-                    f"output_scan={int(out_scan_common[i])}"
-                )
-                continue
-
             n_det = int(denom_cnt[i])
             if n_det <= 0:
                 continue
 
-            matched_all = 0
-            matched_param = {sig: 0 for sig in self.MATCH_SIGNALS}
+            direct_all, direct_param, direct_den = self._evaluate_direct_pairing(
+                in_sig, out_sig, i, n_det
+            )
+            in_candidates = self._collect_scan_detections(in_sig, i, n_det)
+            out_candidates = self._collect_scan_detections(out_sig, i, n_det)
+            if direct_den <= 0 and (not in_candidates or not out_candidates):
+                continue
 
-            for det_idx in range(1, n_det + 1):
-                # Range validity gate
-                rin_arr = in_sig["DET_RANGE"].get(det_idx)
-                rout_arr = out_sig["DET_RANGE"].get(det_idx)
-                if rin_arr is None or rout_arr is None:
-                    continue
-                if i >= len(rin_arr) or i >= len(rout_arr):
-                    continue
+            greedy_all, greedy_param, greedy_den = self._evaluate_greedy_pairing(
+                in_candidates, out_candidates
+            )
 
-                rin = float(rin_arr[i])
-                rout = float(rout_arr[i])
-                if math.isnan(rin) or math.isnan(rout) or rin == 0.0 or rout == 0.0:
-                    continue
+            direct_pct = (100.0 * direct_all / direct_den) if direct_den > 0 else -1.0
+            greedy_pct = (100.0 * greedy_all / greedy_den) if greedy_den > 0 else -1.0
 
-                rin = round(rin, 2)
-                rout = round(rout, 2)
+            if greedy_pct > direct_pct:
+                matched_all = greedy_all
+                matched_param = greedy_param
+                denom = greedy_den
+            else:
+                matched_all = direct_all
+                matched_param = direct_param
+                denom = direct_den
 
-                det_all_ok = True
-                for sig in self.MATCH_SIGNALS:
-                    ain_arr = in_sig[sig].get(det_idx)
-                    aout_arr = out_sig[sig].get(det_idx)
-                    if ain_arr is None or aout_arr is None:
-                        det_all_ok = False
-                        continue
-                    if i >= len(ain_arr) or i >= len(aout_arr):
-                        det_all_ok = False
-                        continue
+            if denom <= 0:
+                continue
 
-                    ain = float(ain_arr[i])
-                    aout = float(aout_arr[i])
-                    if math.isnan(ain) or math.isnan(aout):
-                        det_all_ok = False
-                        continue
-
-                    ain = round(ain, 2)
-                    aout = round(aout, 2)
-                    if abs(ain - aout) <= float(self.MATCH_TOLERANCES[sig]):
-                        matched_param[sig] += 1
-                    else:
-                        det_all_ok = False
-
-                if det_all_ok:
-                    matched_all += 1
-
-            overall_pct[i] = np.float16(round(100.0 * matched_all / n_det, 2))
+            overall_pct[i] = np.float16(round(100.0 * matched_all / float(denom), 2))
             for sig in self.MATCH_SIGNALS:
                 per_param_pct[sig][i] = np.float16(
-                    round(100.0 * matched_param[sig] / n_det, 2)
+                    round(100.0 * matched_param[sig] / float(denom), 2)
                 )
 
         return common, overall_pct, per_param_pct
+
+    def _collect_scan_detections(
+        self,
+        sig_map: Dict[str, Dict[int, np.ndarray]],
+        row_idx: int,
+        n_det: int,
+    ) -> List[Dict[str, float]]:
+        detections: List[Dict[str, float]] = []
+        for det_idx in range(1, n_det + 1):
+            values: Dict[str, float] = {}
+            valid = True
+            for sig in self.MATCH_SIGNALS:
+                arr = sig_map.get(sig, {}).get(det_idx)
+                if arr is None or row_idx >= len(arr):
+                    valid = False
+                    break
+                value = float(arr[row_idx])
+                if math.isnan(value):
+                    valid = False
+                    break
+                values[sig] = value
+
+            if not valid:
+                continue
+            if values.get("DET_RANGE", 0.0) == 0.0:
+                continue
+            detections.append(values)
+        return detections
+
+    def _evaluate_direct_pairing(
+        self,
+        in_sig: Dict[str, Dict[int, np.ndarray]],
+        out_sig: Dict[str, Dict[int, np.ndarray]],
+        row_idx: int,
+        n_det: int,
+    ) -> Tuple[int, Dict[str, int], int]:
+        matched_all = 0
+        matched_param = {sig: 0 for sig in self.MATCH_SIGNALS}
+        denom = 0
+
+        for det_idx in range(1, n_det + 1):
+            rin_arr = in_sig.get("DET_RANGE", {}).get(det_idx)
+            rout_arr = out_sig.get("DET_RANGE", {}).get(det_idx)
+            if rin_arr is None or rout_arr is None:
+                continue
+            if row_idx >= len(rin_arr) or row_idx >= len(rout_arr):
+                continue
+
+            rin = float(rin_arr[row_idx])
+            rout = float(rout_arr[row_idx])
+            if math.isnan(rin) or math.isnan(rout) or rin == 0.0 or rout == 0.0:
+                continue
+
+            denom += 1
+            det_all_ok = True
+            for sig in self.MATCH_SIGNALS:
+                ain_arr = in_sig.get(sig, {}).get(det_idx)
+                aout_arr = out_sig.get(sig, {}).get(det_idx)
+                if ain_arr is None or aout_arr is None:
+                    det_all_ok = False
+                    continue
+                if row_idx >= len(ain_arr) or row_idx >= len(aout_arr):
+                    det_all_ok = False
+                    continue
+
+                ain = float(ain_arr[row_idx])
+                aout = float(aout_arr[row_idx])
+                if math.isnan(ain) or math.isnan(aout):
+                    det_all_ok = False
+                    continue
+
+                ain = round(ain, 2)
+                aout = round(aout, 2)
+                if abs(ain - aout) <= float(self.MATCH_TOLERANCES[sig]):
+                    matched_param[sig] += 1
+                else:
+                    det_all_ok = False
+
+            if det_all_ok:
+                matched_all += 1
+
+        return matched_all, matched_param, denom
+
+    def _evaluate_greedy_pairing(
+        self,
+        in_candidates: List[Dict[str, float]],
+        out_candidates: List[Dict[str, float]],
+    ) -> Tuple[int, Dict[str, int], int]:
+        if not in_candidates or not out_candidates:
+            return 0, {sig: 0 for sig in self.MATCH_SIGNALS}, 0
+
+        used_out = np.zeros(len(out_candidates), dtype=bool)
+        matched_all = 0
+        matched_param = {sig: 0 for sig in self.MATCH_SIGNALS}
+
+        for in_det in in_candidates:
+            best_out_idx = self._pick_best_output_detection(
+                in_det, out_candidates, used_out
+            )
+            if best_out_idx < 0:
+                continue
+            used_out[best_out_idx] = True
+
+            out_det = out_candidates[best_out_idx]
+            det_all_ok = True
+            for sig in self.MATCH_SIGNALS:
+                ain = round(float(in_det[sig]), 2)
+                aout = round(float(out_det[sig]), 2)
+                if abs(ain - aout) <= float(self.MATCH_TOLERANCES[sig]):
+                    matched_param[sig] += 1
+                else:
+                    det_all_ok = False
+
+            if det_all_ok:
+                matched_all += 1
+
+        denom = min(len(in_candidates), len(out_candidates))
+        return matched_all, matched_param, denom
+
+    def _pick_best_output_detection(
+        self,
+        in_det: Dict[str, float],
+        out_candidates: List[Dict[str, float]],
+        used_out: np.ndarray,
+    ) -> int:
+        best_idx = -1
+        best_cost = float("inf")
+        for idx, out_det in enumerate(out_candidates):
+            if used_out[idx]:
+                continue
+            cost = 0.0
+            for sig in self.MATCH_SIGNALS:
+                cost += abs(
+                    round(float(in_det[sig]), 2) - round(float(out_det[sig]), 2)
+                )
+            if cost < best_cost:
+                best_cost = cost
+                best_idx = idx
+        return best_idx
 
     def _align_signal_map_to_rows(
         self, signal_map: Dict[int, np.ndarray], rows: np.ndarray
@@ -377,10 +502,10 @@ class KpiBusiness:
             friendly = self.FRIENDLY.get(sensor_id, sensor_id)
             in_scan = self._get_scan_index(parsed_by_label, "input", sensor_id)
             out_scan = self._get_scan_index(parsed_by_label, "output", sensor_id)
-            common = (
-                np.intersect1d(in_scan, out_scan)
-                if len(in_scan) and len(out_scan)
-                else np.array([])
+            in_time_ns = self._get_time_ns(parsed_by_label, "input", sensor_id)
+            out_time_ns = self._get_time_ns(parsed_by_label, "output", sensor_id)
+            common, _, _ = self._aligned_common_rows(
+                in_scan, out_scan, in_time_ns, out_time_ns
             )
             pct = self._pct(len(common), max(len(in_scan), len(out_scan)))
             in_sigs = len(
@@ -506,14 +631,67 @@ class KpiBusiness:
         return scan_index, out
 
     def _aligned_common_rows(
+        self,
+        in_scan: np.ndarray,
+        out_scan: np.ndarray,
+        in_time_ns: np.ndarray,
+        out_time_ns: np.ndarray,
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return aligned pairs using absolute timestamp with tolerance.
+
+        - Pairing is done by monotonic two-pointer match on ``time_ns``.
+        - Pairs are accepted when |in_time - out_time| <= TIME_MATCH_TOL_NS.
+        - Missing/jumbled scan-index sequences are tolerated.
+        """
+        if len(in_scan) == 0 or len(out_scan) == 0:
+            empty = np.array([], dtype=np.int64)
+            return empty, empty, empty
+
+        # If time arrays are unavailable, fall back to scan-index-only pairing.
+        if len(in_time_ns) == 0 or len(out_time_ns) == 0:
+            return self._aligned_common_rows_scan_only(in_scan, out_scan)
+
+        n_in = min(len(in_scan), len(in_time_ns))
+        n_out = min(len(out_scan), len(out_time_ns))
+        if n_in == 0 or n_out == 0:
+            empty = np.array([], dtype=np.int64)
+            return empty, empty, empty
+
+        in_scan = in_scan[:n_in]
+        out_scan = out_scan[:n_out]
+        in_time_ns = in_time_ns[:n_in]
+        out_time_ns = out_time_ns[:n_out]
+
+        common_vals: List[int] = []
+        in_rows: List[int] = []
+        out_rows: List[int] = []
+
+        i = 0
+        j = 0
+        tol = int(self.TIME_MATCH_TOL_NS)
+        while i < n_in and j < n_out:
+            dt = int(in_time_ns[i]) - int(out_time_ns[j])
+            if abs(dt) <= tol:
+                common_vals.append(int(in_scan[i]))
+                in_rows.append(i)
+                out_rows.append(j)
+                i += 1
+                j += 1
+            elif dt < 0:
+                i += 1
+            else:
+                j += 1
+
+        return (
+            np.asarray(common_vals, dtype=np.int64),
+            np.asarray(in_rows, dtype=np.int64),
+            np.asarray(out_rows, dtype=np.int64),
+        )
+
+    def _aligned_common_rows_scan_only(
         self, in_scan: np.ndarray, out_scan: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """Return exact scan-id aligned pairs (input row, output row).
-
-        - Pairs are created only when scan IDs are identical.
-        - If duplicates exist, they are paired one-by-one in encounter order.
-        - Scan IDs present only on one side are skipped.
-        """
+        """Fallback alignment when timestamp arrays are not available."""
         if len(in_scan) == 0 or len(out_scan) == 0:
             empty = np.array([], dtype=np.int64)
             return empty, empty, empty
@@ -542,3 +720,13 @@ class KpiBusiness:
             np.asarray(in_rows, dtype=np.int64),
             np.asarray(out_rows, dtype=np.int64),
         )
+
+    def _get_time_ns(
+        self,
+        parsed_by_label: Dict[str, Dict[str, Dict[str, Any]]],
+        label: str,
+        sensor_id: str,
+    ) -> np.ndarray:
+        payload = self._payload(parsed_by_label, label, sensor_id)
+        t = payload.get("time_ns")
+        return t if isinstance(t, np.ndarray) else np.array([], dtype=np.int64)
