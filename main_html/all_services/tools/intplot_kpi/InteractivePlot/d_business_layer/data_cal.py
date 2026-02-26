@@ -14,6 +14,8 @@ class DataCalculations:
         """Initialize the DataCalculations class"""
         self.stream_name = None
         self._data_frame_cache = {}
+        self._range_scatter_min = 1e-6
+        self._range_scatter_max = 1e6
 
     def set_stream_name(self, stream_name: str) -> None:
         """
@@ -23,6 +25,127 @@ class DataCalculations:
             stream_name: The name of the data stream
         """
         self.stream_name = stream_name
+
+    def _reduce_to_scalar_series(self, values, reducer):
+        if values is None:
+            return None
+        reduced = []
+        for v in values:
+            if isinstance(v, (list, tuple, np.ndarray)):
+                arr = np.asarray(v, dtype=float)
+                if arr.size == 0:
+                    reduced.append(np.nan)
+                else:
+                    reduced.append(float(reducer(arr)))
+            else:
+                try:
+                    reduced.append(float(v))
+                except Exception:
+                    reduced.append(np.nan)
+        return np.asarray(reduced)
+
+    def _is_range_scatter_signal(self, signal_name):
+        normalized = str(signal_name or "").strip().lower()
+        return normalized in {"range", "ran", "detection_range"}
+
+    def _filter_range_scatter_outliers(self, signal_name, scan_idx, i_vals, o_vals):
+        """
+        Keep only valid range values for scatter plotting.
+        Valid range: [1e-6, 1e6], non-negative, finite.
+        """
+        scan_idx_arr = np.asarray(scan_idx)
+        input_arr = np.asarray(i_vals, dtype=float)
+        output_arr = np.asarray(o_vals, dtype=float)
+
+        if not self._is_range_scatter_signal(signal_name):
+            return scan_idx_arr, input_arr, output_arr
+
+        valid_input = np.isfinite(input_arr) & (input_arr >= self._range_scatter_min) & (input_arr <= self._range_scatter_max)
+        valid_output = np.isfinite(output_arr) & (output_arr >= self._range_scatter_min) & (output_arr <= self._range_scatter_max)
+        valid_mask = valid_input & valid_output
+
+        if valid_mask.size == 0:
+            return scan_idx_arr, input_arr, output_arr
+
+        filtered_count = int(valid_mask.size - np.count_nonzero(valid_mask))
+        if filtered_count > 0:
+            logging.info(
+                "Filtered %d outlier points for range scatter signal '%s' outside [%s, %s] or negative/non-finite.",
+                filtered_count,
+                signal_name,
+                self._range_scatter_min,
+                self._range_scatter_max,
+            )
+
+        return scan_idx_arr[valid_mask], input_arr[valid_mask], output_arr[valid_mask]
+
+    def scatter_plot_vector_mean(self, signal_name, data_dict, shared_data, lock):
+        si = data_dict.get("SI") if isinstance(data_dict, dict) else None
+        i_vals = data_dict.get("I") if isinstance(data_dict, dict) else None
+        o_vals = data_dict.get("O") if isinstance(data_dict, dict) else None
+        if si is None or i_vals is None or o_vals is None:
+            logging.error(f"Missing required data for scatter_plot_vector_mean of {signal_name}")
+            return None, None
+
+        i_series = self._reduce_to_scalar_series(i_vals, np.nanmean)
+        o_series = self._reduce_to_scalar_series(o_vals, np.nanmean)
+        if i_series is None or o_series is None:
+            return None, None
+
+        fig_id = f"scatter_fig_{signal_name}_mean"
+        fig = PlotlyCharts.scatter_plot(
+            si,
+            i_series,
+            o_series,
+            signal_name,
+            "INPUT(mean)",
+            "OUTPUT(mean)",
+            "red",
+            "blue",
+            "IN/OUT",
+        )
+        return fig_id, fig
+
+    def histogram_vector_mean(self, signal_name, data_dict, shared_data, lock):
+        i_vals = data_dict.get("I") if isinstance(data_dict, dict) else None
+        o_vals = data_dict.get("O") if isinstance(data_dict, dict) else None
+        if i_vals is None or o_vals is None:
+            logging.error(f"Missing required data for histogram_vector_mean of {signal_name}")
+            return None, None
+
+        i_series = self._reduce_to_scalar_series(i_vals, np.nanmean)
+        o_series = self._reduce_to_scalar_series(o_vals, np.nanmean)
+        if i_series is None or o_series is None:
+            return None, None
+
+        hist_fig_id = f"hist_fig_{signal_name}_mean"
+        hist_fig = PlotlyCharts.histogram_with_count(i_series, o_series, signal_name)
+        return hist_fig_id, hist_fig
+
+    def scatter_with_mismatch_vector_mean(self, signal_name, data_dict, shared_data, lock):
+        if not isinstance(data_dict, dict):
+            logging.error(f"Invalid data_dict for scatter_with_mismatch_vector_mean of {signal_name}")
+            return None, None
+
+        si_vals = data_dict.get("SI")
+        i_vals = data_dict.get("I")
+        o_vals = data_dict.get("O")
+        if si_vals is None or i_vals is None or o_vals is None:
+            logging.error(f"Missing required data for scatter_with_mismatch_vector_mean of {signal_name}")
+            return None, None
+
+        i_series = self._reduce_to_scalar_series(i_vals, np.nanmean)
+        o_series = self._reduce_to_scalar_series(o_vals, np.nanmean)
+        if i_series is None or o_series is None:
+            return None, None
+
+        reduced_dict = dict(data_dict)
+        reduced_dict["SI"] = np.asarray(si_vals)
+        reduced_dict["I"] = i_series
+        reduced_dict["O"] = o_series
+        reduced_dict.setdefault("MI", [[], []])
+        reduced_dict.setdefault("MO", [[], []])
+        return self.scatter_with_mismatch(signal_name, reduced_dict, shared_data, lock)
 
     def scatter_plot(self, signal_name, data_dict, shared_data, lock):
         """
@@ -43,6 +166,11 @@ class DataCalculations:
 
         if si is None or i_vals is None or o_vals is None:
             logging.error(f"Missing required data for scatter plot of {signal_name}")
+            return None, None
+
+        si, i_vals, o_vals = self._filter_range_scatter_outliers(signal_name, si, i_vals, o_vals)
+        if len(si) == 0:
+            logging.warning(f"No valid points left after outlier filtering for scatter plot of {signal_name}")
             return None, None
 
         fig_id = f"scatter_fig_{signal_name}"
@@ -134,6 +262,15 @@ class DataCalculations:
         scan_idx = np.array(si_vals)
         i_vals = np.array(i_vals)
         o_vals = np.array(o_vals)
+        scan_idx, i_vals, o_vals = self._filter_range_scatter_outliers(
+            signal_name,
+            scan_idx,
+            i_vals,
+            o_vals,
+        )
+        if len(scan_idx) == 0:
+            logging.warning(f"No valid points left after outlier filtering for scatter mismatch of {signal_name}")
+            return None, None
 
         # Calculate mismatch conditions with tolerance (for float comparisons)
         tol = {"ran": 0.1, "vel": 0.015, "phi": 0.00873, "theta": 0.00873, "snr": 0, "rcs": 0}.get(signal_name, 0)

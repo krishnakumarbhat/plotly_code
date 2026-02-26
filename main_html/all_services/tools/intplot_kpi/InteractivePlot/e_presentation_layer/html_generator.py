@@ -199,7 +199,33 @@ class HtmlGenerator:
     def generate_and_save_html_files(self):
         """Generate and save organized HTML files for each plot category."""
         if not self.plots:
-            raise ValueError("No plots available to generate HTML content.")
+            # Don't crash the whole pipeline if a stream produces zero plots.
+            # This can happen when an HDF stream exists but none of the configured
+            # signals are present (naming mismatches, partial dumps, etc.).
+            self.logger.warning("No plots available; generating an empty report page.")
+            generation_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            empty_html = (
+                html_template.replace("{{TABS}}", "")
+                .replace(
+                    "{{CONTENT}}",
+                    "<div class=\"metadata\">"
+                    "<h3>📋 Report Information</h3>"
+                    "<p><strong>No plots were generated for this sensor/stream.</strong></p>"
+                    "</div>",
+                )
+                .replace("{{INPUT_FILENAME}}", self.input_filename)
+                .replace("{{OUTPUT_FILENAME}}", self.output_filename)
+                .replace("{{SENSOR_POSITION}}", self.sensor_position)
+                .replace("{{GENERATION_TIME}}", generation_time)
+            )
+
+            streams_folder = self.folder_structure['streams_direct']
+            file_path = streams_folder / f"{self.html_name}_general.html"
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(empty_html)
+
+            self._create_external_assets()
+            return
 
         self.logger.info(f"Generating HTML files for {len(self.plots)} categories")
         

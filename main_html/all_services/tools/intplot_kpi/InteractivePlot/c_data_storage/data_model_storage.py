@@ -77,7 +77,20 @@ class DataModelStorage:
             grp_name not in self._signal_to_value and self._child_counter == -1
         )
 
+        # Length checks (important for preventing invalid parent/child state)
+        dataset_len = len(dataset) if dataset is not None else 0
+        container_len = len(self._data_container)
+
         if is_new_parent:
+            # If the first dataset we see for a group doesn't align with scan_index length,
+            # skip it without advancing counters; otherwise subsequent datasets would be
+            # treated as children and crash when appending to a non-existent parent row.
+            if dataset_len != container_len:
+                logging.debug(
+                    f"Skipping plot for {signal_name}: dataset length ({dataset_len}) does not match scan indices length ({container_len})"
+                )
+                return f"{self._parent_counter}_skipped"
+
             # Handle new parent group
             key_grp = f"{self._parent_counter}_None"
             self._child_counter += 1
@@ -86,21 +99,17 @@ class DataModelStorage:
             # Process and store the data
             self._process_dataset(dataset, key_stream, signal_name, key_grp)
         else:
-            # Handle child item
-            self._child_counter += 1
-            key = f"{self._parent_counter}_{self._child_counter}"
-
-            # Get the length of dataset and data_container
-            dataset_len = len(dataset) if dataset is not None else 0
-            container_len = len(self._data_container)
-
             # Skip if lengths don't match
             if dataset_len != container_len:
                 # Route messages about skipping child processing to logs file
                 logging.debug(
                     f"Skipping child processing for {signal_name} in {grp_name}: dataset length ({dataset_len}) does not match scan indices length ({container_len})"
                 )
-                return key
+                return f"{self._parent_counter}_skipped"
+
+            # Handle child item (only advance the counter when we will actually append)
+            self._child_counter += 1
+            key = f"{self._parent_counter}_{self._child_counter}"
 
             # Process and store data for child
             for idx, (row, scanidx) in enumerate(zip(dataset, self._data_container)):
@@ -242,25 +251,19 @@ class DataModelStorage:
         grp_idx_out = None
         plt_idx_out = None
         # try:
-        # Parse group and plot indices for input and output
-        if isinstance(unique_in, str) and isinstance(unique_out, str):
-            grp_idx_in, plt_idx_in = (
-                map(int, unique_in.split("_")) if unique_in else (None, None)
-            )
-            grp_idx_out, plt_idx_out = (
-                map(int, unique_out.split("_")) if unique_out else (None, None)
-            )
-        elif isinstance(unique_in, list) and isinstance(unique_out, list):
-            grp_idx_in, plt_idx_in = (
-                map(int, list(unique_in[0].values())[0].split("_"))
-                if unique_in
-                else (None, None)
-            )
-            grp_idx_out, plt_idx_out = (
-                map(int, list(unique_out[0].values())[0].split("_"))
-                if unique_out
-                else (None, None)
-            )
+        def _parse_index_pair(unique_value):
+            if isinstance(unique_value, str) and unique_value:
+                return map(int, unique_value.split("_"))
+            if isinstance(unique_value, list) and unique_value:
+                try:
+                    return map(int, list(unique_value[0].values())[0].split("_"))
+                except Exception:
+                    return (None, None)
+            return (None, None)
+
+        # Parse group and plot indices independently for input and output.
+        grp_idx_in, plt_idx_in = _parse_index_pair(unique_in)
+        grp_idx_out, plt_idx_out = _parse_index_pair(unique_out)
 
         # Pre-filter valid scan indices to avoid if it thier in innput not ouput data viceversa
         scan_indices = list(input_data._data_container.keys())
@@ -344,6 +347,27 @@ class DataModelStorage:
                 else:
                     n_min = min(len_in, len_out)
                     n_diff = max(len_in, len_out) - n_min
+
+                    # If one side is completely missing, still populate SI/I/O so plots can be generated.
+                    # Use NaN as placeholder for the missing side.
+                    if n_min == 0 and n_diff > 0 and (len_in == 0 or len_out == 0):
+                        n_only = max(len_in, len_out)
+                        si_only = np.full(n_only, scan_idx)
+                        if len_in == 0:
+                            i_only = np.full(n_only, np.nan)
+                            o_only = data_out
+                        else:
+                            i_only = data_in
+                            o_only = np.full(n_only, np.nan)
+
+                        if data_dict["SI"] is None:
+                            data_dict["SI"] = si_only
+                            data_dict["I"] = i_only
+                            data_dict["O"] = o_only
+                        else:
+                            data_dict["SI"] = np.append(data_dict["SI"], si_only)
+                            data_dict["I"] = np.append(data_dict["I"], i_only)
+                            data_dict["O"] = np.append(data_dict["O"], o_only)
 
                     # Handle matched portion first (if any)
                     if n_min > 0:

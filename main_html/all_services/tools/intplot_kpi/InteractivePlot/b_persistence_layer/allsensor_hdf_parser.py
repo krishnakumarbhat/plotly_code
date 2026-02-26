@@ -8,7 +8,7 @@ from InteractivePlot.d_business_layer.data_prep import DataPrep
 from InteractivePlot.b_persistence_layer.Persensor_hdf_parser import PersensorHdfParser
 from InteractivePlot.b_persistence_layer.prerun_hdf_parser import PreRun
 from InteractivePlot.c_data_storage.data_model_storage import DataModelStorage
-from InteractivePlot.c_data_storage.config_storage import Gen7V1_V2
+from InteractivePlot.c_data_storage.config_loader import get_plot_config
 from InteractivePlot.d_business_layer.utils import time_taken
 from InteractivePlot.kpi_client.kpi_integration import kpiIntegration
 
@@ -73,12 +73,13 @@ class AllsensorHdfParser(PersensorHdfParser):
 
             for sensor in sensor_list:
                 html_name = f"{base_name}_{sensor}.html"
+                plot_config = get_plot_config()
 
                 if os.environ.get('INTERACTIVE_PLOT_ENABLE_KPI', '0') == '1':
                     kpiIntegration(base_name, sensor, input_file, output_file, output_dir=self.output_dir)
 
                 for stream in streams:
-                    if stream in Gen7V1_V2:
+                    if stream in plot_config:
                         processed += 1
                         progress = (processed / total_combinations) * 100
                         print(f"\rProcessing...... [{progress:.1f}%]", end="")

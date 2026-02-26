@@ -1,5 +1,5 @@
 import importlib
-from InteractivePlot.c_data_storage.config_storage import Gen7V1_V2
+from InteractivePlot.c_data_storage.config_loader import get_plot_config
 from InteractivePlot.e_presentation_layer.html_generator import HtmlGenerator
 from InteractivePlot.c_data_storage.data_model_storage import DataModelStorage
 from InteractivePlot.d_business_layer.utils import time_taken
@@ -149,7 +149,7 @@ class DataPrep:
         shared_data = mp.Manager().dict()
         self.temp_dir = tempfile.mkdtemp(prefix="plotly_temp_")
         shared_data["temp_dir"] = self.temp_dir
-        stream_signals = Gen7V1_V2.get(self.stream_name, {})
+        stream_signals = get_plot_config().get(self.stream_name, {})
         for signal_name, signal_config in stream_signals.items():
             mp_args.append(
                 (

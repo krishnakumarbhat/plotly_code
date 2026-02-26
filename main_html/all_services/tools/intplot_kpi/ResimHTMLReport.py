@@ -7,6 +7,10 @@ os.environ.setdefault('PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION', 'python')
 
 from InteractivePlot.a_config_layer.xml_config_parser import XmlConfigParser
 from InteractivePlot.a_config_layer.json_parser_factory import JSONParserFactory
+from InteractivePlot.c_data_storage.config_loader import (
+    load_plot_config,
+    get_plot_config_source,
+)
 # from InteractivePlot.a_config_layer.config_manager import ConfigManager, Environment, get_config
 from InteractivePlot.b_persistence_layer.hdf_processor_factory import HdfProcessorFactory
 from InteractivePlot.d_business_layer.utils import time_taken, LoggerSetup
@@ -14,10 +18,11 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
 class MainProcessor:
-    def __init__(self, xml_file=None, json_file=None, output_dir=None):
+    def __init__(self, xml_file=None, json_file=None, output_dir=None, plot_config_json=None):
         self.xml_file = xml_file
         self.json_file = json_file
         self.output_dir = output_dir or "html"  # Default to "html" if not provided
+        self.plot_config_json = plot_config_json
         
         # Initialize configuration
         # self.config = ConfigManager(config_file, environment)
@@ -26,6 +31,13 @@ class MainProcessor:
         # Set up enhanced logging
         self.logger_setup = LoggerSetup(self.output_dir)
         self.logger = self.logger_setup.logger
+
+        # Load runtime plot configuration.
+        # Priority: explicit CLI config.json > default ./config.json > built-in config_storage.py
+        load_plot_config(self.plot_config_json)
+        self.logger_setup.log_to_both(
+            f"Plot configuration source: {get_plot_config_source()}"
+        )
         
 
         
@@ -106,16 +118,42 @@ if __name__ == "__main__":
         print(f"Running as PyInstaller bundle. Application path: {application_path}")
 
     # Check command line arguments
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
+    if len(sys.argv) < 3 or len(sys.argv) > 5:
         print(
-            "Usage: python ResimHTMLReport.py <config.xml> <inputs.json> [output_directory]"
+            "Usage: python ResimHTMLReport.py <config.xml> <inputs.json> [output_directory] [plot_config.json]"
+        )
+        print(
+            "Also supported: python ResimHTMLReport.py <config.xml> <inputs.json> <plot_config.json> [output_directory]"
         )
         sys.exit(1)
 
     # Handle file paths
     config_file = sys.argv[1]
     input_plot_json_file = sys.argv[2]
-    output_directory = sys.argv[3] if len(sys.argv) == 4 else None
+    output_directory = None
+    plot_config_json = None
+
+    # Flexible optional argument parsing:
+    # Supported patterns:
+    # 1) <xml> <input_json> <out>
+    # 2) <xml> <input_json> <plot_config_json>
+    # 3) <xml> <input_json> <out> <plot_config_json>
+    # 4) <xml> <input_json> <plot_config_json> <out>
+    optional_args = sys.argv[3:]
+    for arg in optional_args:
+        is_json = arg.lower().endswith('.json')
+        if is_json and plot_config_json is None:
+            plot_config_json = arg
+        elif output_directory is None:
+            output_directory = arg
+        elif is_json and plot_config_json is None:
+            plot_config_json = arg
+        else:
+            print(
+                f"Error: Could not interpret optional argument '{arg}'. "
+                "Use optional args as [output_directory] [plot_config.json] in any order."
+            )
+            sys.exit(1)
 
     # Common user mistake: arguments swapped (inputs.json then config.xml).
     # Detect and fix it early with a clear message.
@@ -134,12 +172,24 @@ if __name__ == "__main__":
         print(f"Current working directory: {os.getcwd()}")
         sys.exit(1)
 
+    if plot_config_json and not os.path.exists(plot_config_json):
+        print(f"Error: Plot config JSON file not found: {plot_config_json}")
+        print(f"Current working directory: {os.getcwd()}")
+        sys.exit(1)
+
     print(f"Config file: {config_file}")
     print(f"JSON file: {input_plot_json_file}")
     if output_directory:
         print(f"Output directory: {output_directory}")
+    if plot_config_json:
+        print(f"Plot config JSON: {plot_config_json}")
 
-    processor = MainProcessor(config_file, input_plot_json_file, output_directory)
+    processor = MainProcessor(
+        config_file,
+        input_plot_json_file,
+        output_directory,
+        plot_config_json,
+    )
     
     # Run with asyncio for better performance
     # try:

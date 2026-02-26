@@ -2,7 +2,7 @@ import h5py
 import gc
 from typing import List, Set
 from InteractivePlot.c_data_storage.data_model_storage import DataModelStorage
-from InteractivePlot.c_data_storage.config_storage import Gen7V1_V2
+from InteractivePlot.c_data_storage.config_loader import get_plot_config
 
 
 class HDF5Parser:
@@ -89,9 +89,10 @@ class HDF5Parser:
         current_depth = (
             len(group.name.split("/")) - 1
         )  # Root is depth 0, first level is 1, etc.
+        plot_config = get_plot_config()
 
         is_second_layer = current_depth == 2
-        if is_second_layer and current_group_name not in Gen7V1_V2:
+        if is_second_layer and current_group_name not in plot_config:
             return  # Skip this group and all its children
 
         # Process datasets immediately to avoid storing them all in memory
@@ -100,10 +101,30 @@ class HDF5Parser:
         child_groups = []
         current_stream = group.name.split("/")[2] if len(group.name.split("/")) > 1 else ""
 
-        # First collect all items to process with minimal memory retention
+        # First collect all items to process with minimal memory retention.
+        # Resolve dataset names via aliases so we can parse HDFs whose datasets use different naming
+        # (e.g., RDD_IDX / rdd_index) but still map them to canonical signal keys (e.g., rdd_idx).
+        stream_config = plot_config.get(current_stream, {}) if current_stream in plot_config else {}
+
         for item_name, item in group.items():
-            if isinstance(item, h5py.Dataset) and current_stream in Gen7V1_V2 and item_name in Gen7V1_V2.get(current_stream, {}):
-                datasets_to_process.append((item_name, item))
+            if isinstance(item, h5py.Dataset) and stream_config:
+                canonical_signal_name = None
+
+                # Direct hit (preferred)
+                if item_name in stream_config:
+                    canonical_signal_name = item_name
+                else:
+                    # Alias hit (fallback)
+                    for signal_key, signal_cfg in stream_config.items():
+                        if not isinstance(signal_cfg, dict):
+                            continue
+                        aliases = signal_cfg.get("aliases") or []
+                        if item_name in aliases:
+                            canonical_signal_name = signal_key
+                            break
+
+                if canonical_signal_name is not None:
+                    datasets_to_process.append((canonical_signal_name, item))
             elif isinstance(item, h5py.Group) and item_name not in header_names:
                 child_groups.append(item)
 
