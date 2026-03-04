@@ -55,3 +55,9 @@ db/html/
 bin/
 *.exe
 *.stackdump
+
+# User-requested exclusions and large artifact patterns
+/main_html/all_services/tools/intplot_kpi/
+*.pkg
+log_viewer_online*
+build/log_viewer_online_linux/
