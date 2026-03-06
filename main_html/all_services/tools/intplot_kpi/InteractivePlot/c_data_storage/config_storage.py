@@ -5,6 +5,10 @@ Gen7V1_V2 = {
             "aliases": ["ran", "detection_range"],
             "call": ["Range"],
             "plot_types": [
+                "histogram_scanindex_polar_dbscan",
+                "histogram_scanindex_density_contour",
+                "histogram_scanindex_density_contour_animated",
+                "histogram_scanindex_object_count_line",
                 "histogram_with_count",
                 "scatter_plot",
                 "scatter_with_mismatch",
@@ -298,13 +302,16 @@ sequence_of_plot = {
         "signal_to_noise_ratio;scatter_plot"
     ],
     "histogram": [
+        "Range;histogram_scanindex_polar_dbscan",
+        "Range;histogram_scanindex_density_contour",
+        "Range;histogram_scanindex_density_contour_animated",
+        "Range;histogram_scanindex_object_count_line",
         "Range;histogram_with_count",
         "Rangerate;histogram_with_count",
         "Azimuth;histogram_with_radtodeg",
         "elevation;histogram_with_radtodeg",
         "amplitude;histogram_with_count",
         "radar_cross_section;histogram_with_count",
-        "signal_to_noise_ratio;histogram_with_count",
-        "Range;scatter_with_scanindex"
+        "signal_to_noise_ratio;histogram_with_count"
     ]
 }

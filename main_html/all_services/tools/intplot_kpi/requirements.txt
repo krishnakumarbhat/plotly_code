@@ -13,6 +13,7 @@
 numpy>=1.24.0                    # Numerical operations and array processing
 pandas>=2.0.0                    # Data manipulation and analysis
 h5py>=3.8.0                      # HDF5 file handling for sensor data
+scipy>=1.10.0                    # Assignment and distance metrics for SIL radar validation
 
 # ------------------------------------------------------------------------------
 # Visualization

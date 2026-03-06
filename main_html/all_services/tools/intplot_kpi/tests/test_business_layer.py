@@ -2,10 +2,12 @@ import pytest
 import pandas as pd # Assuming pandas is used for data manipulation
 import numpy as np
 from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import call
 import logging
 import plotly.graph_objects as go
 from InteractivePlot.d_business_layer.data_prep import DataPrep
 from InteractivePlot.d_business_layer.data_cal import DataCalculations as DataCal
+from InteractivePlot.c_data_storage.data_model_storage import DataModelStorage
 # Import other necessary modules or mock classes
 
 # Fixtures for DataPrep and DataCal if needed
@@ -199,17 +201,17 @@ def test_data_cal_scatter_plot(mock_scatter_plot, data_calculator, sample_data_d
     
     assert fig_id == f"scatter_fig_{signal_name}"
     assert fig == mock_fig
-    mock_scatter_plot.assert_called_once_with(
-        sample_data_dict_for_plot['SI'],
-        sample_data_dict_for_plot['I'],
-        sample_data_dict_for_plot['O'],
-        signal_name,
-        "INPUT",
-        "OUTPUT",
-        "red",
-        "blue",
-        "IN/OUT",
-    )
+    mock_scatter_plot.assert_called_once()
+    call_args = mock_scatter_plot.call_args[0]
+    np.testing.assert_array_equal(call_args[0], sample_data_dict_for_plot['SI'])
+    np.testing.assert_array_equal(call_args[1], sample_data_dict_for_plot['I'])
+    np.testing.assert_array_equal(call_args[2], sample_data_dict_for_plot['O'])
+    assert call_args[3] == signal_name
+    assert call_args[4] == "INPUT"
+    assert call_args[5] == "OUTPUT"
+    assert call_args[6] == "red"
+    assert call_args[7] == "blue"
+    assert call_args[8] == "IN/OUT"
 
 @patch('InteractivePlot.d_business_layer.data_cal.PlotlyCharts.scatter_plot')
 def test_data_cal_scatter_plot_mstokmh(mock_scatter_plot, data_calculator, sample_data_dict_for_plot):
@@ -250,10 +252,10 @@ def test_data_cal_scatter_with_mismatch_has_mismatch(mock_scatter_plot, data_cal
     assert fig == mock_fig
     
     # Check that MI and MO were populated
-    assert len(data_with_mismatch['MI'][0]) == 1 # One mismatch index (scan_idx = 2)
-    assert data_with_mismatch['MI'][0][0] == 2 # Scan index of mismatch
+    assert len(data_with_mismatch['MI'][0]) == 2
+    assert data_with_mismatch['MI'][0] == [2, 3]
     assert data_with_mismatch['MI'][1][0] == 12 # Input value at mismatch
-    assert len(data_with_mismatch['MO'][1]) == 1 # One mismatch output value
+    assert len(data_with_mismatch['MO'][1]) == 2
     assert data_with_mismatch['MO'][1][0] == 99 # Output value at mismatch
 
     mock_scatter_plot.assert_called_once_with(
@@ -289,11 +291,12 @@ def test_data_cal_scatter_with_mismatch_no_mismatch(mock_scatter_plot, data_calc
     
     assert len(data_no_mismatch['MI'][0]) == 0
     assert len(data_no_mismatch['MO'][1]) == 0
+    placeholder_x = int(data_no_mismatch['SI'][0])
 
     mock_scatter_plot.assert_called_once_with(
-        [], # x_vals = empty
-        [], # y_vals = empty
-        [], # y2_vals = empty
+        [placeholder_x],
+        [0.0],
+        [0.0],
         expected_plot_signal_name,
         "NO MISMATCH",
         "output mismatch",
@@ -301,6 +304,91 @@ def test_data_cal_scatter_with_mismatch_no_mismatch(mock_scatter_plot, data_calc
         "blue",
         "NO MISMATCH",
     )
+
+@patch('InteractivePlot.d_business_layer.data_cal.PlotlyCharts.scatter_plot')
+def test_data_cal_scatter_with_mismatch_output_only_range(mock_scatter_plot, data_calculator):
+    mock_fig = MagicMock()
+    mock_scatter_plot.return_value = mock_fig
+
+    signal_name = "ran"
+    data_output_only = {
+        'SI': np.array([1, 2, 3]),
+        'I': np.array([np.nan, np.nan, np.nan]),
+        'O': np.array([10.0, 11.0, 12.0]),
+        'MI': [[], []],
+        'MO': [[], []],
+    }
+
+    fig_id, fig = data_calculator.scatter_with_mismatch(signal_name, data_output_only, None, None)
+
+    assert fig_id == f"scatter_fig_{signal_name}"
+    assert fig == mock_fig
+    mock_scatter_plot.assert_called_once()
+
+    call_args = mock_scatter_plot.call_args[0]
+    assert list(call_args[0]) == [1, 2, 3]
+    assert np.isnan(np.asarray(call_args[1], dtype=float)).all()
+    np.testing.assert_array_almost_equal(np.asarray(call_args[2], dtype=float), np.array([10.0, 11.0, 12.0]))
+    assert call_args[3] == signal_name
+    assert call_args[4] == "MISMATCH"
+
+@patch('InteractivePlot.d_business_layer.data_cal.PlotlyCharts.scatter_plot')
+def test_data_cal_scatter_plot_range_keeps_output_when_out_of_range(mock_scatter_plot, data_calculator):
+    mock_fig = MagicMock()
+    mock_scatter_plot.return_value = mock_fig
+
+    data_dict = {
+        'SI': np.array([10, 11, 12]),
+        'I': np.array([100.0, 110.0, 120.0]),
+        'O': np.array([1.2e6, 1.3e6, 1.4e6]),
+    }
+
+    fig_id, fig = data_calculator.scatter_plot('range', data_dict, None, None)
+
+    assert fig_id == 'scatter_fig_range'
+    assert fig == mock_fig
+    mock_scatter_plot.assert_called_once()
+    call_args = mock_scatter_plot.call_args[0]
+
+    np.testing.assert_array_equal(call_args[0], np.array([10, 11, 12]))
+    np.testing.assert_array_equal(call_args[1], np.array([100.0, 110.0, 120.0]))
+    np.testing.assert_array_equal(call_args[2], np.array([1.2e6, 1.3e6, 1.4e6]))
+
+
+def test_data_model_storage_get_data_resolves_output_alias():
+    input_data = MagicMock()
+    output_data = MagicMock()
+
+    input_data._signal_to_value = {'ran': '0_0'}
+    output_data._signal_to_value = {'range': '0_0'}
+
+    input_data._data_container = {
+        100: [[np.array([10.0, 20.0])]],
+    }
+    output_data._data_container = {
+        100: [[np.array([11.0, 21.0])]],
+    }
+
+    data_dict = DataModelStorage.get_data(input_data, output_data, 'ran')
+
+    assert isinstance(data_dict, dict)
+    np.testing.assert_array_equal(data_dict['SI'], np.array([100, 100]))
+    np.testing.assert_array_equal(data_dict['I'], np.array([10.0, 20.0]))
+    np.testing.assert_array_equal(data_dict['O'], np.array([11.0, 21.0]))
+
+
+def test_data_model_storage_set_value_truncates_oversized_dataset():
+    storage = DataModelStorage()
+    storage.initialize([1, 2, 3], 'FL', 'DETECTION_STREAM')
+    storage.init_parent('AF_Det')
+
+    dataset = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
+    key = storage.set_value(dataset, 'ran', 'AF_Det')
+
+    assert not str(key).endswith('_skipped')
+    assert storage._signal_to_value.get('ran') == '0_0'
+    stored = [storage._data_container[idx][0][0] for idx in [1, 2, 3]]
+    assert stored == [10.0, 20.0, 30.0]
 
 def test_data_cal_set_stream_name(data_calculator):
     stream_name = "TestStream"

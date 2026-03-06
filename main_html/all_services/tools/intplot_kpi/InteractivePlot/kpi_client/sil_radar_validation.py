@@ -878,6 +878,153 @@ def _flag_confusion(veh_flags: np.ndarray, resim_flags: np.ndarray) -> np.ndarra
     return mat
 
 
+def _quantile_edges(values: np.ndarray, q: Sequence[float]) -> Optional[np.ndarray]:
+    vals = np.asarray(values, dtype=np.float64)
+    vals = vals[np.isfinite(vals)]
+    if vals.size < 3:
+        return None
+    edges = np.quantile(vals, q)
+    if np.unique(edges).size < 4:
+        vmin = float(np.nanmin(vals))
+        vmax = float(np.nanmax(vals))
+        if not np.isfinite(vmin) or not np.isfinite(vmax) or vmax <= vmin:
+            return None
+        return np.array([vmin, vmin + (vmax - vmin) / 3.0, vmin + 2.0 * (vmax - vmin) / 3.0, vmax])
+    return np.asarray(edges, dtype=np.float64)
+
+
+def _digitize_bins(values: np.ndarray, edges: np.ndarray) -> np.ndarray:
+    v = np.asarray(values, dtype=np.float64)
+    bins = np.digitize(v, edges[1:-1], right=False)
+    return np.clip(bins, 0, len(edges) - 2).astype(np.int64)
+
+
+def _confusion_from_categories(veh_cat: np.ndarray, resim_cat: np.ndarray, n_classes: int) -> np.ndarray:
+    mat = np.zeros((n_classes, n_classes), dtype=np.int64)
+    for i in range(n_classes):
+        for j in range(n_classes):
+            mat[i, j] = np.count_nonzero((veh_cat == i) & (resim_cat == j))
+    return mat
+
+
+def _class_labels(prefix: str, n_classes: int) -> List[str]:
+    names = ["Low", "Mid", "High", "Very High", "Top"]
+    if n_classes <= len(names):
+        return [f"{prefix} {names[i]}" for i in range(n_classes)]
+    return [f"{prefix} C{i}" for i in range(n_classes)]
+
+
+def _make_feature_confusion_figure(veh_df: pd.DataFrame, resim_df: pd.DataFrame, match: MatchOutput) -> go.Figure:
+    if match.matched_veh_idx.size == 0:
+        fig = go.Figure()
+        fig.update_layout(title="Additional Feature Confusion Matrices")
+        return fig
+
+    veh_m = veh_df.iloc[match.matched_veh_idx].reset_index(drop=True)
+    res_m = resim_df.iloc[match.matched_resim_idx].reset_index(drop=True)
+
+    features: List[Tuple[str, str, Optional[np.ndarray], Optional[np.ndarray], Optional[List[str]]]] = []
+
+    range_edges = _quantile_edges(np.concatenate([veh_m["ran"].to_numpy(), res_m["ran"].to_numpy()]), [0.0, 0.33, 0.66, 1.0])
+    if range_edges is not None:
+        features.append((
+            "Range Bins",
+            "ran",
+            _digitize_bins(veh_m["ran"].to_numpy(), range_edges),
+            _digitize_bins(res_m["ran"].to_numpy(), range_edges),
+            _class_labels("R", 3),
+        ))
+
+    az_edges = _quantile_edges(np.concatenate([veh_m["azimuth"].to_numpy(), res_m["azimuth"].to_numpy()]), [0.0, 0.33, 0.66, 1.0])
+    if az_edges is not None:
+        features.append((
+            "Azimuth Bins",
+            "azimuth",
+            _digitize_bins(veh_m["azimuth"].to_numpy(), az_edges),
+            _digitize_bins(res_m["azimuth"].to_numpy(), az_edges),
+            _class_labels("Az", 3),
+        ))
+
+    vel = veh_m["vel"].to_numpy(dtype=np.float64)
+    rvel = res_m["vel"].to_numpy(dtype=np.float64)
+    veh_vel_cat = np.full(vel.shape[0], 1, dtype=np.int64)
+    res_vel_cat = np.full(rvel.shape[0], 1, dtype=np.int64)
+    veh_vel_cat[vel < -0.1] = 0
+    veh_vel_cat[vel > 0.1] = 2
+    res_vel_cat[rvel < -0.1] = 0
+    res_vel_cat[rvel > 0.1] = 2
+    features.append(("Velocity State", "vel", veh_vel_cat, res_vel_cat, ["Approach", "Static", "Recede"]))
+
+    if "snr" in veh_m.columns and "snr" in res_m.columns:
+        snr_edges = _quantile_edges(np.concatenate([veh_m["snr"].to_numpy(), res_m["snr"].to_numpy()]), [0.0, 0.33, 0.66, 1.0])
+        if snr_edges is not None:
+            features.append((
+                "SNR Bins",
+                "snr",
+                _digitize_bins(veh_m["snr"].to_numpy(), snr_edges),
+                _digitize_bins(res_m["snr"].to_numpy(), snr_edges),
+                _class_labels("SNR", 3),
+            ))
+
+    if "rcs" in veh_m.columns and "rcs" in res_m.columns:
+        rcs_edges = _quantile_edges(np.concatenate([veh_m["rcs"].to_numpy(), res_m["rcs"].to_numpy()]), [0.0, 0.33, 0.66, 1.0])
+        if rcs_edges is not None:
+            features.append((
+                "RCS Bins",
+                "rcs",
+                _digitize_bins(veh_m["rcs"].to_numpy(), rcs_edges),
+                _digitize_bins(res_m["rcs"].to_numpy(), rcs_edges),
+                _class_labels("RCS", 3),
+            ))
+
+        # Out-of-RCS (tail) confusion: values outside [q05, q95] treated as outliers.
+        rcs_all = np.concatenate([veh_m["rcs"].to_numpy(dtype=np.float64), res_m["rcs"].to_numpy(dtype=np.float64)])
+        rcs_all = rcs_all[np.isfinite(rcs_all)]
+        if rcs_all.size > 3:
+            q05 = float(np.quantile(rcs_all, 0.05))
+            q95 = float(np.quantile(rcs_all, 0.95))
+            veh_out = ((veh_m["rcs"].to_numpy(dtype=np.float64) < q05) | (veh_m["rcs"].to_numpy(dtype=np.float64) > q95)).astype(np.int64)
+            res_out = ((res_m["rcs"].to_numpy(dtype=np.float64) < q05) | (res_m["rcs"].to_numpy(dtype=np.float64) > q95)).astype(np.int64)
+            features.append(("RCS Out-of-Band", "rcs_out", veh_out, res_out, ["In-Band", "Out-of-Band"]))
+
+    if not features:
+        fig = go.Figure()
+        fig.update_layout(title="Additional Feature Confusion Matrices")
+        return fig
+
+    cols = 3
+    rows = math.ceil(len(features) / cols)
+    subplot_titles = [f[0] for f in features]
+    fig = make_subplots(rows=rows, cols=cols, subplot_titles=subplot_titles)
+
+    for idx, (title, _name, veh_cat, res_cat, labels) in enumerate(features, start=1):
+        row = (idx - 1) // cols + 1
+        col = (idx - 1) % cols + 1
+        if veh_cat is None or res_cat is None or labels is None:
+            z = np.zeros((2, 2), dtype=np.int64)
+            labels = ["Class0", "Class1"]
+        else:
+            n_classes = len(labels)
+            z = _confusion_from_categories(veh_cat, res_cat, n_classes)
+
+        fig.add_trace(
+            go.Heatmap(
+                z=z,
+                x=[f"RESIM {x}" for x in labels],
+                y=[f"VEH {x}" for x in labels],
+                text=z,
+                texttemplate="%{text}",
+                showscale=False,
+                colorscale="Blues",
+            ),
+            row=row,
+            col=col,
+        )
+
+    fig.update_layout(title="Additional Feature Confusion Matrices")
+    return fig
+
+
 def _make_flag_divergence_figure(veh_df: pd.DataFrame, resim_df: pd.DataFrame, match: MatchOutput) -> go.Figure:
     flags = ["f_superres_target", "f_ci_det", "f_bistatic"]
     fig = make_subplots(rows=1, cols=3, subplot_titles=flags)
@@ -955,6 +1102,7 @@ def build_report_html(
     fig_orphan = _make_orphan_histogram(veh.frame, resim.frame, match)
     fig_flag = _make_flag_divergence_figure(veh.frame, resim.frame, match)
     fig_boresight = _make_boresight_figure(veh.frame, resim.frame)
+    fig_feature_conf = _make_feature_confusion_figure(veh.frame, resim.frame, match)
 
     fig_blocks = [
         fig_hex_ran,
@@ -963,6 +1111,7 @@ def build_report_html(
         fig_orphan,
         fig_flag,
         fig_boresight,
+        fig_feature_conf,
     ]
 
     divs: List[str] = []
@@ -1029,6 +1178,7 @@ def build_report_html(
   <div class=\"panel\"><h2>Orphan Analysis</h2>{divs[3]}</div>
   <div class=\"panel\"><h2>Feature Flag Divergence</h2>{divs[4]}</div>
   <div class=\"panel\"><h2>Boresight Alignment Tracking</h2>{divs[5]}</div>
+    <div class="panel"><h2>Additional Feature Confusion Matrices</h2>{divs[6]}</div>
 </body>
 </html>
 """

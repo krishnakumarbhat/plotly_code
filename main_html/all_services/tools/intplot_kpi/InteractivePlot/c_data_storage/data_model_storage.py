@@ -81,6 +81,13 @@ class DataModelStorage:
         dataset_len = len(dataset) if dataset is not None else 0
         container_len = len(self._data_container)
 
+        if dataset is not None and dataset_len > container_len:
+            logging.warning(
+                f"Truncating dataset for {signal_name}: dataset length ({dataset_len}) exceeds scan indices length ({container_len})"
+            )
+            dataset = dataset[:container_len]
+            dataset_len = container_len
+
         if is_new_parent:
             # If the first dataset we see for a group doesn't align with scan_index length,
             # skip it without advancing counters; otherwise subsequent datasets would be
@@ -229,17 +236,40 @@ class DataModelStorage:
             "mismatch": 0,
         }
 
-        # Check if signal exists in input and output maps
-        unique_in = (
-            input_data._signal_to_value.get(signal_name)
-            if input_data._signal_to_value
-            else None
-        )
-        unique_out = (
-            output_data._signal_to_value.get(signal_name)
-            if output_data._signal_to_value
-            else None
-        )
+        def _normalize_signal_name(name):
+            return "".join(ch for ch in str(name or "").strip().lower() if ch.isalnum())
+
+        def _candidate_normalized_names(name):
+            normalized = _normalize_signal_name(name)
+            groups = [
+                {"ran", "range", "detectionrange"},
+                {"vel", "velocity", "detectionvelocity"},
+                {"phi", "elevation"},
+                {"theta", "azimuth"},
+            ]
+            for group in groups:
+                if normalized in group:
+                    return group
+            return {normalized}
+
+        def _resolve_signal_mapping(data_obj, requested_name):
+            signal_map = getattr(data_obj, "_signal_to_value", None)
+            if not signal_map:
+                return None
+
+            direct = signal_map.get(requested_name)
+            if direct:
+                return direct
+
+            candidate_names = _candidate_normalized_names(requested_name)
+            for existing_name, existing_value in signal_map.items():
+                if _normalize_signal_name(existing_name) in candidate_names and existing_value:
+                    return existing_value
+            return None
+
+        # Resolve signal mapping per side (input/output may use different aliases)
+        unique_in = _resolve_signal_mapping(input_data, signal_name)
+        unique_out = _resolve_signal_mapping(output_data, signal_name)
 
         # Return early if signal not found in either map
         if not unique_in and not unique_out:

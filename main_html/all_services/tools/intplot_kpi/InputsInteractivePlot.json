@@ -2,18 +2,8 @@
     "INPUT_HDF": [
 
 
-        "C:/Users/ouymc2/Downloads/inout_logs/CCA_9010_3100099_DEBUG_20251006_145301_0004.h5",
-        "C:/Users/ouymc2/Downloads/CCA_9010_3100099_DEBUG_20251006_145301_0004_HIL_Engine_DET_4_OUT 1.h5",
-        "C:/Users/ouymc2/Downloads/CCA_9010_3100099_DEBUG_20251006_145301_0004_ORCAS 1.h5"
-
-
-
-
     ],
     "OUTPUT_HDF": [
         
-        "C:/Users/ouymc2/Downloads/inout_logs/CCA_9010_3100099_DEBUG_20251006_145301_0004.h5",
-        "C:/Users/ouymc2/Downloads/CCA_9010_3100099_DEBUG_20251006_145301_0004_HIL_Engine_DET_4_OUT 1.h5",
-        "C:/Users/ouymc2/Downloads/CCA_9010_3100099_DEBUG_20251006_145301_0004_ORCAS 1.h5"
     ]
 }

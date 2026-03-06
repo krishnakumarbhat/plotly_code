@@ -5,6 +5,8 @@ import json
 from typing import Dict, List, Optional
 from pathlib import Path
 from datetime import datetime
+import re
+import math
 from InteractivePlot.e_presentation_layer.main_front_end import css, js, master_index_css, master_index_js
 
 
@@ -287,6 +289,7 @@ class HtmlGenerator:
             return
         if not self.sensor_position:
             return
+        base_folder = self.folder_structure['main']
             
         try:
             # Direct ZMQ request to get HTML path (data already sent during parsing)
@@ -297,7 +300,6 @@ class HtmlGenerator:
             
             if kpi_html_path:
                 kpi_path_obj = Path(kpi_html_path)
-                base_folder = self.folder_structure['main']
                 
                 if kpi_path_obj.exists():
                     category_files.append({
@@ -607,6 +609,8 @@ class HtmlGenerator:
         """Organize HTML files by sensor and stream (supports multiple layouts)."""
         sensor_data = {}
 
+        sensor_pat = re.compile(r"_([A-Z]{2,4})_sil_(validation_report|narrative)$", re.IGNORECASE)
+
         for file_info in html_files:
             path_parts = list(Path(file_info['relative_path']).parts)
 
@@ -629,10 +633,20 @@ class HtmlGenerator:
 
             filename = file_info['name']
             category = "general"
+            if "sil_validation_report" in filename.lower() or "kpi_f1_summary" in filename.lower():
+                category = "kpi"
+            elif "sil_narrative" in filename.lower() or "detailed_on_" in filename.lower():
+                category = "narrative"
             for cat in ['histogram', 'mismatch', 'kpi', 'sensor_data', 'stream_plots', 'scatter', 'general']:
                 if cat in filename.lower():
                     category = cat
                     break
+
+            if category in {"kpi", "narrative"}:
+                m = sensor_pat.search(filename)
+                if m:
+                    sensor_name = m.group(1).upper()
+                    stream_name = "KPI"
 
             if sensor_name not in sensor_data:
                 sensor_data[sensor_name] = {}
@@ -648,9 +662,52 @@ class HtmlGenerator:
         return sensor_data
 
     @classmethod
+    def _extract_f1_from_html(cls, file_path: Path) -> float:
+        try:
+            txt = file_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            return float("nan")
+
+        patterns = [
+            re.compile(r"<tr><td>f1_score</td><td>([^<]+)</td></tr>", re.IGNORECASE),
+            re.compile(r"f1_score\s*[:=]\s*([0-9]*\.?[0-9]+)", re.IGNORECASE),
+        ]
+        for pat in patterns:
+            m = pat.search(txt)
+            if not m:
+                continue
+            try:
+                return float(m.group(1).strip())
+            except Exception:
+                continue
+        return float("nan")
+
+    @classmethod
+    def _compute_sensor_accuracy(cls, sensor_stream_data: dict) -> Dict[str, float]:
+        accuracy_map: Dict[str, float] = {}
+        for sensor_name, streams in sensor_stream_data.items():
+            f1_values: List[float] = []
+            for categories in streams.values():
+                for category_name, plots in categories.items():
+                    if category_name != "kpi":
+                        continue
+                    for plot_info in plots:
+                        if "sil_validation_report" not in plot_info["name"].lower():
+                            continue
+                        f1 = cls._extract_f1_from_html(Path(plot_info["path"]))
+                        if not math.isnan(f1):
+                            f1_values.append(f1)
+            accuracy_map[sensor_name] = (sum(f1_values) / len(f1_values)) if f1_values else float("nan")
+        return accuracy_map
+
+    @classmethod
     def _generate_master_index_html(cls, sensor_stream_data: dict, base_filename: str) -> str:
         """Generate master index HTML with nested dropdowns."""
         generation_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sensor_accuracy = cls._compute_sensor_accuracy(sensor_stream_data)
+        valid_sensor_acc = [v for v in sensor_accuracy.values() if not math.isnan(v)]
+        avg_accuracy = (sum(valid_sensor_acc) / len(valid_sensor_acc)) if valid_sensor_acc else float("nan")
+        avg_accuracy_text = f"{avg_accuracy:.4f}" if not math.isnan(avg_accuracy) else "NA"
         
         html_content = f"""
         <!DOCTYPE html>
@@ -685,10 +742,13 @@ class HtmlGenerator:
                             <div class="metadata-item">
                                 <strong>HTML Generated Time Info:</strong> {generation_time}
                             </div>
+                            <div class="metadata-item">
+                                <strong>Average Accuracy (F1):</strong> {avg_accuracy_text}
+                            </div>
                         </div>
                     </div>
                     <div class="sensors-container">
-                        {cls._generate_sensors_html(sensor_stream_data)}
+                        {cls._generate_sensors_html(sensor_stream_data, sensor_accuracy)}
                     </div>
                 </div>
             </div>
@@ -703,15 +763,29 @@ class HtmlGenerator:
         return html_content
 
     @classmethod
-    def _generate_sensors_html(cls, sensor_stream_data: dict) -> str:
+    def _generate_sensors_html(cls, sensor_stream_data: dict, sensor_accuracy: dict) -> str:
         """Generate HTML for sensors section."""
         html_parts = []
         
-        for sensor_name, streams in sensor_stream_data.items():
+        def _sensor_sort_key(name: str):
+            n = str(name or "").strip().lower()
+            is_other = (n == "unknown" or n == "others")
+            return (1 if is_other else 0, n)
+
+        for sensor_name in sorted(sensor_stream_data.keys(), key=_sensor_sort_key):
+            streams = sensor_stream_data[sensor_name]
+            display_sensor_name = "Others" if str(sensor_name).strip().lower() == "unknown" else sensor_name
+            acc = sensor_accuracy.get(sensor_name, float("nan"))
+            if not math.isnan(acc):
+                match_pct = acc * 100.0
+                mismatch_pct = max(0.0, (1.0 - acc) * 100.0)
+                acc_txt = f"Sensor {display_sensor_name} - Match % : {match_pct:.2f}  Missmatch % : {mismatch_pct:.2f}"
+            else:
+                acc_txt = f"Sensor {display_sensor_name} - Match % : NA  Missmatch % : NA"
             html_parts.append(f'''
             <div class="sensor-section">
                 <div class="sensor-title" onclick="toggleSection(this)">
-                    <span>🔧 {sensor_name} ({len(streams)} streams)</span>
+                    <span>🔧 {acc_txt}</span>
                     <span class="toggle-icon">▶</span>
                 </div>
                 <div class="sensor-content">
@@ -727,12 +801,19 @@ class HtmlGenerator:
         """Generate HTML for streams section."""
         html_parts = []
         
-        for stream_name, categories in streams.items():
+        def _stream_sort_key(name: str):
+            n = str(name or "").strip().lower()
+            is_other = (n == "unknown" or n == "others")
+            return (1 if is_other else 0, n)
+
+        for stream_name in sorted(streams.keys(), key=_stream_sort_key):
+            categories = streams[stream_name]
+            display_stream_name = "Others" if str(stream_name).strip().lower() == "unknown" else stream_name
             total_plots = sum(len(plots) for plots in categories.values())
             html_parts.append(f'''
             <div class="stream-section">
                 <div class="stream-title" onclick="toggleSection(this)">
-                    <span>🌊 {stream_name} ({total_plots} plots)</span>
+                    <span>🌊 {display_stream_name} ({total_plots} plots)</span>
                     <span class="toggle-icon">▶</span>
                 </div>
                 <div class="stream-content">
@@ -754,6 +835,7 @@ class HtmlGenerator:
             'sensor_data': '🔧',
             'stream_plots': '🌊',
             'kpi': '📈',
+            'narrative': '🧾',
             'general': '📋',
             'scatter': '📈'
         }

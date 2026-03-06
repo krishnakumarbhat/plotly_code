@@ -1,0 +1,264 @@
+/* HPC Tools Platform - Main Stylesheet */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --sidebar-width: 280px;
+    --navbar-height: 56px;
+}
+
+/* Base Layout */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+}
+
+.main-content {
+    margin-top: var(--navbar-height);
+    min-height: calc(100vh - var(--navbar-height));
+}
+
+/* Navbar Customization */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: transparent;
+    padding: 1rem 1.25rem;
+}
+
+/* Chat Styling - Compact */
+.chat-container {
+    height: 250px;
+    min-height: 200px;
+}
+
+.chat-messages {
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.message-content {
+    word-wrap: break-word;
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+.message-content pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
+.message-content code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+/* Tool Cards */
+.tool-card {
+    background: white;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.tool-card .tool-icon {
+    color: inherit;
+    transition: transform 0.3s ease;
+}
+
+.tool-card:hover .tool-icon {
+    transform: scale(1.1);
+}
+
+/* Status Badges */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.status-QUEUED, .status-SUBMITTED { 
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); 
+    color: #000; 
+}
+
+.status-RUNNING { 
+    background: linear-gradient(135deg, #17a2b8 0%, #0d8aa8 100%); 
+    color: #fff; 
+}
+
+.status-COMPLETED { 
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); 
+    color: #fff; 
+}
+
+.status-FAILED { 
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
+    color: #fff; 
+}
+
+.status-CANCELLED { 
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); 
+    color: #fff; 
+}
+
+/* Tables */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    border-bottom-width: 1px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+/* Form Controls */
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+/* File Browser */
+.file-browser-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.file-browser-item:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.file-browser-item.selected {
+    background-color: rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+}
+
+/* History Container - Large */
+.history-container {
+    min-height: 350px;
+    max-height: 450px;
+}
+
+/* Loading States */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .chat-container {
+        height: 200px;
+        min-height: 180px;
+    }
+    
+    .history-container {
+        min-height: 250px;
+        max-height: 300px;
+    }
+    
+    .tool-card {
+        padding: 15px !important;
+    }
+    
+    .tool-icon {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .chat-input-container {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-top: 0;
+    }
+}

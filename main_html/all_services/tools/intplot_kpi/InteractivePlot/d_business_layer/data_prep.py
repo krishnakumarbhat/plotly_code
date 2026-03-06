@@ -265,13 +265,16 @@ class DataPrep:
         if isinstance(data_dict, tuple) and len(data_dict) > 0:
             if data_dict[0] == "no_data_in_hdf" and "aliases" in signal_config:
                 for alias in signal_config["aliases"]:
-                    data_dict, alias_data_dict = self._get_data_cached(
-                        alias
-                    )
-                    if data_dict != "no_data_in_hdf":
-                        # If we got valid data from an alias, use its data_dict if available
+                    alias_result = self._get_data_cached(alias)
+                    if isinstance(alias_result, tuple):
+                        if len(alias_result) > 0 and alias_result[0] == "no_data_in_hdf":
+                            continue
+                        alias_data_dict = alias_result[1] if len(alias_result) > 1 else None
                         if alias_data_dict:
                             data_dict = alias_data_dict
+                            break
+                    else:
+                        data_dict = alias_result
                         break
 
         if (
@@ -284,6 +287,17 @@ class DataPrep:
                 # This should be created once before multiprocessing starts
                 return {}
             # Process each plot type for this signal
+                try:
+                    if shared_data is not None and hasattr(shared_data, "__setitem__"):
+                        cache_key = f"_signal_bundle::{str(complete_signal_name).strip().lower()}"
+                        shared_data[cache_key] = {
+                            "SI": data_dict.get("SI").tolist() if hasattr(data_dict.get("SI"), "tolist") else data_dict.get("SI"),
+                            "I": data_dict.get("I").tolist() if hasattr(data_dict.get("I"), "tolist") else data_dict.get("I"),
+                            "O": data_dict.get("O").tolist() if hasattr(data_dict.get("O"), "tolist") else data_dict.get("O"),
+                        }
+                except Exception:
+                    logging.debug("Failed caching signal bundle for %s", complete_signal_name)
+
             for plot_type in signal_config.get("plot_types", []):
                 func_name = plot_type
                 # Check if the function exists in data_cal.py

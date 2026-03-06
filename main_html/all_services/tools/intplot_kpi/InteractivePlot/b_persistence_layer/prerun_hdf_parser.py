@@ -29,6 +29,7 @@ class PreRun:
         self.missing_data = None
         self.sensor_list = None
         self.streams = None
+        self.read_error = None
         self.get_missing_data()
 
     def get_missing_data(self):
@@ -66,21 +67,40 @@ class PreRun:
                             queue.append((item, full_name))
                             grp_list.append(full_name)
 
-        # Traverse input and output files in parallel (still sequential execution but combined logic)
-        traverse_hdf(
-            self.input_file,
-            self.datasetsin,
-            self.grp_listin,
-            level1_groups_in,
-            level2_groups_in,
-        )
-        traverse_hdf(
-            self.output_file,
-            self.datasetsout,
-            self.grp_listout,
-            level1_groups_out,
-            level2_groups_out,
-        )
+        try:
+            # Traverse input and output files in parallel (still sequential execution but combined logic)
+            traverse_hdf(
+                self.input_file,
+                self.datasetsin,
+                self.grp_listin,
+                level1_groups_in,
+                level2_groups_in,
+            )
+            traverse_hdf(
+                self.output_file,
+                self.datasetsout,
+                self.grp_listout,
+                level1_groups_out,
+                level2_groups_out,
+            )
+        except Exception as exc:
+            self.read_error = str(exc)
+            self.missing_data = {
+                "missing_groups": [],
+                "missing_datasets": [],
+                "read_error": self.read_error,
+            }
+            self.sensor_list = []
+            self.streams = []
+            return (
+                self.missing_data,
+                self.sensor_list,
+                self.streams,
+                level1_groups_in,
+                level1_groups_out,
+                level2_groups_in,
+                level2_groups_out,
+            )
 
         # Compute missing groups and datasets using set operations
         missing_groups_in = set(self.grp_listout) - set(self.grp_listin)

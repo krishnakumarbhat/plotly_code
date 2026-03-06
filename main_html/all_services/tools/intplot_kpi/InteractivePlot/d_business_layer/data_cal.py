@@ -2,6 +2,7 @@ import numpy as np
 from InteractivePlot.e_presentation_layer.plotly_visualization import PlotlyCharts
 import logging
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 class DataCalculations:
@@ -14,7 +15,7 @@ class DataCalculations:
         """Initialize the DataCalculations class"""
         self.stream_name = None
         self._data_frame_cache = {}
-        self._range_scatter_min = 1e-6
+        self._range_scatter_min = 0.0
         self._range_scatter_max = 1e6
 
     def set_stream_name(self, stream_name: str) -> None:
@@ -48,10 +49,114 @@ class DataCalculations:
         normalized = str(signal_name or "").strip().lower()
         return normalized in {"range", "ran", "detection_range"}
 
-    def _filter_range_scatter_outliers(self, signal_name, scan_idx, i_vals, o_vals):
+    def _get_cached_signal_bundle(self, shared_data, candidate_names):
+        if shared_data is None:
+            return None
+        for name in candidate_names:
+            key = f"_signal_bundle::{str(name).strip().lower()}"
+            try:
+                bundle = shared_data.get(key)
+                if bundle:
+                    return bundle
+            except Exception:
+                continue
+        return None
+
+    def _as_numeric(self, values):
+        if values is None:
+            return np.array([], dtype=float)
+        try:
+            arr = np.asarray(values, dtype=float)
+            return np.ravel(arr)
+        except Exception:
+            return np.array([], dtype=float)
+
+    def _to_degrees_if_needed(self, values):
+        arr = self._as_numeric(values)
+        if arr.size == 0:
+            return arr
+        finite = arr[np.isfinite(arr)]
+        if finite.size == 0:
+            return arr
+        if np.nanmax(np.abs(finite)) <= 3.5:
+            return np.rad2deg(arr)
+        return arr
+
+    def _build_radar_context(self, signal_name, data_dict, shared_data):
+        current_si = self._as_numeric(data_dict.get("SI"))
+        current_i = self._as_numeric(data_dict.get("I"))
+        current_o = self._as_numeric(data_dict.get("O"))
+
+        range_bundle = self._get_cached_signal_bundle(shared_data, ["range", "ran", signal_name])
+        az_bundle = self._get_cached_signal_bundle(shared_data, ["azimuth", "theta"])
+        el_bundle = self._get_cached_signal_bundle(shared_data, ["elevation", "phi"])
+
+        if range_bundle is None:
+            range_i = current_i
+            range_o = current_o
+            scan_i = current_si
+            scan_o = current_si
+        else:
+            range_i = self._as_numeric(range_bundle.get("I"))
+            range_o = self._as_numeric(range_bundle.get("O"))
+            scan_i = self._as_numeric(range_bundle.get("SI"))
+            scan_o = scan_i.copy()
+
+        az_i = self._to_degrees_if_needed(az_bundle.get("I") if az_bundle else current_i)
+        az_o = self._to_degrees_if_needed(az_bundle.get("O") if az_bundle else current_o)
+        el_i = self._to_degrees_if_needed(el_bundle.get("I") if el_bundle else current_i)
+        el_o = self._to_degrees_if_needed(el_bundle.get("O") if el_bundle else current_o)
+
+        n_i = min(scan_i.size, range_i.size, az_i.size, el_i.size)
+        n_o = min(scan_o.size, range_o.size, az_o.size, el_o.size)
+        if n_i == 0 or n_o == 0:
+            return None
+
+        return {
+            "si_i": scan_i[:n_i],
+            "si_o": scan_o[:n_o],
+            "ran_i": range_i[:n_i],
+            "ran_o": range_o[:n_o],
+            "az_i": az_i[:n_i],
+            "az_o": az_o[:n_o],
+            "el_i": el_i[:n_i],
+            "el_o": el_o[:n_o],
+        }
+
+    def _dbscan_labels(self, features, eps=0.85, min_samples=10):
+        points = np.asarray(features, dtype=float)
+        n_points = points.shape[0]
+        if n_points == 0:
+            return np.array([], dtype=int)
+
+        finite_mask = np.all(np.isfinite(points), axis=1)
+        labels = np.full(n_points, -1, dtype=int)
+        if not np.any(finite_mask):
+            return labels
+
+        valid_points = points[finite_mask]
+        step = max(float(eps), 1e-3)
+        quantized = np.floor(valid_points / step).astype(np.int64)
+
+        bins = {}
+        for index, row in enumerate(quantized):
+            key = tuple(row.tolist())
+            bins.setdefault(key, []).append(index)
+
+        cluster_id = 0
+        valid_labels = np.full(valid_points.shape[0], -1, dtype=int)
+        for _, members in bins.items():
+            if len(members) >= int(min_samples):
+                valid_labels[np.asarray(members, dtype=int)] = cluster_id
+                cluster_id += 1
+
+        labels[np.where(finite_mask)[0]] = valid_labels
+        return labels
+
+    def _filter_range_scatter_outliers(self, signal_name, scan_idx, i_vals, o_vals, allow_one_sided_fallback=True):
         """
         Keep only valid range values for scatter plotting.
-        Valid range: [1e-6, 1e6], non-negative, finite.
+        Valid range: [0, 1e6], non-negative, finite.
         """
         scan_idx_arr = np.asarray(scan_idx)
         input_arr = np.asarray(i_vals, dtype=float)
@@ -60,8 +165,10 @@ class DataCalculations:
         if not self._is_range_scatter_signal(signal_name):
             return scan_idx_arr, input_arr, output_arr
 
-        valid_input = np.isfinite(input_arr) & (input_arr >= self._range_scatter_min) & (input_arr <= self._range_scatter_max)
-        valid_output = np.isfinite(output_arr) & (output_arr >= self._range_scatter_min) & (output_arr <= self._range_scatter_max)
+        finite_input = np.isfinite(input_arr)
+        finite_output = np.isfinite(output_arr)
+        valid_input = finite_input & (input_arr >= self._range_scatter_min) & (input_arr <= self._range_scatter_max)
+        valid_output = finite_output & (output_arr >= self._range_scatter_min) & (output_arr <= self._range_scatter_max)
         valid_mask = valid_input & valid_output
 
         if valid_mask.size == 0:
@@ -77,7 +184,40 @@ class DataCalculations:
                 self._range_scatter_max,
             )
 
-        return scan_idx_arr[valid_mask], input_arr[valid_mask], output_arr[valid_mask]
+        if not allow_one_sided_fallback:
+            return scan_idx_arr[valid_mask], input_arr[valid_mask], output_arr[valid_mask]
+
+        input_plot_mask = valid_input.copy()
+        output_plot_mask = valid_output.copy()
+
+        if np.count_nonzero(input_plot_mask) == 0 and np.count_nonzero(finite_input) > 0:
+            input_plot_mask = finite_input
+            logging.warning(
+                "No in-range INPUT points for range signal '%s'; using finite INPUT values for visualization.",
+                signal_name,
+            )
+
+        if np.count_nonzero(output_plot_mask) == 0 and np.count_nonzero(finite_output) > 0:
+            output_plot_mask = finite_output
+            logging.warning(
+                "No in-range OUTPUT points for range signal '%s'; using finite OUTPUT values for visualization.",
+                signal_name,
+            )
+
+        combined_mask = input_plot_mask | output_plot_mask
+        if np.count_nonzero(combined_mask) == 0:
+            return scan_idx_arr[valid_mask], input_arr[valid_mask], output_arr[valid_mask]
+
+        if np.count_nonzero(valid_mask) == 0:
+            logging.warning(
+                "No overlapping in-range IN/OUT points for range signal '%s'; using one-sided data for visualization.",
+                signal_name,
+            )
+
+        filtered_scan = scan_idx_arr[combined_mask]
+        filtered_input = np.where(input_plot_mask[combined_mask], input_arr[combined_mask], np.nan)
+        filtered_output = np.where(output_plot_mask[combined_mask], output_arr[combined_mask], np.nan)
+        return filtered_scan, filtered_input, filtered_output
 
     def scatter_plot_vector_mean(self, signal_name, data_dict, shared_data, lock):
         si = data_dict.get("SI") if isinstance(data_dict, dict) else None
@@ -267,6 +407,7 @@ class DataCalculations:
             scan_idx,
             i_vals,
             o_vals,
+            allow_one_sided_fallback=True,
         )
         if len(scan_idx) == 0:
             logging.warning(f"No valid points left after outlier filtering for scatter mismatch of {signal_name}")
@@ -293,21 +434,26 @@ class DataCalculations:
         data_dict["MI"][1].extend(i_mismatches.tolist())
         data_dict["MO"][1].extend(o_mismatches.tolist())
 
+        has_mismatch = len(data_dict["MI"][0]) > 0 or len(data_dict["MO"][1]) > 0
+
         # Check if there are mismatches
-        if len(all_mismatches) > 0:
+        if has_mismatch:
             # There are mismatches: plot them
             plot_signal_name = signal_name
-            x_vals = data_dict["MI"][0]
+            x_vals = data_dict["MI"][0] if len(data_dict["MI"][0]) > 0 else data_dict["MO"][0]
             y_vals = data_dict["MI"][1]
+            if len(y_vals) == 0:
+                y_vals = [np.nan] * len(x_vals)
             y2_vals = data_dict["MO"][1]
             color = "red"
             label = "MISMATCH"
         else:
-            # No mismatches: plot a placeholder and update signal name
+            # No mismatches: plot a visible placeholder and update signal name
             plot_signal_name = f"{signal_name} (no mismatch)"
-            x_vals = data_dict["MI"][0]
-            y_vals = data_dict["MI"][1]
-            y2_vals = data_dict["MO"][1]
+            placeholder_x = int(scan_idx[0]) if len(scan_idx) > 0 else 0
+            x_vals = [placeholder_x]
+            y_vals = [0.0]
+            y2_vals = [0.0]
             color = "green"
             label = "NO MISMATCH"
         # Create plot
@@ -620,3 +766,292 @@ class DataCalculations:
             rad_temp_i, rad_temp_o, signal_name
         )
         return hist_fig_id, hist_fig
+
+    def histogram_scanindex_polar_dbscan(self, signal_name, data_dict, shared_data, lock):
+        context = self._build_radar_context(signal_name, data_dict, shared_data)
+        if context is None:
+            return None, None
+
+        max_points = 6000
+        if context["ran_i"].size > max_points:
+            idx = np.linspace(0, context["ran_i"].size - 1, max_points, dtype=int)
+            for key in ("si_i", "ran_i", "az_i", "el_i"):
+                context[key] = context[key][idx]
+        if context["ran_o"].size > max_points:
+            idx = np.linspace(0, context["ran_o"].size - 1, max_points, dtype=int)
+            for key in ("si_o", "ran_o", "az_o", "el_o"):
+                context[key] = context[key][idx]
+
+        fi = np.column_stack([
+            (context["ran_i"] - np.nanmean(context["ran_i"])) / (np.nanstd(context["ran_i"]) + 1e-6),
+            context["az_i"] / 180.0,
+            context["el_i"] / 90.0,
+        ])
+        fo = np.column_stack([
+            (context["ran_o"] - np.nanmean(context["ran_o"])) / (np.nanstd(context["ran_o"]) + 1e-6),
+            context["az_o"] / 180.0,
+            context["el_o"] / 90.0,
+        ])
+        labels_i = self._dbscan_labels(fi)
+        labels_o = self._dbscan_labels(fo)
+
+        fig = make_subplots(
+            rows=1,
+            cols=2,
+            specs=[[{"type": "polar"}, {"type": "polar"}]],
+            subplot_titles=["INPUT clusters", "OUTPUT clusters"],
+        )
+        fig.add_trace(
+            go.Scatterpolar(
+                theta=context["az_i"],
+                r=np.abs(context["ran_i"]),
+                mode="markers",
+                name="INPUT clusters",
+                marker=dict(size=4, color=labels_i, colorscale="Turbo", opacity=0.75, showscale=True),
+            ),
+            row=1,
+            col=1,
+        )
+        fig.add_trace(
+            go.Scatterpolar(
+                theta=context["az_o"],
+                r=np.abs(context["ran_o"]),
+                mode="markers",
+                name="OUTPUT clusters",
+                marker=dict(size=4, color=labels_o, colorscale="Turbo", opacity=0.75, showscale=False),
+            ),
+            row=1,
+            col=2,
+        )
+        fig.update_layout(title=f"{signal_name} Polar DBSCAN Clusters (range/azimuth/elevation)")
+        return f"hist_fig_{signal_name}_polar_dbscan", fig
+
+    def histogram_scanindex_density_contour(self, signal_name, data_dict, shared_data, lock):
+        context = self._build_radar_context(signal_name, data_dict, shared_data)
+        if context is None:
+            return None, None
+
+        all_az = np.concatenate([context["az_i"], context["az_o"]])
+        all_ran = np.concatenate([context["ran_i"], context["ran_o"]])
+        finite_mask = np.isfinite(all_az) & np.isfinite(all_ran)
+        if np.any(finite_mask):
+            all_az_f = all_az[finite_mask]
+            all_ran_f = all_ran[finite_mask]
+            az_min, az_max = np.nanpercentile(all_az_f, [1, 99])
+            ran_min, ran_max = np.nanpercentile(all_ran_f, [1, 99])
+        else:
+            az_min, az_max = -90, 90
+            ran_min, ran_max = 0, 200
+
+        fig = make_subplots(rows=1, cols=2, subplot_titles=["INPUT density", "OUTPUT density"])
+        fig.add_trace(
+            go.Histogram2dContour(
+                x=context["az_i"],
+                y=context["ran_i"],
+                colorscale="Blues",
+                ncontours=18,
+                contours=dict(coloring="heatmap", showlines=True),
+                name="INPUT",
+                showscale=True,
+                colorbar=dict(title="Input density"),
+            ),
+            row=1,
+            col=1,
+        )
+        fig.add_trace(
+            go.Histogram2dContour(
+                x=context["az_o"],
+                y=context["ran_o"],
+                colorscale="Turbo",
+                ncontours=18,
+                contours=dict(coloring="heatmap", showlines=True),
+                name="OUTPUT",
+                showscale=True,
+                colorbar=dict(title="Output density"),
+            ),
+            row=1,
+            col=2,
+        )
+        fig.update_xaxes(title_text="Azimuth (deg)", row=1, col=1, range=[az_min, az_max])
+        fig.update_xaxes(title_text="Azimuth (deg)", row=1, col=2, range=[az_min, az_max])
+        fig.update_yaxes(title_text="Range", row=1, col=1, range=[ran_min, ran_max])
+        fig.update_yaxes(title_text="Range", row=1, col=2, range=[ran_min, ran_max])
+        fig.update_layout(title=f"{signal_name} Heatmap / Density Contours (shared scale)")
+        return f"hist_fig_{signal_name}_density_contour", fig
+
+    def histogram_scanindex_density_contour_animated(self, signal_name, data_dict, shared_data, lock):
+        context = self._build_radar_context(signal_name, data_dict, shared_data)
+        if context is None:
+            return None, None
+
+        all_az = np.concatenate([context["az_i"], context["az_o"]])
+        all_ran = np.concatenate([context["ran_i"], context["ran_o"]])
+        all_el = np.concatenate([context["el_i"], context["el_o"]])
+        finite_mask = np.isfinite(all_az) & np.isfinite(all_ran)
+        if np.any(finite_mask):
+            all_az_f = all_az[finite_mask]
+            all_ran_f = all_ran[finite_mask]
+            az_min, az_max = np.nanpercentile(all_az_f, [1, 99])
+            ran_min, ran_max = np.nanpercentile(all_ran_f, [1, 99])
+        else:
+            az_min, az_max = -90, 90
+            ran_min, ran_max = 0, 200
+
+        finite_el = all_el[np.isfinite(all_el)]
+        if finite_el.size:
+            el_min, el_max = np.nanpercentile(finite_el, [1, 99])
+        else:
+            el_min, el_max = -30, 30
+
+        dark_blue_scale = [
+            [0.0, "#050816"],
+            [0.35, "#0b1f4d"],
+            [0.7, "#145da0"],
+            [1.0, "#56cfe1"],
+        ]
+
+        unique_scans = np.unique(context["si_i"].astype(int))
+        if unique_scans.size == 0:
+            return None, None
+
+        if unique_scans.size > 40:
+            unique_scans = unique_scans[np.linspace(0, unique_scans.size - 1, 40, dtype=int)]
+
+        first_scan = int(unique_scans[0])
+        m_i0 = context["si_i"].astype(int) == first_scan
+        m_o0 = context["si_o"].astype(int) == first_scan
+
+        fig = make_subplots(rows=1, cols=2, subplot_titles=["INPUT by scan", "OUTPUT by scan"])
+        fig.add_trace(
+            go.Scatter(
+                x=context["az_i"][m_i0],
+                y=context["ran_i"][m_i0],
+                mode="markers",
+                marker=dict(
+                    size=6,
+                    color=context["el_i"][m_i0],
+                    cmin=el_min,
+                    cmax=el_max,
+                    colorscale=dark_blue_scale,
+                    colorbar=dict(title="Elevation"),
+                    opacity=0.82,
+                ),
+                name="INPUT",
+            ),
+            row=1,
+            col=1,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=context["az_o"][m_o0],
+                y=context["ran_o"][m_o0],
+                mode="markers",
+                marker=dict(
+                    size=6,
+                    color=context["el_o"][m_o0],
+                    cmin=el_min,
+                    cmax=el_max,
+                    colorscale=dark_blue_scale,
+                    showscale=False,
+                    opacity=0.82,
+                ),
+                name="OUTPUT",
+            ),
+            row=1,
+            col=2,
+        )
+
+        frames = []
+        for scan in unique_scans:
+            scan = int(scan)
+            m_i = context["si_i"].astype(int) == scan
+            m_o = context["si_o"].astype(int) == scan
+            frames.append(
+                go.Frame(
+                    name=str(scan),
+                    data=[
+                        go.Scatter(
+                            x=context["az_i"][m_i],
+                            y=context["ran_i"][m_i],
+                            marker=dict(
+                                color=context["el_i"][m_i],
+                                cmin=el_min,
+                                cmax=el_max,
+                                colorscale=dark_blue_scale,
+                            ),
+                        ),
+                        go.Scatter(
+                            x=context["az_o"][m_o],
+                            y=context["ran_o"][m_o],
+                            marker=dict(
+                                color=context["el_o"][m_o],
+                                cmin=el_min,
+                                cmax=el_max,
+                                colorscale=dark_blue_scale,
+                            ),
+                        ),
+                    ],
+                )
+            )
+        fig.frames = frames
+
+        fig.update_layout(
+            title=f"{signal_name} Density Without/With Animation by scanindex",
+            xaxis_title="Azimuth (deg)",
+            yaxis_title="Range",
+            xaxis2_title="Azimuth (deg)",
+            yaxis2_title="Range",
+            xaxis=dict(range=[az_min, az_max]),
+            yaxis=dict(range=[ran_min, ran_max]),
+            xaxis2=dict(range=[az_min, az_max]),
+            yaxis2=dict(range=[ran_min, ran_max]),
+            updatemenus=[{
+                "type": "buttons",
+                "showactive": False,
+                "buttons": [
+                    {
+                        "label": "Play",
+                        "method": "animate",
+                        "args": [None, {"frame": {"duration": 300, "redraw": True}, "fromcurrent": True}],
+                    },
+                    {
+                        "label": "Pause",
+                        "method": "animate",
+                        "args": [[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate"}],
+                    },
+                ],
+            }],
+            sliders=[{
+                "active": 0,
+                "steps": [
+                    {
+                        "label": str(scan),
+                        "method": "animate",
+                        "args": [[str(scan)], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                    }
+                    for scan in unique_scans
+                ],
+            }],
+        )
+        return f"hist_fig_{signal_name}_density_animated", fig
+
+    def histogram_scanindex_object_count_line(self, signal_name, data_dict, shared_data, lock):
+        context = self._build_radar_context(signal_name, data_dict, shared_data)
+        if context is None:
+            return None, None
+
+        si_i = context["si_i"].astype(int)
+        si_o = context["si_o"].astype(int)
+        unique_scan = np.unique(np.concatenate([si_i, si_o]))
+        in_counts = np.array([np.count_nonzero(si_i == scan) for scan in unique_scan], dtype=int)
+        out_counts = np.array([np.count_nonzero(si_o == scan) for scan in unique_scan], dtype=int)
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=unique_scan, y=in_counts, mode="lines+markers", name="INPUT objects", line=dict(color="green")))
+        fig.add_trace(go.Scatter(x=unique_scan, y=out_counts, mode="lines+markers", name="OUTPUT objects", line=dict(color="red")))
+        fig.update_layout(
+            title=f"{signal_name} Object Count per scanindex",
+            xaxis_title="scanindex",
+            yaxis_title="Number of objects",
+        )
+        return f"hist_fig_{signal_name}_object_count_line", fig
