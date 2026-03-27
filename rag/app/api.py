@@ -50,7 +50,8 @@ class RagApi:
             try:
                 answer = self.query_graph.run(question, history=session_messages)
             except Exception as exc:
-                return jsonify({"error": str(exc)}), 500
+                message = (str(exc) or repr(exc)).strip()
+                return jsonify({"error": message, "type": exc.__class__.__name__}), 500
 
             session_messages.append({"role": "user", "content": question})
             session_messages.append({"role": "assistant", "content": answer})

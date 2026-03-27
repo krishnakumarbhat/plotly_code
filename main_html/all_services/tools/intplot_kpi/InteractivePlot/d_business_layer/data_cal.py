@@ -17,6 +17,7 @@ class DataCalculations:
         self._data_frame_cache = {}
         self._range_scatter_min = 0.0
         self._range_scatter_max = 1e6
+        self._exp_scatter_threshold = 1e5
 
     def set_stream_name(self, stream_name: str) -> None:
         """
@@ -219,6 +220,41 @@ class DataCalculations:
         filtered_output = np.where(output_plot_mask[combined_mask], output_arr[combined_mask], np.nan)
         return filtered_scan, filtered_input, filtered_output
 
+    def _replace_exponential_scatter_values(self, signal_name, i_vals, o_vals):
+        input_arr = np.asarray(i_vals, dtype=float)
+        output_arr = np.asarray(o_vals, dtype=float)
+
+        input_exp = np.isfinite(input_arr) & (np.abs(input_arr) > self._exp_scatter_threshold)
+        output_exp = np.isfinite(output_arr) & (np.abs(output_arr) > self._exp_scatter_threshold)
+        replaced = int(np.count_nonzero(input_exp) + np.count_nonzero(output_exp))
+
+        if replaced > 0:
+            logging.info(
+                "Replaced %d exponential scatter points for '%s' (|value| > %s) with 0.0.",
+                replaced,
+                signal_name,
+                self._exp_scatter_threshold,
+            )
+
+        input_clean = np.where(input_exp, 0.0, input_arr)
+        output_clean = np.where(output_exp, 0.0, output_arr)
+        return input_clean, output_clean
+
+    def _scatter_placeholder(self, signal_name, first_label="INPUT", second_label="OUTPUT", plot_label="IN/OUT"):
+        fig_id = f"scatter_fig_{signal_name}"
+        fig = PlotlyCharts.scatter_plot(
+            [0],
+            [0.0],
+            [0.0],
+            signal_name,
+            first_label,
+            second_label,
+            "red",
+            "blue",
+            plot_label,
+        )
+        return fig_id, fig
+
     def scatter_plot_vector_mean(self, signal_name, data_dict, shared_data, lock):
         si = data_dict.get("SI") if isinstance(data_dict, dict) else None
         i_vals = data_dict.get("I") if isinstance(data_dict, dict) else None
@@ -310,8 +346,12 @@ class DataCalculations:
 
         si, i_vals, o_vals = self._filter_range_scatter_outliers(signal_name, si, i_vals, o_vals)
         if len(si) == 0:
-            logging.warning(f"No valid points left after outlier filtering for scatter plot of {signal_name}")
-            return None, None
+            logging.warning(
+                "No valid points left after outlier filtering for scatter plot of %s; using zero placeholder.",
+                signal_name,
+            )
+            return self._scatter_placeholder(signal_name)
+        i_vals, o_vals = self._replace_exponential_scatter_values(signal_name, i_vals, o_vals)
 
         fig_id = f"scatter_fig_{signal_name}"
         fig = PlotlyCharts.scatter_plot(
@@ -351,6 +391,7 @@ class DataCalculations:
         fig_id = f"scatter_fig_{signal_name}"
         temp_dict_i = np.asarray(i_vals) * 3.6
         temp_dict_o = np.asarray(o_vals) * 3.6
+        temp_dict_i, temp_dict_o = self._replace_exponential_scatter_values(signal_name, temp_dict_i, temp_dict_o)
         fig = PlotlyCharts.scatter_plot(
             si,
             temp_dict_i,
@@ -410,8 +451,17 @@ class DataCalculations:
             allow_one_sided_fallback=True,
         )
         if len(scan_idx) == 0:
-            logging.warning(f"No valid points left after outlier filtering for scatter mismatch of {signal_name}")
-            return None, None
+            logging.warning(
+                "No valid points left after outlier filtering for scatter mismatch of %s; using zero mismatch placeholder.",
+                signal_name,
+            )
+            fig_id, fig = self._scatter_placeholder(
+                signal_name,
+                first_label="MISMATCH",
+                second_label="output mismatch",
+                plot_label="MISMATCH",
+            )
+            return fig_id, fig
 
         # Calculate mismatch conditions with tolerance (for float comparisons)
         tol = {"ran": 0.1, "vel": 0.015, "phi": 0.00873, "theta": 0.00873, "snr": 0, "rcs": 0}.get(signal_name, 0)

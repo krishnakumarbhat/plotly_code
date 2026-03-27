@@ -7,6 +7,7 @@ import math
 import shutil
 from pathlib import Path
 from typing import Dict, List
+import plotly.graph_objects as go
 from InteractivePlot.b_persistence_layer import hdf_parser
 from InteractivePlot.d_business_layer.data_prep import DataPrep
 from InteractivePlot.b_persistence_layer.Persensor_hdf_parser import PersensorHdfParser
@@ -57,6 +58,12 @@ class AllsensorHdfParser(PersensorHdfParser):
                     os.path.basename(input_file),
                     os.path.basename(output_file),
                     prerun_result.read_error,
+                )
+                self._write_read_error_placeholder_report(
+                    base_name=base_name,
+                    input_file=input_file,
+                    output_file=output_file,
+                    read_error=str(prerun_result.read_error),
                 )
                 continue
 
@@ -208,6 +215,63 @@ class AllsensorHdfParser(PersensorHdfParser):
                 logging.info(f"Per-base index created: {index_path}")
             except Exception:
                 logging.exception("Failed to create per-base index")
+
+    def _write_read_error_placeholder_report(self, base_name: str, input_file: str, output_file: str, read_error: str) -> None:
+        try:
+            report_dir = Path(self.output_dir) / base_name / "sensors" / "UNKNOWN" / "READ_ERROR"
+            report_dir.mkdir(parents=True, exist_ok=True)
+            report_path = report_dir / f"{base_name}_UNKNOWN_read_error_scatter.html"
+
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=[0],
+                    y=[0],
+                    mode="markers",
+                    name="INPUT",
+                    marker=dict(color="red", size=8),
+                )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=[0],
+                    y=[0],
+                    mode="markers",
+                    name="output mismatch",
+                    marker=dict(color="blue", size=8),
+                )
+            )
+            fig.update_layout(
+                title="Read-error fallback plot (0 placeholder)",
+                xaxis_title="Scan Index",
+                yaxis_title="Value",
+            )
+
+            meta = (
+                f"<p><b>Input:</b> {os.path.basename(input_file)}</p>"
+                f"<p><b>Output:</b> {os.path.basename(output_file)}</p>"
+                f"<p><b>Reason:</b> {read_error}</p>"
+                "<p><b>Note:</b> Source HDF could not be read, so a zero placeholder plot is generated.</p>"
+            )
+            html = (
+                "<!doctype html><html><head><meta charset='utf-8'><title>Read Error Placeholder</title></head><body>"
+                "<h1>Read Error Placeholder Report</h1>"
+                f"{meta}"
+                f"{fig.to_html(full_html=False, include_plotlyjs='inline')}"
+                "</body></html>"
+            )
+            report_path.write_text(html, encoding="utf-8")
+            logging.info("Created read-error placeholder report: %s", report_path)
+
+            try:
+                from InteractivePlot.e_presentation_layer.html_generator import HtmlGenerator
+
+                index_path = HtmlGenerator.create_base_index(self.output_dir, base_name)
+                logging.info("Per-base index updated after read-error fallback: %s", index_path)
+            except Exception:
+                logging.exception("Failed to refresh base index after read-error fallback")
+        except Exception:
+            logging.exception("Failed to create read-error placeholder report")
 
     def _run_sil_artifacts_once(self, input_file: str, output_file: str, base_name: str) -> None:
         base_folder = Path(self.output_dir) / base_name

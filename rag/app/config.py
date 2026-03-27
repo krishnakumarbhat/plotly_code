@@ -3,10 +3,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 class AppConfig:
     def __init__(self) -> None:
         self.project_root = Path(__file__).resolve().parents[1]
+        # Ensure local .env values are available when running via `python main.py`.
+        load_dotenv(self.project_root / ".env")
         self.data_dir = self.project_root / "data"
         self.sqlite_path = self.data_dir / "rag_logs.db"
         self.chroma_dir = self.data_dir / "chroma"
