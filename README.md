@@ -1,138 +1,235 @@
-# plotly_code 📊🔍
+# plotly_code
 
-[![CI](https://github.com/krishnakumarbhat/plotly_code/actions/workflows/ci.yml/badge.svg)](https://github.com/krishnakumarbhat/plotly_code/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+Integrated toolkit for automotive log processing and visualization. This repository contains multiple related tools:
 
-A **log viewer and data visualization** tool — renders HTML log files with integrated video playback, supports offline/online modes, and can be deployed on HPC clusters via Singularity containers.
+- CAN KPI report generation from HDF inputs
+- Interactive HTML/video log viewer (offline and online)
+- RAG-based assistant for querying ingested HTML logs with local models
+- HPC-oriented service packaging (Singularity images and helper scripts)
 
-## 🏗️ Architecture
+## Overview
+
+The codebase is organized as several runnable modules that share a similar workflow:
+
+1. Read source logs/configuration.
+2. Parse and transform data.
+3. Generate KPI/HTML outputs or serve web APIs.
+4. Optionally package and run on HPC infrastructure.
+
+## Architecture Diagram
 
 ```mermaid
-flowchart TD
-    subgraph Input["Data Sources"]
-        HTML_DIR[HTML Log Files]
-        VID_DIR[Video Files]
-    end
+flowchart LR
+        subgraph Inputs
+                HDF[HDF files]
+                HTML[HTML log trees]
+                VIDEO[Video files]
+                CFG[JSON/XML config]
+        end
 
-    subgraph Modes["Operation Modes"]
-        OFFLINE[Offline Mode\nPyInstaller Binary]
-        ONLINE[Online Mode\nFlask Web Server]
-        CLUSTER[Cluster Mode\nSingularity + Slurm]
-    end
+        subgraph CoreApps[Core Applications]
+                CKPI[can_kpi]
+                MHTML[main_html]
+                RAG[rag]
+                SZ[simg_zmq]
+        end
 
-    subgraph Processing["Processing Engine"]
-        MAIN[Main Parser]
-        BUILD[HTML Builder]
-        SERVE[Flask Server]
-    end
+        subgraph Services
+                WEB[Flask web apps]
+                JOBS[Slurm/Singularity scripts]
+                IDX[Vector/SQLite stores]
+        end
 
-    subgraph Output["Output"]
-        BROWSER[Web Browser\nInteractive Viewer]
-        FILE[Static HTML File]
-    end
+        subgraph Outputs
+                KPIHTML[KPI HTML reports]
+                VIEWER[Interactive log viewer]
+                CHAT[RAG chat responses]
+                IMG[Container images]
+        end
 
-    HTML_DIR --> MAIN
-    VID_DIR --> MAIN
-    MAIN --> OFFLINE
-    MAIN --> ONLINE
-    MAIN --> CLUSTER
-    OFFLINE --> BUILD --> FILE
-    ONLINE --> SERVE --> BROWSER
-    CLUSTER --> SERVE
+        HDF --> CKPI
+        CFG --> CKPI
+        HTML --> MHTML
+        VIDEO --> MHTML
+        HTML --> RAG
+        CFG --> RAG
+        CKPI --> KPIHTML
+        MHTML --> WEB
+        MHTML --> VIEWER
+        RAG --> WEB
+        RAG --> CHAT
+        RAG --> IDX
+        SZ --> WEB
+        SZ --> JOBS
+        JOBS --> IMG
 ```
 
-## 🚀 Features
+## Repository Structure
 
-- **Offline Mode** — Build standalone HTML viewers as single-file executables
-- **Online Mode** — Flask web server for LAN/cluster access
-- **Cluster Deployment** — Singularity container with Slurm job submission
-- **Cross-Platform** — Windows and Linux executables via PyInstaller
-- **Interactive** — HTML log browsing with integrated video playback
+```text
+plotly_code/
+    README.md
+    requirements.txt
+    .gitignore
 
-## 🛠️ Tech Stack
+    can_kpi/
+        kpi_main.py
+        kpi.json
+        a_persistence_layer/
+        b_data_storage/
+        c_business_layer/
+        d_presentation_layer/
 
-| Component | Technology                 |
-| --------- | -------------------------- |
-| Backend   | Python, Flask              |
-| Frontend  | HTML, Plotly.js            |
-| Packaging | PyInstaller                |
-| Cluster   | Singularity, Slurm         |
-| Build     | Spec files (Windows/Linux) |
+    main_html/
+        all_services/
+            app.py
+            main_html/
+            tools/
+            scripts/
+            simg/
+        code/
+            main.py
+            html_offline/
+            html_online/
+            singularity/
 
-## 📦 Installation
+    rag/
+        main.py
+        run.py
+        app/
+        tests/
+        tools/
+        data/
+        model/
 
-### Python (Online Mode)
+    simg_zmq/
+        app.py
+        main_html/
+        rag/
+        scripts/
+        simg_sh_hpcc/
+```
+
+## Component Details
+
+### 1) `can_kpi`
+
+Purpose: generate KPI HTML reports from configured HDF input/output pairs.
+
+Key entrypoint:
+
+- `can_kpi/kpi_main.py`
+
+Run example:
+
+```bash
+python can_kpi/kpi_main.py can_kpi/kpi.json can_kpi/out_html
+```
+
+What it produces:
+
+- Per-pair HTML reports
+- `index.html` summary page linking generated reports
+
+### 2) `main_html`
+
+Purpose: HTML/video log viewing and service orchestration for offline/online/HPC usage.
+
+Key paths:
+
+- `main_html/code/main.py` (viewer tooling entry)
+- `main_html/all_services/app.py` (service launcher)
+- `main_html/code/singularity/` (image and job scripts)
+
+Common operations:
 
 ```bash
 pip install -r requirements.txt
-cd main_html/code
-python main.py --serve [html_root] [video_root] --host 0.0.0.0 --port 5000
+python main_html/all_services/app.py
 ```
 
-### Build Executables
+### 3) `rag`
+
+Purpose: local-model RAG service for ingesting HTML logs and answering questions.
+
+Key entrypoints:
+
+- `rag/main.py`
+- `rag/run.py`
+
+Common operations:
 
 ```bash
-# Linux
-pip install pyinstaller
-pyinstaller main_html/code/log_viewer_linux.spec
+pip install -r rag/requirements.txt
+python rag/main.py --scrap "C:\path\to\html_root" --embed --reset-index
+python rag/main.py --talk
+```
 
+Default local endpoint:
+
+- `http://127.0.0.1:5000/`
+
+### 4) `simg_zmq`
+
+Purpose: HPC-oriented wrapper workspace combining web services, RAG, and container scripts.
+
+Key entrypoint:
+
+- `simg_zmq/app.py`
+
+## Setup
+
+## Prerequisites
+
+- Python 3.10+ recommended
+- Git
+- Optional: Singularity/Apptainer and Slurm for HPC deployment
+
+## Local Setup
+
+```bash
+python -m venv .venv
 # Windows
-pyinstaller main_html/code/log_viewer_windows.spec
+.venv\Scripts\activate
+# Linux/macOS
+source .venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
-## ▶️ Usage
+## Data and Git Policy (Important)
+
+This repository is configured to keep heavy artifacts out of Git.
+
+- Keep only lightweight source/config/test data in Git.
+- Do not commit model binaries, vector databases, containers, executables, or build outputs.
+- Target rule: keep committed files under `100 MB`.
+
+Quick check before commit:
 
 ```bash
-# Offline — generate static viewer
-./log_viewer <html_root> <video_root> [output.html]
-
-# Online — start web server
-python main.py --serve db/html db/video --host 0.0.0.0 --port 5000
-
-# Cluster — Slurm job
-sbatch slurm_log_viewer.sh
+git ls-files | xargs -I{} sh -c 'test -f "{}" && ls -l "{}"' | sort -k5 -nr | head
 ```
 
-## 📁 Project Structure
+On PowerShell:
 
-```
-plotly_code/
-├── main_html/
-│   ├── code/
-│   │   ├── main.py                  # Entry point
-│   │   ├── readme.md                # Build instructions
-│   │   ├── log_viewer_linux.spec    # Linux PyInstaller spec
-│   │   ├── log_viewer_windows.spec  # Windows PyInstaller spec
-│   │   ├── singularity/            # Cluster deployment
-│   │   │   ├── build_image.sh
-│   │   │   ├── run_log_viewer.sh
-│   │   │   └── slurm_log_viewer.sh
-│   │   ├── db/                     # Database/data store
-│   │   ├── html_offline/           # Offline HTML templates
-│   │   └── html_online/            # Online server templates
-│   └── all_services/               # Service modules
-├── requirements.txt
-├── .github/workflows/              # CI/CD pipeline
-├── .gitignore
-└── README.md
+```powershell
+git ls-files | ForEach-Object {
+    if (Test-Path $_) {
+        $f = Get-Item $_
+        if (-not $f.PSIsContainer) {
+            [PSCustomObject]@{Path=$_; SizeMB=[math]::Round($f.Length/1MB, 2)}
+        }
+    }
+} | Sort-Object SizeMB -Descending | Select-Object -First 20
 ```
 
-## 🖥️ Cluster Deployment
+## Development Notes
 
-### Build Singularity Image
+- There are multiple independent `requirements.txt` files under subprojects.
+- Prefer installing per-subproject dependencies when working in a specific module.
+- Large runtime data is intentionally ignored by `.gitignore`.
 
-```bash
-bash main_html/code/singularity/build_image.sh
-```
+## License
 
-### Submit Slurm Job
-
-```bash
-sbatch slurm_log_viewer.sh
-# Check: squeue -u $USER
-# Access: http://<node-ip>:5000/
-```
-
-## 📝 License
-
-MIT License
+No explicit license file is currently present at repository root. Add a `LICENSE` file if distribution terms are required.

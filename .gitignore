@@ -1,16 +1,16 @@
-# Byte-compiled / optimized / DLL files
+# Python cache/bytecode
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
+# Build and packaging outputs
 build/
 dist/
+bin/
 *.egg-info/
 *.egg
-
-# PyInstaller
-.spec
+*.stackdump
+*.pkg
 
 # Virtual environments
 .venv/
@@ -19,45 +19,61 @@ venv/
 env/
 ENV/
 
-# IDEs
+# IDE/editor metadata
 .vscode/
 .idea/
+*/.vscode/settings.json
+.vscode/launch.json
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Cache for HTML viewer
+# Environment files
+.env
+.env.*
+!.env.template
+
+# Local app/cache outputs
 .cache_html/
-*.html
-*.csv
-*/.vscode/settings.json
-*__pycache__
-*.pyc
-.idea
-.vscode/launch.json
+logs/
+*.log
+
+# Generated media/database outputs
+db/html/
+db/video/
+**/db/html/
+**/db/video/
+
+# Executables and installers
+*.exe
+log_viewer_online*
+
+# Containers and heavy runtime artifacts
+*.simg
+*.sif
+*.img
+*.safetensors
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.bin
+
+# Large data/model stores (keep out of git)
+rag/model/
+rag/data/chroma/
+rag/data/vector_store/
+simg_zmq/rag/model/
+simg_zmq/rag/data/chroma/
+simg_zmq/rag/data/vector_store/
+main_html/all_services/simg/
+simg_zmq/simg_sh_hpcc/*.simg
+
+# Legacy/local workspace paths
+gen7v2_resim_kpi_scripts/log_path.txt
+gen7v2_resim_kpi_scripts/meta_data.txt
 /profile_timing_plotter/.idea/
 /profile_timing_plotter/venv/
 /gen7v2_resim_kpi_scripts/venv/
 /gen7v2_resim_kpi_scripts/.idea/
-gen7v2_resim_kpi_scripts/log_path.txt
-gen7v2_resim_kpi_scripts/meta_data.txt
-
-# Large artifacts (do not commit)
-*.simg
-*.sif
-*.safetensors
-
-# Ignore generated html_db in all_services/simg
-/all_services/simg/html_db/
-Copy/dist/
-db/html/
-bin/
-*.exe
-*.stackdump
-
-# User-requested exclusions and large artifact patterns
-/main_html/all_services/tools/intplot_kpi/
-*.pkg
-log_viewer_online*
-build/log_viewer_online_linux/
