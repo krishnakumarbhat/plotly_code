@@ -1,0 +1,15 @@
+108
+12
+0
+0
+int timerNameInfo.timerIndex
+REPEAT52
+char timerNameInfo.timerName
+END_REPEAT
+REPEAT52
+char timerNameInfo.moduleName
+END_REPEAT
+REPEATDYN
+double timer.total_time
+int timer.numOccurences
+END_REPEAT

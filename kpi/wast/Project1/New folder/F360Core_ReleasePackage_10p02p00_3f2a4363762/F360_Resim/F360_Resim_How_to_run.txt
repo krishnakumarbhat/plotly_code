@@ -1,0 +1,89 @@
+ F360 RESIM INSTRUCTIONS
+ -----------------------
+
+There are two ways to run the F360 resim (At this point):
+1. Run single log through resim.
+2. Run sequence of continous logs resim.
+3. Process multiple single logs thorough using batch program (non-continous).
+
+
+1). Running single log at a time
+   ------------------------------
+ HELP USAGE:  resim_f360 -help                              
+ RESIM USAGE: resim_f360 <dvlog_basename>.dvl -f360trkopt -ini <ini_file> -endopt           
+
+ For more details on options, please check 'HELP_F360_Resim.txt'
+ (Some of the important options are explained below with an example).
+
+ EXAMPLES:
+ -------- 
+ resim_f360.exe "C:\DVL_file_001.dvl" -f360trk
+ resim_f360.exe "C:\DVL_file_001.dvl" -f360trkopt -ini "C:\F360Tracker.ini" -endopt
+ 
+    "-ini"  The INI file option used to provide the vehicle specific sensor mount calibrations and options. 
+            If an INI file is not provided, then default sensor mount and radar calibrations will be used.
+            (Sample INI files are provided in the resim release folder).
+
+The output of the resim will stored in a directory with the <ResimTag> name of the resim and tracker version, 
+e.g. "rRf360t1090201v113". (Refer to the release notes or help file for a 
+description of how the resim directory name represents the resim version).
+
+The resim will generate 3 output files for every log processed with the folowing extension:
+
+  "*.dvl"       - output resim DVL CAN file
+  "*.mudp"      - output resim UDP stream log file. 
+  "_TrkOpt.txt" - output text file with radar and tracker calibrations used for the resim.
+     
+
+2). Run a sequence of continuous logs
+    ---------------------------------
+
+ RESIM USAGE: resim_f360 <dvlog_basename>[increment].dvl -f360trkopt -ini <ini_file> -endopt
+
+ resim_f360.exe "C:\DVL_file_[001].dvl" -nfiles 5 -f360trkopt -ini "C:\F360Tracker.ini" -endopt // 5 files starting from 001
+ resim_f360.exe "C:\DVL_file_[003].dvl" -nfiles 2 -f360trkopt -ini "C:\F360Tracker.ini" -endopt // 2 files starting from 003
+ resim_f360.exe "C:\DVL_file_[001].dvl" -nfiles 0 -f360trkopt -ini "C:\F360Tracker.ini" -endopt // All files in folder starting from 001 (Up to 300)
+
+3). Run a sequence of continuous logs from a filelist
+    -------------------------------------------------
+
+ RESIM USAGE: resim_f360 <filelist_name>.dvl -filelist -f360trkopt -ini <ini_file> -endopt
+
+ resim_f360.exe "C:\DVL_filelist.txt" -filelist // Process all logs in filelist.
+ resim_f360.exe "C:\DVL_filelist.txt" -filelist -f360trkopt -ini "C:\F360Tracker.ini" -endopt
+
+
+4). Running multiple logs through a batch program (non-continous)
+    -------------------------------------------------------------
+USAGE: Dir_Full_Resim_non_continuous.bat [-dir "data-dir"] [-filelist "files.txt"] [-rsarchive "archive-dir"] [-ini "ini-file"] [-batch _x]
+
+Runs F360 tracker resim on all dvlogs in the current directory
+
+OPTIONAL BATCH FILE COMMAND LINE ARGUMENTS:
+-dir       <directory>   = dvl data directory where logfiles reside
+                           (default is current folder where you execute this .bat)
+
+-filelist  <flist>       = text file with list of log files to process (filenames without path, ending in ".dvl")
+                           (default is "dvlfiles.txt", populated automatically by the script: all ".dvl" files in target folder)
+
+-rsarchive <archivedir>  = resim application folder where resim release is stored
+                           (default is current folder where you execute this .bat)
+
+-ini <inifile>           = INI filename (don't supply a path for the INI file; it is assumed to be in folder %rs_archive%)
+                           (default is no INI file)
+
+-batch <thread number>   = thread number when running batch program in multi-threaded mode
+
+Examples:
+Dir_Full_Resim_non_continuous.bat -dir "c:\cwm1\data" -ini "F360Tracker.ini"
+Dir_Full_Resim_non_continuous.bat -dir "c:\cwm1\data" -rs_archive "C:\release_folder" -ini "F360Tracker.ini"
+Dir_Full_Resim_non_continuous.bat -filelist "c:\test\seqfiles.txt" 
+Dir_Full_Resim_non_continuous.bat -dir "..\Malibu" -filelist "c:\test\myfiles.txt" 
+Dir_Full_Resim_non_continuous.bat -rsarchive "C:\projects\scania\rsarchive\d6p00_rEh418001a424001d355010v1401"
+
+Batch file checks to see that DVLogs exist in the specified path before preceding.
+It produces "dvlfiles.txt" which contains list of files on which it ran the resim.
+It also produces "F360_tracker_resim_rsout.txt" which records the console output when running all the resims
+
+
+-----------------------------------------------------------------------------

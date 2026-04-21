@@ -1,0 +1,160 @@
+2564
+float sensor_calib.initial_ka.ka_speed_calibration
+float sensor_calib.initial_ka.ka_yaw_rate_bias_dps
+bool sensor_calib.initial_ka.ka_values_initialized
+REPEAT3
+uint8_t sensor_calib.initial_ka.reserved
+END_REPEAT
+float sensor_calib.vehicle.dist_from_rear_axle_to_vcs_m
+float sensor_calib.vehicle.rear_corner_compliance
+float sensor_calib.vehicle.steer_gear_ratio
+float sensor_calib.vehicle.wheelbase_m
+float sensor_calib.vehicle.understeer_coefficient
+float sensor_calib.vehicle.vehicle_width_m
+float sensor_calib.vehicle.vehicle_length_m
+float sensor_calib.vehicle.cog_x
+float sensor_calib.vehicle.cog_y
+float sensor_calib.vehicle.front_wheel_radius_m
+float sensor_calib.vehicle.front_track_width_m
+float sensor_calib.vehicle.speed_correction_factor
+uint32_t sensor_calib.vehicle.raw_host_signal_latency_ms
+int32_t sensor_calib.vehicle.f_cals_initialized
+bool sensor_calib.vehicle.f_enable_internal_reflections_func
+bool sensor_calib.vehicle.f_enable_internal_reflections_func_trailer
+REPEAT2
+uint8_t sensor_calib.vehicle.reserved
+END_REPEAT
+float sensor_calib.vision.vcs_camera_long_m
+float sensor_calib.vision.vcs_camera_lat_m
+float sensor_calib.vision.veh_width_m
+float sensor_calib.vision.camera_height_m
+float sensor_calib.vision.camera_boresight_angle_deg
+float sensor_calib.vision.camera_yaw
+float sensor_calib.vision.camera_horizon
+float sensor_calib.vision.pixels_per_deg
+int sensor_calib.vision.focal_length
+int sensor_calib.vision.camera_dist_lwheel_mm
+int sensor_calib.vision.camera_dist_rwheel_mm
+int sensor_calib.vision.f_camera_available
+int sensor_calib.vision.f_camera_cals_initialized
+SensorTypes sensor_calib.vision.camera_type
+REPEAT12
+SensorTypes sensor_calib.radar.sensor_type
+bool sensor_calib.radar.f_use_radar
+bool sensor_calib.radar.f_radar_available
+bool sensor_calib.radar.f_radar_cals_initialized
+uint8_t sensor_calib.radar.reserved_1
+ReceiveProtocol sensor_calib.radar.receive_protocol
+bool sensor_calib.radar.f_multi_mode
+bool sensor_calib.radar.f_read_cdc_data
+REPEAT2
+uint8_t sensor_calib.radar.reserved_2
+END_REPEAT
+F360_MOUNT_LOC sensor_calib.radar.mount_location
+float sensor_calib.radar.vcs_lat_m
+float sensor_calib.radar.vcs_long_m
+float sensor_calib.radar.vcs_vert_m
+float sensor_calib.radar.boresight_azimuth_angle_deg
+float sensor_calib.radar.boresight_elevation_angle_deg
+int sensor_calib.radar.radar_polarity
+bool sensor_calib.radar.f_mount_pos_from_CAN
+bool sensor_calib.radar.f_alignment_from_CAN
+REPEAT2
+uint8_t sensor_calib.radar.reserved_3
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.fov_min_az_deg
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.fov_max_az_deg
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.fov_min_el_deg
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.fov_max_el_deg
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.range_limits
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.min_aliaised_range_rate
+END_REPEAT
+REPEAT4
+float sensor_calib.radar.rng_rate_interval_widths
+END_REPEAT
+REPEAT4
+bool sensor_calib.radar.f_range_limits_from_CAN
+END_REPEAT
+REPEAT4
+bool sensor_calib.radar.f_rng_rate_interval_from_CAN
+END_REPEAT
+REPEAT4
+bool sensor_calib.radar.f_min_aliased_range_rate_from_CAN
+END_REPEAT
+float sensor_calib.radar.ka_radar_initial_alignment_deg_az
+float sensor_calib.radar.ka_radar_initial_alignment_deg_el
+float sensor_calib.radar.ka_radar_initial_speed_correction_factor
+int sensor_calib.radar.ka_radar_alignment_converged_flag
+END_REPEAT
+unsigned char sensor_calib.f_report_objects_in_priority_order
+unsigned char sensor_calib.f_close_alignment_loop
+REPEAT2
+uint8_t sensor_calib.reserved
+END_REPEAT
+T360VehDataSource_T can_info.vehDataSource
+int can_info.vcan_channel
+int can_info.vcan_bus_speed
+int can_info.vcan_eucd_version
+int can_info.tracker_output_channel
+int can_info.tracker_output_bus_speed
+REPEAT12
+int can_info.sensor_canBus_channel
+END_REPEAT
+REPEAT12
+int can_info.sensor_canBus_speed
+END_REPEAT
+int can_info.max_canBus_channel
+bool can_info.f_use_CANFD
+bool can_info.f_read_BRR
+bool can_info.f_read_CDC
+bool can_info.f_old_ini_format
+bool can_info.f_gateway_vehicle_signals
+REPEAT3
+uint8_t can_info.reserved
+END_REPEAT
+bool log_opt.log_cslp_info
+bool log_opt.log_tracker_info
+bool log_opt.log_vehicle_info
+bool log_opt.log_proc_dets
+bool log_opt.log_all_objects
+bool log_opt.log_timing_info
+bool log_opt.log_align_info
+bool log_opt.log_diag_info
+bool log_opt.log_partial_blockage_info
+bool log_opt.log_static_env_polys
+bool log_opt.log_tracker_internal
+bool log_opt.log_vru_data
+bool log_opt.log_oal_data
+bool log_opt.log_vse_internal_data
+bool log_opt.log_unified_output
+bool log_opt.log_debug_timers
+bool log_opt.log_debug_probes
+bool log_opt.log_compact_objects
+bool log_opt.log_dets_out
+bool log_opt.log_proc_dets_by_sensor
+bool log_opt.log_reduced_objects
+REPEAT3
+bool log_opt.reserved
+END_REPEAT
+int32_t proc_opt.trackerID
+int32_t proc_opt.timer_period_in_ms
+bool proc_opt.f_use_timer
+bool proc_opt.f_read_BRR
+bool proc_opt.f_read_CDC
+bool proc_opt.f_VRU_Classifier
+bool proc_opt.f_run_oal
+bool proc_opt.f_run_iso_oal
+bool proc_opt.f_use_vse_buffer
+uint8_t proc_opt.reserved
+int32_t align_cmd

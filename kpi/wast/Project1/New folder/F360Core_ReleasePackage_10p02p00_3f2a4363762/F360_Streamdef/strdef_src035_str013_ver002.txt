@@ -1,0 +1,20 @@
+48
+float global_time_sync_s
+float timestamp_s
+float raw_speed
+float raw_yaw_rate_rad
+float steering_wheel_angle_rad
+float road_wheel_angle_rad
+float lat_accel
+float long_accel
+float speed_correction_factor
+uint8_t reverse_gear
+uint8_t prndl
+uint8_t speed_qf
+uint8_t yaw_rate_qf
+uint8_t steering_wheel_angle_qf
+uint8_t road_wheel_angle_qf
+uint8_t lat_accel_qf
+uint8_t long_accel_qf
+uint8_t speed_correction_factor_qf
+PADDING3

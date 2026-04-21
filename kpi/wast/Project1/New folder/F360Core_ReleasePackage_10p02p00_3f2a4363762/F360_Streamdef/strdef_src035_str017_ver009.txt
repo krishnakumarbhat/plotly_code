@@ -1,0 +1,136 @@
+38388
+REPEAT125
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_animal
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_bicycle
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_car
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_hazard
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_motorcycle
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_pedestrian
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_truck
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_unknown
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_underdrivable
+uint8_t adapted_output.bmw_object_list.object_list.classification.class_overdrivable
+REPEAT2
+uint8_t adapted_output.bmw_object_list.object_list.classification.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.covariance_xy
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.x
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.x_std_dev
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.y
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.y_std_dev
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.acceleration_absolute.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.covariance_xy
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.x
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.x_std_dev
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.y
+float adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.y_std_dev
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.acceleration_relative.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.dynamics.orientation_rate.mean
+float adapted_output.bmw_object_list.object_list.dynamics.orientation_rate.std_dev
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.orientation_rate.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.orientation_rate.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.covariance_xy
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.x
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.x_std_dev
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.y
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.y_std_dev
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.velocity_absolute.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.covariance_xy
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.x
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.x_std_dev
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.y
+float adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.y_std_dev
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.dynamics.velocity_relative.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.existence.existence_ppv
+float adapted_output.bmw_object_list.object_list.existence.existence_probability
+uint8_t adapted_output.bmw_object_list.object_list.existence.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.existence.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.position.covariance_xy
+float adapted_output.bmw_object_list.object_list.position.orientation
+float adapted_output.bmw_object_list.object_list.position.orientation_std_dev
+float adapted_output.bmw_object_list.object_list.position.x
+float adapted_output.bmw_object_list.object_list.position.x_std_dev
+float adapted_output.bmw_object_list.object_list.position.y
+float adapted_output.bmw_object_list.object_list.position.y_std_dev
+uint8_t adapted_output.bmw_object_list.object_list.position.invalid_flags
+uint8_t adapted_output.bmw_object_list.object_list.position.reference_point
+REPEAT2
+uint8_t adapted_output.bmw_object_list.object_list.position.UNUSED
+END_REPEAT
+float adapted_output.bmw_object_list.object_list.shape.length.edge.mean
+float adapted_output.bmw_object_list.object_list.shape.length.edge.std_dev
+uint8_t adapted_output.bmw_object_list.object_list.shape.length.edge.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.shape.length.edge.UNUSED
+END_REPEAT
+uint32_t adapted_output.bmw_object_list.object_list.shape.length.status
+float adapted_output.bmw_object_list.object_list.shape.width.edge.mean
+float adapted_output.bmw_object_list.object_list.shape.width.edge.std_dev
+uint8_t adapted_output.bmw_object_list.object_list.shape.width.edge.invalid_flags
+REPEAT3
+uint8_t adapted_output.bmw_object_list.object_list.shape.width.edge.UNUSED
+END_REPEAT
+uint32_t adapted_output.bmw_object_list.object_list.shape.width.status
+uint32_t adapted_output.bmw_object_list.object_list.summary.id
+uint16_t adapted_output.bmw_object_list.object_list.summary.age
+uint8_t adapted_output.bmw_object_list.object_list.summary.status_measurement
+uint8_t adapted_output.bmw_object_list.object_list.summary.status_movement
+uint16_t adapted_output.bmw_object_list.object_list.status_sensor
+uint16_t adapted_output.bmw_object_list.object_list.UNUSED
+END_REPEAT
+uint32_t adapted_output.bmw_object_list.timestamp.fractional_seconds
+uint32_t adapted_output.bmw_object_list.timestamp.seconds
+uint8_t adapted_output.bmw_object_list.timestamp.sync_status
+REPEAT3
+uint8_t adapted_output.bmw_object_list.timestamp.UNUSED
+END_REPEAT
+REPEAT4
+uint32_t adapted_output.bmw_object_list.timestamp_detections.fractional_seconds
+uint32_t adapted_output.bmw_object_list.timestamp_detections.seconds
+uint8_t adapted_output.bmw_object_list.timestamp_detections.sync_status
+REPEAT3
+uint8_t adapted_output.bmw_object_list.timestamp_detections.UNUSED
+END_REPEAT
+END_REPEAT
+uint32_t adapted_output.bmw_object_list.counter
+uint32_t adapted_output.bmw_object_list.crc
+uint32_t adapted_output.bmw_object_list.dataID
+uint32_t adapted_output.bmw_object_list.event_data_qualifier
+uint16_t adapted_output.bmw_object_list.length
+uint8_t adapted_output.bmw_object_list.extended_qualifier
+uint8_t adapted_output.bmw_object_list.number_of_objects
+bool adapted_output.internal_tracker_error_fault
+PADDING3
+REPEAT3072
+uint16_t BMW_object_to_detections_association.detection_id
+uint16_t BMW_object_to_detections_association.BMW_objectID
+END_REPEAT
+bool OAL_SCL_info.input_faults.distance_to_rear_axle_is_invalid
+bool OAL_SCL_info.input_faults.time_us_no_increase
+bool OAL_SCL_info.input_faults.cnt_loops_no_increase
+uint8_t OAL_SCL_info.input_faults.padding
+bool OAL_SCL_info.output_faults.bmw_obj_list_id_is_invalid
+REPEAT3
+uint8_t OAL_SCL_info.output_faults.padding
+END_REPEAT
+int32_t OAL_SCL_info.scl_output_faults.fault_status
+bool OAL_SCL_info.scl_output_faults.should_reset
+REPEAT3
+uint8_t OAL_SCL_info.scl_output_faults.padding
+END_REPEAT

@@ -1,0 +1,10 @@
+{
+    "INPUT": [
+
+         "C:/Users/ouymc2/Desktop/csv_script/DEV_X8310_235_SDV_4SRad_20240916_124820_010_ESW-SRad9.0_Aptiv_RL_UDP_GEN7_RDD_CORE.csv"
+    ],
+    "OUTPUT": [
+        "C:/Users/ouymc2/Desktop/csv_script/DEV_X8310_235_SDV_4SRad_20240916_124820_010_ESW-SRad9.0_Aptiv_r000900152_RL_UDP_GEN7_RDD_CORE.csv"      
+       
+    ]
+}

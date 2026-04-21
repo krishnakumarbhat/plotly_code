@@ -1,0 +1,4 @@
+{
+    "INPUT_HDF": ["hdf_dc.h5"],
+    "OUTPUT_HDF": ["output_dc.h5"]
+} 

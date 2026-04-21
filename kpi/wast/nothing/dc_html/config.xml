@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <HDF_SOURCE_SELECTION>HDF_WITH_ALLSENSOR</HDF_SOURCE_SELECTION>
+    <HDF_FILE>HDF_WITH_ALLSENSOR</HDF_FILE>
+    <output_directory>html</output_directory>
+</configuration> 

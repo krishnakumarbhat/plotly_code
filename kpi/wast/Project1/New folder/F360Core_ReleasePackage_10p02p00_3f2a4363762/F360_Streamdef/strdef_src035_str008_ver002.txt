@@ -1,0 +1,22 @@
+528
+unsigned int tracker_index
+double timestamp
+double prev_timestamp
+unsigned char f360_tracker_version.sw_version_major
+unsigned char f360_tracker_version.sw_version_minor
+unsigned char f360_tracker_version.dll_version_major
+unsigned char f360_tracker_version.dll_version_minor
+REPEAT2
+bool guard_rails.f_active
+bool guard_rails.f_present
+char guard_rails.status
+PADDING1
+float guard_rails.lateral_position
+float guard_rails.peak_amplitude
+int guard_rails.age
+int guard_rails.number_of_continuous_misses
+REPEAT57
+float guard_rails.filtered_bin_scores
+END_REPEAT
+float guard_rails.raw_peak_location
+END_REPEAT

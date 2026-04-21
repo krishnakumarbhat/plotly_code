@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rspp_integration_guideline.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<!---
+Reading and editing the guideline is easy with vscode https://code.visualstudio.com/download
+Use the markdown preview to see the formatted output as you edit "Ctrl + Shift + V"
+
+Export the guideline to HTML with the "Markdown PDF" extension in vscode (yzane.markdown-pdf)
+-->
+<h1 id="integration-guide">Integration Guide</h1>
+<p>Updated 2023-10-20</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#Preface">Preface</a></li>
+<li><a href="#radar-sensor-preprocessing-library-overview">Radar Sensor Preprocessing Library Overview</a></li>
+<li><a href="#input-interface">Input Interface</a></li>
+<li><a href="#output-interface">Output Interface</a></li>
+<li><a href="#building-the-library">Building the Library</a></li>
+<li><a href="#integrating-the-rspp-library">Integrating the RSPP Library</a></li>
+<li><a href="#appendix">Appendix</a></li>
+</ol>
+<h1 id="preface">Preface</h1>
+<p>The Radar Sensor Preprocessing (RSPP) component performs pre-processing of raw radar detections.
+It is is mandatory to integrate and execute this component before running the Radar Object Tracker (ROT) and the Occupancy Grid (OCG).
+The RSPP should be executed over all sensor data per cycle at once (not per sensor) and it should be executed immediately before the OCG (if applicable) and the ROT in the same thread.</p>
+<p>The Radar Sensor Pre-processing(<strong>RSPP</strong>) is built in C++ and measured for compliance against MISRA C++ 2008.</p>
+<p>The release package contains test specifications and reports for Unit-Testing. Additionally, it contains a static code analysis report summary of any MISRA C++ 2008 rule violations, a software complexity report, as well as a code coverage summary.</p>
+<p>The RSPP library has been successfully compiled with the following:</p>
+<ul>
+<li>MSVC 2019</li>
+<li>GCC 7.5.0</li>
+<li>Tasking Tricore v6.3</li>
+<li>Windriver diab-5.9.6.4</li>
+<li>QNX 7.1.0</li>
+</ul>
+<p>The RSPP is wrapped in a namespace which corresponds to the variant that it built as: <code>rspp_variant_A</code>, <code>rspp_variant_B</code> or <code>rspp_variant_C</code>, etc. <span style="color:red"> <strong>Note:</strong> </span> that RSPP and ROT variants must be the same.</p>
+<h1 id="radar-sensor-preprocessing-library-overview">Radar Sensor Preprocessing Library Overview</h1>
+<p>RSPP is a library that provides the methods to perform pre-processing of the raw radar detections.
+There are mainly two function calls needed to populate the pre-processed detections.</p>
+<h2 id="1-initialize-the-rspp-calibrations">1. Initialize the RSPP calibrations.</h2>
+<p><code>Initialize_RSPP_Calibrations()</code> An initialization method that will set up calibration values and the correct starting values of various internal variables.</p>
+<h2 id="2-call-the-main-function-inputspreprocessing">2. Call the main function <code>Inputs_Preprocessing()</code></h2>
+<p><code>Inputs_Preprocessing()</code> Call this function to perform preprocessing of the raw detections. Before calling this function the input structs should be populated with consistent and valid data. Check <a href="#input-interface">Input Interface</a> below to understand the inputs required.</p>
+<h1 id="input-interface">Input Interface</h1>
+<p>The <code>Inputs_Preprocessing()</code> function requires 5 structs as arguments to the function,
+<code>RSPP_Core_Tnfo_T</code>, <code>RSPP_Host_T</code>, <code>RSPP_Detection_List_T</code>, <code>F360_Radar_Sensor_T</code> and <code>RSPP_Calibrations_T</code>. The definition of these required inputs are described below.</p>
+<p><span style="color:red"><strong>All detection properties shall be reported according to the SAE J670 z-down coordinate system (x-axis pointing in the direction of the antenna, y-axis to the right of the antenna, z-axis pointing down).</strong></span></p>
+<p>Project integration teams need to ensure that all the input data is available and updated for each cycle. In case an input struct is not able to be populated it should be cleared rather than sending old/invalid data.
+In general, structs are expected to be cleared before populating them.</p>
+<p>For definitions with respect to coordinate systems, please refer to Chapter 5 in the following requirements document: https://polarionprod1.aptiv.com/polarion/#/project/F360TrackerCoreProject/wiki/SYS_Requirements/Abbreviations_Definitions_TrackerCore</p>
+<h2 id="rsppcoreinfot"><code>RSPP_Core_Info_T</code></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>cnt_loops</code></td>
+<td style="text-align:left">Counter that increases every cycle iteration</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>time_us</code></td>
+<td style="text-align:left">Time in microseconds</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>prev_time_us</code></td>
+<td style="text-align:left">Previous time in microseconds</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>elapsed_time_s</code></td>
+<td style="text-align:left">Time elapsed since the previous tracker execution</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rspphostt"><code>RSPP_Host_T</code></h2>
+<p>The vehicle coordinate system (VCS) is defined in the Appendix of this document.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>vehicle_index</code></td>
+<td style="text-align:left">index of VSE iteration</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>speed</code></td>
+<td style="text-align:left">m/s, total speed at rear axle</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_speed</code></td>
+<td style="text-align:left">m/s, total speed at VCS origin</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>acceleration</code></td>
+<td style="text-align:left">m/s^2, total acceleration at rear axle</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_lat_acceleration</code></td>
+<td style="text-align:left">m/s^2, at VCS origin</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_long_acceleration</code></td>
+<td style="text-align:left">m/s^2, at VCS origin</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>yaw_rate_rad</code></td>
+<td style="text-align:left">rad/s, in VCS, compensated for bias</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_sideslip</code></td>
+<td style="text-align:left">rad, signal range (-pi/2, pi/2) at VCS, check definition from VSE - might need to be converted from range -pi/pi</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>curvature_rear</code></td>
+<td style="text-align:left">1/m, at rear axle</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>dist_rear_axle_to_vcs_m</code></td>
+<td style="text-align:left">distance between the rear axle and the VCS origin (front bumper) in meters, always a positive value</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>rear_cornering_compliance</code></td>
+<td style="text-align:left">calibration value</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>speed_correction_factor</code></td>
+<td style="text-align:left">used to correct the host speed in VSE</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>speed_qf</code></td>
+<td style="text-align:left">quality flag (used only for debug)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>yaw_rate_qf</code></td>
+<td style="text-align:left">quality flag (used only for debug)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>lat_accel_qf</code></td>
+<td style="text-align:left">quality flag (used only for debug)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>long_accel_qf</code></td>
+<td style="text-align:left">quality flag (used only for debug)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_trailer_presence_hardware</code></td>
+<td style="text-align:left">trailer presence detected by the host vehicle electronically</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rsppdetectionlistt"><code>RSPP_Detection_List_T</code></h2>
+<p><code>RSPP_Detection_List_T</code> contains the following:</p>
+<ul>
+<li>all detections from all sensors in a packed list with <code>RSPP_Detection_T</code> type. All detections in the list are expected to be valid.</li>
+<li><code>number_of_valid_detections</code> member in the struct should correspond to the total number of detections in the array that the RSPP needs to process.</li>
+<li>vcslong_det_idx_min; Sorted vcs-long index of detection with most negative vcs-long position, this member is updated by RSPP not the wrapper</li>
+<li>vcslong_det_idx_max; Sorted vcs-long index of detection with most positive vcs-long position, this member is updated by RSPP not the wrapper</li>
+<li>vcslong_sorted_ref_det_idx; this member is updated by RSPP not the wrapper</li>
+</ul>
+<p><code>RSPP_Detection_T</code> struct contains two substructs,</p>
+<ul>
+<li><code>Raw_Detection_T</code> raw;</li>
+<li><code>Processed_Detection_T</code> processed;</li>
+</ul>
+<p>The <code>Raw_Detection_T</code> should be populated with raw detections information from the sensors and is used as input to the function <code>Inputs_Preprocessing()</code>.</p>
+<p>The <code>Processed_Detection_T</code> struct is the output provided by the function call <code>Inputs_Preprocessing()</code>. It is populated by the RSPP component - it should be cleared before each RSPP iteration.</p>
+<p>The <code>sensor_id</code> and <code>det_id</code> members in <code>Raw_Detection_T</code> need to be populated manually before being sent to the RSPP for further processing.
+The <code>det_id</code> should be populated from 1 to the number of detections received for each sensor.
+The <code>sensor_id</code> shall correspond to the id of the sensor in the <code>F360_Radar_Sensor_T</code> structure under <code>ConstantProps_T</code> structs as sensor_id = index + 1.
+Simplified pseudo code example:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">uint8_t</span> iSens=<span class="hljs-number">0</span>; iSens &lt; n_sensors; iSens++){
+   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">uint8_t</span> iDet=<span class="hljs-number">0</span>; iDet &lt; n_dets; iDet++){
+      sensor_id = iSens + <span class="hljs-number">1</span>;
+      det_id = iDet + <span class="hljs-number">1</span>;
+   }
+}
+</div></code></pre>
+<p>This will result in the below data representation:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">sensor_id</th>
+<th style="text-align:left">det_id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">1</td>
+</tr>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">2</td>
+</tr>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">3</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">1</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">2</td>
+</tr>
+<tr>
+<td style="text-align:left">etc.</td>
+<td style="text-align:left">etc.</td>
+</tr>
+</tbody>
+</table>
+<p>Description of signals in  <code>Raw_Detection_T</code></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>sensor_id</code></td>
+<td style="text-align:left">id of the sensor that the detection came from</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>det_id</code></td>
+<td style="text-align:left">id from the sensor that the detection came from (unique only to that sensor)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>range</code></td>
+<td style="text-align:left">[m], distance to detection</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>std_range</code></td>
+<td style="text-align:left">set if available from sensor, otherwise zero</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>range_rate</code></td>
+<td style="text-align:left">m/s</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>std_range_rate</code></td>
+<td style="text-align:left">set if available from sensor, otherwise zero</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>azimuth</code></td>
+<td style="text-align:left">[rad] Raw Azimuth angle. <strong>Not compensated for alignment or polarity</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>std_azimuth</code></td>
+<td style="text-align:left">set if available from sensor, otherwise zero</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>elevation</code></td>
+<td style="text-align:left">[rad] Raw Elevation angle. <strong>Not compensated for alignment or polarity</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>std_elevation</code></td>
+<td style="text-align:left">set if available from sensor, otherwise zero</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>snr</code></td>
+<td style="text-align:left">Signal to noise ratio</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>rcs</code></td>
+<td style="text-align:left">radar cross section</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>confid_azimuth</code></td>
+<td style="text-align:left">[0-3] 0 = best, 3 = worst</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>confid_elevation</code></td>
+<td style="text-align:left">[0-1] 0 = best, 1 = worst</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_super_res</code></td>
+<td style="text-align:left">[0-1] 0 = not super resolution, 1 = is super resolution</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_host_veh_clutter</code></td>
+<td style="text-align:left">[0-1] flag indicating that detection is host vehicle clutter</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_nd_target</code></td>
+<td style="text-align:left">[0-1] flag indicating that this detection seems to stem from a small target close to a larger target</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_bistatic</code></td>
+<td style="text-align:left">[0-1] Flag indicating that this detection is a bistatic detection</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A note on det_id</strong>: When analyzing the output of the radar object tracker it's important to be able to determine which detections eg. are associated to an object.
+The objects contain a <code>detectionID</code> field which comes as an index from <code>RSPP_Detection_List.T</code>. The corresponding index in the <code>RSPP_Detection_Log_T</code> contains a <code>sensorID</code> and a <code>raw_det_id</code>.</p>
+<p>This information can then be used to trace back to the sensor inputs.</p>
+<h2 id="f360radarsensort"><code>F360_Radar_Sensor_T</code></h2>
+<p>Sensor data contains two struct <code>ConstantProps_T</code> and <code>VariableProps_T</code>.</p>
+<p><code>ConstantProps_T</code> contains all the sensor calibration parameters which is set during initialization. The data should not be updated during runtime:
+Sensor Coordinate System is abbreviated as SCS below.
+All data is per sensor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+<th style="text-align:left">Updated by RSPP/Wrapper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>ant_sens_SCS_azim</code></td>
+<td style="text-align:left">common azimuth angle knots for all antenna sensitivity maps of the sensor, to be populated using input from radar team</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ant_sens_SCS_sq_rng_90</code></td>
+<td style="text-align:left">border of antenna sensitivity region for a given probability of detection, to be populated using input from radar team</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ant_sens_SCS_sq_rng_50</code></td>
+<td style="text-align:left">border of antenna sensitivity region for a given probability of detection, to be populated using input from radar team</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>internal_reflections</code></td>
+<td style="text-align:left">Contains enable/disable &amp; tuning parameters for the internal reflections functionality, only applicable if a trailer is connected. Unless otherwise specified/discussed set the subsignal f_enable to false and all other signals to 0</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>interior_fov</code></td>
+<td style="text-align:left">interior fov  - per look id</td>
+<td style="text-align:left">RSPP</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>left_fov_normal</code></td>
+<td style="text-align:left">sensor left edge field of view normal vector towards inside [-sinf(theta), cosf(theta)] - per look id</td>
+<td style="text-align:left">RSPP</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>right_fov_normal</code></td>
+<td style="text-align:left">sensor right edge field of view normal vector towards inside [sinf(theta), -cosf(theta)] - per look id</td>
+<td style="text-align:left">RSPP</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_position.vcs_position.longitudinal</code></td>
+<td style="text-align:left">[m] longitudinal mounting position of the sensor in VCS</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_position.vcs_position.lateral</code></td>
+<td style="text-align:left">[m] lateral mounting position of the sensor in VCS</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_position.vcs_position.height</code></td>
+<td style="text-align:left">[m] height above ground mounting position of the sensor</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_position.vcs_boresight_azimuth_angle</code></td>
+<td style="text-align:left">[rad] nominal boresight of the sensor in VCS, not compensated for alignment error</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_position.vcs_boresight_elevation_angle</code></td>
+<td style="text-align:left">[rad] nominal elevation of the sensor in VCS, not compensated for alignment error</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>range_limits</code></td>
+<td style="text-align:left">instrumented range of the radar - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fov_min_az_rad</code></td>
+<td style="text-align:left">instrumented azimuth in the negative direction - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fov_max_az_rad</code></td>
+<td style="text-align:left">instrumented azimuth in the positive direction - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fov_min_el_rad</code></td>
+<td style="text-align:left">instrumented elevation in the negative direction - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fov_max_el_rad</code></td>
+<td style="text-align:left">instrumented elevation in the positive direction - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>min_aliaised_range_rate</code></td>
+<td style="text-align:left">most negative measurable range-rate before folding,  - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>v_wrapping</code></td>
+<td style="text-align:left">Absolute value of SMC same-titled parameter; range rate dealiasing interval - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>r_wrapping</code></td>
+<td style="text-align:left">Absolute value of SMC same-titled parameter; range offset after doppler unfolding; zero for FMCW and nonzero for SFW - per look id</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>id</code></td>
+<td style="text-align:left">sensor id, manually populated, id = index + 1</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>polarity</code></td>
+<td style="text-align:left">1 (regular mounting) or -1 (flipped mounting) depending on mounting orientation</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>sensor_sw_version</code></td>
+<td style="text-align:left">sw version of the radar sensor</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_read_cdc_data</code></td>
+<td style="text-align:left">not used, set false</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>mounting_location</code></td>
+<td style="text-align:left">Check headerfile enumeration</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>sensor_type</code></td>
+<td style="text-align:left">Check headerfile enumeration</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+</tbody>
+</table>
+<p><code>VariableProps_T</code> contains the sensor data that should be updated before tracker iteration</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+<th style="text-align:left">Updated by RSPP/Wrapper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>timestamp_us</code></td>
+<td style="text-align:left">microseconds, time when the sensor scanned the environment. Usually &gt;100ms before   tracker execution, and this should be visible when comparing this timestamps and the timestamp in   <code>F360_Core_Info_T</code></td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_velocity.longitudinal</code></td>
+<td style="text-align:left">m/s</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vcs_velocity.lateral</code></td>
+<td style="text-align:left">m/s</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vacs_boresight_az_estimated </code></td>
+<td style="text-align:left">true boresight azimuth angle compensated by sensor misalignment, output from alignment algorithm, [rad]</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vacs_boresight_el_estimated</code></td>
+<td style="text-align:left">true boresight elevation angle compensated by sensor misalignment, output from alignment algorithm, [rad]</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>number_of_valid_detections</code></td>
+<td style="text-align:left">number of detections from this sensor</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>yaw_rate_calc_dps</code></td>
+<td style="text-align:left">deg/s in VCS, (used only for debug)</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vehicle_speed_calc_mps</code></td>
+<td style="text-align:left">m/s in VCS, (used only for debug)</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>time_since_measurement_s</code></td>
+<td style="text-align:left">delta time between RSPP excution and sensor measurement timestamp. Unit second</td>
+<td style="text-align:left">RSPP</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>first_detection_list_idx</code></td>
+<td style="text-align:left">Index of first detection from this sensor in the full tracker detection list</td>
+<td style="text-align:left">RSPP</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>look_index</code></td>
+<td style="text-align:left">look_index reported by sensor</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>is_valid</code></td>
+<td style="text-align:left">set true</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_ant_sens_available</code></td>
+<td style="text-align:left">set true if <code>ant_sens_SCS</code>* arrays are populated</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>f_ant_sens_degraded</code></td>
+<td style="text-align:left">set true if <code>ant_sens_SCS</code>* arrays are populated</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>look_id</code></td>
+<td style="text-align:left">[0-3] look_id reported by sensor</td>
+<td style="text-align:left">Wrapper</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dynamic-radar-alignment"><code>Dynamic Radar Alignment</code></h2>
+<p><span style="color:red"><strong>Important note on the Dynamic Radar Alignment interface from v14.0.1 and onwards.</strong></span>
+In DRA v14.0.1 the output interface changes from providing a misalignment relative a nominal mounting angle of the sensor, to providing a complete estimated mounting angle relative to the vehicle.</p>
+<p>This interface change has a hard dependency to the above structure <code>VariableProps_T</code> and specifically the new signals <code>vacs_boresight_az_estimated</code> and <code>vacs_boresight_el_estimated</code> which are a part of the RSPP components input interface since RSPP v2.0.0.</p>
+<p>For this reason, if you are using a version of the DRA which is earlier than v14.0.1 together with RSPP v2.0.0 (and ROT v10.0.0) you still need to provide the new signals <code>vacs_boresight_az_estimated</code> and <code>vacs_boresight_el_estimated</code> and they need to be calculated using the nominal mounting angles and the misalignment angles as in the example below.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// vacs_boresight_az_estimated from F360_Radar_Sensor_T -&gt; VariableProps_T.</span>
+<span class="hljs-comment">// vacs_boresight_el_estimated from F360_Radar_Sensor_T -&gt; VariableProps_T.</span>
+
+<span class="hljs-comment">// sensor_misalign_azimuth from legacy alignment algorithm</span>
+<span class="hljs-comment">// sensor_misalign_elevation from legacy alignment algorithm</span>
+
+<span class="hljs-comment">// vcs_boresight_azimuth_angle from F360_Radar_Sensor_T -&gt; ConstantProps_T -&gt; RSPP_Sensor_Mounting_Position_T</span>
+<span class="hljs-comment">// vcs_boresight_elevation_angle from F360_Radar_Sensor_T -&gt; ConstantProps_T -&gt; RSPP_Sensor_Mounting_Position_T</span>
+
+vacs_boresight_az_estimated = vcs_boresight_azimuth_angle - sensor_misalign_azimuth;
+vacs_boresight_el_estimated = vcs_boresight_elevation_angle - sensor_misalign_elevation;
+</div></code></pre>
+<p>In case of the opposite scenario, DRA v14.0.1 or later used together with RSPP 1.x.x and ROT 9.x.x you will need to calculate the legacy misalignment angles using the nominal mounting angles and the corrected boresight angles as in the example below.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// vacs_boresight_az_estimated from Dynamic_Alignment_Log_Stream_T -&gt; DRA_Core_Log_Data_T.</span>
+<span class="hljs-comment">// vacs_boresight_el_estimated from Dynamic_Alignment_Log_Stream_T -&gt; DRA_Core_Log_Data_T.</span>
+
+<span class="hljs-comment">// sensor_misalign_azimuth from F360_Radar_Sensor_T -&gt; VariableProps_T (RSPP v1.x.x)</span>
+<span class="hljs-comment">// sensor_misalign_elevation from F360_Radar_Sensor_T -&gt; VariableProps_T (RSPP v1.x.x)</span>
+
+<span class="hljs-comment">// vcs_boresight_azimuth_angle from F360_Radar_Sensor_T -&gt; ConstantProps_T -&gt; RSPP_Sensor_Mounting_Position_T</span>
+<span class="hljs-comment">// vcs_boresight_elevation_angle from F360_Radar_Sensor_T -&gt; ConstantProps_T -&gt; RSPP_Sensor_Mounting_Position_T</span>
+
+sensor_misalign_azimuth = vcs_boresight_azimuth_angle - vacs_boresight_az_estimated;
+sensor_misalign_elevation = vcs_boresight_elevation_angle - vacs_boresight_el_estimated;
+</div></code></pre>
+<p>It is highly recommended to use DRA v14.0.1 or later if you are using ROT 10.0.0 and RSPP 2.0.0 since in this case a simple assignment from the DRA output struct to the F360 Sensor struct is all that is required.</p>
+<h2 id="rsppcalibrationst"><code>RSPP_Calibrations_T</code></h2>
+<p>This struct contains the RSPP calibration parameters and they can be populated by simply calling the function <code>Initialize_RSPP_Calibrations()</code>.</p>
+<h1 id="output-interface">Output Interface</h1>
+<p>RSPP primary output interface to downstream users</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">signal</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>RSPP_Detection_List_T</code></td>
+<td style="text-align:left">Raw and processed detection data</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>F360_Radar_Sensor_T</code></td>
+<td style="text-align:left">Sensor calibration data</td>
+</tr>
+</tbody>
+</table>
+<p>After executing RSPP <code>Inputs_Preprocessing()</code> detections[MAX_NUMBER_OF_DETECTIONS].processed properties will be updated.
+F360_Radar_Sensor_T sensor info data have been converted to VCS coordinate.</p>
+<h1 id="building-the-library">Building the Library</h1>
+<p>RSPP is expected to be delivered as a prebuilt library. However if for some reason RSPP is being integrated as source code, no modifications to the code should be made without consulting with the development team.</p>
+<p>The default CMake files are used to configure build environments for RSPP variant_A which is used for F360tracker resim and trackerPC applications. A toolchain with limited functionality for Tasking TriCore exists but since linking requires a program specific .lsl file, it cannot be simply dropped into projects.</p>
+<p>Part of the CMake configuration allows for the selection of a variant to build. The effect of this is that different variants from the <a href="../sw/rspp/include/variants">variants folder</a> replaces the <code>rspp_variant_definition.h</code>. There are different variants corresponding to different customer programs and integrators need to select the appropriate one in order to ensure that the tracker runs as expected. Additionally, the cmake system will generate a folder with variant specific interfaces which shall be used. The folder will be located in your specified build folder and be named &quot;<code>iface_variant_*</code>&quot;. If unsure of which variant should be used for a given project, reference in <code>index.txt</code> file in the variants folder.</p>
+<p>Observe that different variant definitions have different namespaces. In order to also build everything else with the same namespace, the C Preprocessor is used to specify the default namespace name as a symbol and thereby overwriting it with the appropriate namespace name. Exactly how this is done can be seen in the <code>variant_config.cmake</code> file for the RSPP.</p>
+<h1 id="integrating-the-rspp-library">Integrating the RSPP Library</h1>
+<h2 id="preface">Preface</h2>
+<p>We will assume that at this phase the rspp has been compiled and archived into a library. Then it can be imported by customized downstream user projects.</p>
+<h2 id="running-a-test-program">Running a test program</h2>
+<p>Below is an example of a simple wrapper that calls the RSPP lib main function.</p>
+<p>The sample code below below assumes two instances of different variants of both RSPP and ROT, for example (rspp_variant_A + f360_variant_A &amp; rspp_variant_B + f360_variant_A). The integrator must change the namespace name to match the correct variant, and import the RSPP libaray to the projects. If only a single instance is used, the other should be removed.</p>
+<p>If the below code compiles successfully, then the minimum requirements for integration are met. If the code can be executed with a connected debugger and function returns zero, then the bare minimum of qualification is met.</p>
+<pre class="hljs"><code><div><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"iface_variant_A/rspp_inputs_preprocessing.h"</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"iface_variant_B/rspp_inputs_preprocessing.h"</span></span>
+
+<span class="hljs-comment">/* Support functions */</span>
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Advance_Core_Info</span><span class="hljs-params">(T &amp;core_info)</span>
+</span>{
+   core_info.cnt_loops++;
+   core_info.elapsed_time_s = <span class="hljs-number">0.05f</span>;
+   core_info.prev_time_us = core_info.time_us;
+   core_info.time_us += <span class="hljs-number">50000</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T1,<span class="hljs-keyword">typename</span> T2&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Advance_Sensor</span><span class="hljs-params">( <span class="hljs-keyword">const</span> <span class="hljs-keyword">uint64_t</span> time_us, T1 &amp;host, T2 &amp;sensor)</span>
+</span>{
+   sensor.variable.look_index++;
+   sensor.variable.look_id = (sensor.variable.look_id == RSPP_DET_LOOK_ID_0) ? RSPP_DET_LOOK_ID_1 : RSPP_DET_LOOK_ID_0;
+   sensor.variable.timestamp_us = time_us;
+   sensor.variable.vcs_velocity.longitudinal = host.vcs_speed;
+   sensor.variable.vacs_boresight_az_estimated = sensor.constant.mounting_position.vcs_boresight_azimuth_angle; <span class="hljs-comment">// considering no misalignment</span>
+   sensor.variable.vacs_boresight_el_estimated = sensor.constant.mounting_position.vcs_boresight_elevation_angle; <span class="hljs-comment">// considering no misalignment</span>
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Init_Sensor_Calibs</span><span class="hljs-params">(T &amp;sensor)</span>
+</span>{
+   sensor.constant.id = <span class="hljs-number">1</span>;
+   sensor.constant.v_wrapping[<span class="hljs-number">0</span>] = <span class="hljs-number">70.0f</span>;
+   sensor.constant.v_wrapping[<span class="hljs-number">1</span>] = <span class="hljs-number">60.0f</span>;
+   sensor.constant.r_wrapping[<span class="hljs-number">0</span>] = <span class="hljs-number">0.0f</span>;
+   sensor.constant.r_wrapping[<span class="hljs-number">1</span>] = <span class="hljs-number">0.0f</span>;
+   sensor.constant.polarity = <span class="hljs-number">1</span>;
+   sensor.constant.mounting_location = RSPP_MOUNTING_LOCATION_CENTER_REAR;
+   sensor.constant.mounting_position.vcs_position.lateral = <span class="hljs-number">0.0f</span>;
+   sensor.constant.mounting_position.vcs_position.longitudinal = <span class="hljs-number">-4.5f</span>;
+   sensor.constant.mounting_position.vcs_boresight_azimuth_angle = <span class="hljs-number">3.1415926f</span>;
+   sensor.constant.mounting_position.vcs_boresight_elevation_angle = <span class="hljs-number">0.0F</span>;
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Init_Single_Detection</span><span class="hljs-params">(T &amp;raw_det_list)</span>
+</span>{
+   raw_det_list.number_of_valid_detections = <span class="hljs-number">1</span>;
+   raw_det_list.detections[<span class="hljs-number">0</span>].raw.range = <span class="hljs-number">14.5f</span>;
+   raw_det_list.detections[<span class="hljs-number">0</span>].raw.range_rate = <span class="hljs-number">0.0f</span>;
+   raw_det_list.detections[<span class="hljs-number">0</span>].raw.sensor_id = <span class="hljs-number">1</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">bool</span> <span class="hljs-title">check_processed_det</span><span class="hljs-params">(T &amp;processed_det)</span>
+</span>{
+   <span class="hljs-keyword">bool</span> pass = (processed_det.range_rate_compensated &gt; <span class="hljs-number">-10.01F</span>)
+            &amp;&amp; (processed_det.range_rate_compensated &lt; <span class="hljs-number">-9.99F</span>)
+            &amp;&amp; (processed_det.vcs_position_x &lt; <span class="hljs-number">-18.99F</span> )
+            &amp;&amp; (processed_det.vcs_position_x &gt; <span class="hljs-number">-19.01F</span> )
+            &amp;&amp; (processed_det.cos_vcs_az &gt; <span class="hljs-number">-1.01F</span>)
+            &amp;&amp; (processed_det.cos_vcs_az &lt; <span class="hljs-number">-0.99F</span>);
+   
+   <span class="hljs-keyword">return</span> pass;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T1, <span class="hljs-keyword">typename</span> T2&gt;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Sensor_Motion_Update</span><span class="hljs-params">(T1&amp; host_info, T2&amp; sensor)</span>
+</span>{
+   <span class="hljs-comment">// here only considered a simple version of host move straight forward for the RSPP integration test</span>
+   <span class="hljs-keyword">float</span> xsens = <span class="hljs-number">0.0f</span>;
+   <span class="hljs-keyword">float</span> ysens = <span class="hljs-number">0.0f</span>;
+   xsens = host_info.dist_rear_axle_to_vcs_m + sensor.constant.mounting_position.vcs_position.longitudinal;
+   ysens = sensor.constant.mounting_position.vcs_position.lateral;
+   sensor.variable.vcs_velocity.longitudinal = host_info.vcs_speed;
+   sensor.variable.vcs_velocity.lateral = <span class="hljs-number">0</span>;
+
+}
+
+
+<span class="hljs-comment">/* Test description
+   Scenario:
+      - The host moves straight with 10 m/s speed.
+      - Single target (as single detection) is behind the host
+
+   Expected output (test pass criteria):
+      - Processed detection has correct compensated position, range rate, vcs azimuth angle .
+*/</span>
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+   <span class="hljs-keyword">static</span> rspp_variant_A::RSPP_Calibrations_T rspp_calibs_a;
+   <span class="hljs-keyword">static</span> rspp_variant_A::RSPP_Detection_List_T detection_list_a{};
+   <span class="hljs-keyword">static</span> RSPP_Core_Info_T rspp_core_info_a{};
+   <span class="hljs-keyword">static</span> rspp_variant_A::F360_Radar_Sensor_T sensors_a[rspp_variant_A::MAX_NUMBER_OF_SENSORS]{};
+
+   <span class="hljs-keyword">static</span> rspp_variant_B::RSPP_Calibrations_T rspp_calibs_b;
+   <span class="hljs-keyword">static</span> rspp_variant_B::RSPP_Detection_List_T detection_list_b{};
+   <span class="hljs-keyword">static</span> RSPP_Core_Info_T rspp_core_info_b{};
+   <span class="hljs-keyword">static</span> rspp_variant_B::F360_Radar_Sensor_T sensors_b[rspp_variant_B::MAX_NUMBER_OF_SENSORS]{};
+   
+   <span class="hljs-keyword">static</span> RSPP_Host_T host_info{};
+
+   Init_Single_Detection(detection_list_a);
+   Init_Single_Detection(detection_list_b);
+   host_info.vcs_speed = <span class="hljs-number">10.0f</span>;
+
+   Advance_Core_Info(rspp_core_info_a);
+   Advance_Core_Info(rspp_core_info_b);
+
+   Init_Sensor_Calibs(sensors_a[<span class="hljs-number">0</span>]);
+   Init_Sensor_Calibs(sensors_b[<span class="hljs-number">0</span>]);
+  
+   Advance_Sensor(rspp_core_info_a.time_us, host_info, sensors_a[<span class="hljs-number">0</span>]);
+   Advance_Sensor(rspp_core_info_b.time_us, host_info, sensors_b[<span class="hljs-number">0</span>]);
+
+   Sensor_Motion_Update(host_info, sensors_a[<span class="hljs-number">0</span>]);
+   Sensor_Motion_Update(host_info, sensors_b[<span class="hljs-number">0</span>]);
+   
+   rspp_variant_A::Initialize_RSPP_Calibrations(rspp_calibs_a);
+   rspp_variant_B::Initialize_RSPP_Calibrations(rspp_calibs_b);
+
+   rspp_variant_A::Inputs_Preprocessing(rspp_core_info_a,host_info,sensors_a, rspp_calibs_a,rspp_calibs_a.max_otg_speed,detection_list_a);
+   rspp_variant_B::Inputs_Preprocessing(rspp_core_info_b, host_info, sensors_b, rspp_calibs_b, rspp_calibs_b.max_otg_speed, detection_list_b);
+
+   <span class="hljs-keyword">uint8_t</span> test_result;
+
+   <span class="hljs-keyword">if</span>(check_processed_det(detection_list_a.detections[<span class="hljs-number">0</span>].processed) &amp;&amp; check_processed_det(detection_list_b.detections[<span class="hljs-number">0</span>].processed))
+   {
+      test_result = <span class="hljs-number">1U</span>;
+   }
+   <span class="hljs-keyword">else</span>
+   {
+      test_result = <span class="hljs-number">0U</span>;
+   }
+   <span class="hljs-keyword">return</span> test_result;
+}
+</div></code></pre>
+<h1 id="appendix">Appendix</h1>
+<p>Collection of definitions and frequently asked questions.</p>
+<h2 id="definition-of-vehicle-coordinate-system-vcs">Definition of vehicle coordinate system (VCS)</h2>
+<p>The vehicle coordinate system is a right-handed coordinate system in which the origin is defined at the center of the front bumper.
+The x-axis is defined as positive in the forward direction of the host vehicles driving path. The y-axis is defined as positive to the right and the z-axis is defined as positive towards the ground with the origin at ground level.
+All angles in this coordinate system shall be defined in mathematically negative direction of rotation (i.e., clockwise). The standard range for angles is [-pi, pi] in radians (i.e., -180° to 180°).
+This coordinate system is rigidly linked to the vehicle.</p>
+<p><img src="./integration_guideline_img/vcs_definition.png" alt="vcs_definition"></p>
+
+</body>
+</html>

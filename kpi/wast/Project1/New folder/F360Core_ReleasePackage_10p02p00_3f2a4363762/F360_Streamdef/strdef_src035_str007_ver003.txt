@@ -1,0 +1,38 @@
+1916
+uint64_t sw_version_buildID
+uint64_t timestamp_us
+uint64_t object_list_timestamp
+REPEAT12
+uint64_t sensor_timestamp_us
+END_REPEAT
+float elapsed_time_s
+uint16_t tracker_index
+REPEAT250
+uint16_t active_obj_ids
+END_REPEAT
+REPEAT250
+uint16_t inactive_obj_ids
+END_REPEAT
+uint16_t num_active_objs
+REPEAT125
+uint16_t reduced_active_obj_ids
+END_REPEAT
+REPEAT125
+uint16_t reduced_inactive_obj_ids
+END_REPEAT
+REPEAT125
+uint16_t reduced_obj_ids
+END_REPEAT
+uint16_t reduced_num_active_objs
+uint16_t vehicle_index
+REPEAT12
+uint16_t sensor_look_index
+END_REPEAT
+uint16_t num_active_clusters
+uint16_t number_of_historic_detections
+uint8_t sw_version_major
+uint8_t sw_version_minor
+uint8_t sw_version_patch
+REPEAT3
+uint8_t reserved
+END_REPEAT

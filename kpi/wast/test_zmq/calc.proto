@@ -1,0 +1,19 @@
+syntax = "proto3";
+package calc;
+
+enum Operation {
+  ADD = 0;
+  MUL = 1;
+  PING = 2;
+}
+
+message CalcRequest {
+  Operation op = 1;
+  int64 a = 2;
+  int64 b = 3;
+}
+
+message CalcResponse {
+  int64 result = 1;
+  string error = 2;
+}

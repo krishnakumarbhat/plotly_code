@@ -1,0 +1,49 @@
+14056
+unsigned char tracker_version.sw_version_major
+unsigned char tracker_version.sw_version_minor
+unsigned char tracker_version.dll_version_major
+unsigned char tracker_version.dll_version_minor
+float vehicle_info.yawrate
+float vehicle_info.vcs_speed
+float vehicle_info.vcs_sideslip
+float vehicle_info.dist_rear_axle_to_vcs
+PADDING4
+double tracker_header.timestamp
+double tracker_header.prev_timestamp
+uint32_t tracker_header.tracker_index
+uint32_t tracker_header.num_valid_objects
+REPEAT125
+int32_t tracker_objects.id
+F360_OBJ_STATUS tracker_objects.status
+F360_TRKFLTR tracker_objects.trk_fltr_type
+F360_OBJECT_CLASS tracker_objects.object_class
+float tracker_objects.vcs_longPos
+float tracker_objects.vcs_longVel
+float tracker_objects.vcs_longAccel
+float tracker_objects.vcs_latPos
+float tracker_objects.vcs_latVel
+float tracker_objects.vcs_latAccel
+float tracker_objects.curvature
+float tracker_objects.speed
+float tracker_objects.tang_accel
+float tracker_objects.vcs_heading
+float tracker_objects.vcs_pointing
+float tracker_objects.len1
+float tracker_objects.len2
+float tracker_objects.wid1
+float tracker_objects.wid2
+float tracker_objects.confidenceLevel
+float tracker_objects.existenceProb
+float tracker_objects.stdDev_longPos
+float tracker_objects.stdDev_longVel
+float tracker_objects.stdDev_longAccel
+float tracker_objects.stdDev_latPos
+float tracker_objects.stdDev_latVel
+float tracker_objects.stdDev_latAccel
+uint8_t tracker_objects.f_moving
+uint8_t tracker_objects.f_moveable
+PADDING2
+END_REPEAT
+unsigned char customer_info.sw_version_major
+unsigned char customer_info.sw_version_minor
+PADDING6
