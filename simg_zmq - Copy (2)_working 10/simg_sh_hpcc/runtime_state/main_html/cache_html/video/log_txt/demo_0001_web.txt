@@ -1,0 +1,1 @@
+Radar visualization shows the white ego vehicle moving through an otherwise clear scene.
