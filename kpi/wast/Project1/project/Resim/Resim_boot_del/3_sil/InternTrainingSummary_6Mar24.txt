@@ -1,0 +1,41 @@
+SIL Engine Overview:
+ 
+Topics covered ==>
+1. Sensor + positions in car. 
+   Gen 7 sensors - SRR7, SRR7P, and FLR7 [https://www.aptiv.com/en/gen7-radar-family]
+   Feature functions in ADAS [https://tmlcars.tatamotors.com/images/safari/downloads/tata-safari-adas.pdf]
+2. Sample sensor architecture - Gen6
+   What is a cycle data? scan index? 
+   What is the interval of data collection by a sensor? (50 ms)
+   Cores and streams - C0, C1, and C2. 
+   Sensor collects detections. Tracker algo generates tracker objects based on detections. 
+3. Data transfer in vehcile network. UDP (Engineering phase) and CAN (Engineering + Production phase)
+4. MF4 log file content. Vector MDF logging.
+   UDP frames. Aptiv header + payload (chunks of streams).
+5. Types of logs - vehicle, dspace (virtual), bench, and chamber
+6. Why Resim? Who is the end user of Resim?
+7. SIL Engine 
+	Functionality, input, and output
+	SIL_Engine_Config.xml details. entry points - CDC, Detection, DSPACE. Output file formats. Mode - Continuous & Sequential
+	File list update in json file
+	Latching of stream data
+	Decoder details
+	Key APIs exported by Sensor/Embedded dlls
+		GetVersion(), Init(), Execute(), SetFolderPath(), Reset(), Exit()
+	Flow of cycle data from log --> SIL Engine --> Sensor Dll --> SIL Engine --> resimulated log
+	Build variants - release and debug. why release to customer?
+8. SW details
+	SIL Engine, MUDP extractor, Bordnet, orcas
+9. Software run:
+	a. SIL Engine on STLA Scale 1
+		Files generated - Orcas and CAN mf4
+	b. MUDP extractor
+		Files generated - Header and data dump 
+10. Details on SIL FW repos
+ 
+Action items ==>
+Exploring more on following:
+1. dll/so and lib/a
+2. UDP protocol. Writing sample client and server for UDP.
+3. CAN protocol.
+4. Linux APIs (https://broman.dev/download/The%20Linux%20Programming%20Interface.pdf) 
