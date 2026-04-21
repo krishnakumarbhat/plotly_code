@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8"/>
+    <title>PCAN Detection KPI</title>
+    <style>
+    body{font-family:Arial, sans-serif; margin:16px;}
+    h1{text-align:left;}
+    .tables-container{display:flex;flex-wrap:wrap;gap:12px;}
+    .table-wrapper{flex:1 1 300px; max-width:32%; border:1px solid #ccc; padding:6px; box-shadow:2px 2px 4px rgba(0,0,0,0.1);}
+    .scroll{max-height:220px; overflow-y:auto;}
+    table{border-collapse:collapse; width:100%; font-size:12px;}
+    th,td{border:1px solid #999; padding:4px; text-align:right;}
+    th{background:#5b9460; position:sticky; top:0;}
+    h3{margin:4px 0 8px; font-size:14px; text-align:center;}
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+    <h1>PCAN KPI</h1>
+    <h2>Detections matched (%) — All Radars</h2>
+    <div>                            <div id="cede8ce0-c05c-40e7-a843-5f48c9ecff10" class="plotly-graph-div" style="height:360px; width:1250px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("cede8ce0-c05c-40e7-a843-5f48c9ecff10")) {                    Plotly.newPlot(                        "cede8ce0-c05c-40e7-a843-5f48c9ecff10",                        [{"line":{"color":"red"},"marker":{"size":5},"mode":"lines+markers","name":"FLR","x":[1,2,3],"y":[89.36,96.76,91.68],"type":"scatter"},{"line":{"color":"green"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFL","x":[1,2,3],"y":[97.0,99.2,95.59],"type":"scatter"},{"line":{"color":"blue"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFR","x":[1,2,3],"y":[92.84,93.04,97.32],"type":"scatter"},{"line":{"color":"violet"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRL","x":[1,2,3],"y":[86.82,99.26,98.91],"type":"scatter"},{"line":{"color":"black"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRR","x":[1,2,3],"y":[91.68,86.61,89.24],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Detections matched (%) \u2014 All Radars"},"xaxis":{"title":{"text":"Log Index"},"zeroline":false,"showgrid":false,"type":"category"},"yaxis":{"title":{"text":"Percentage"},"zeroline":false,"showgrid":false,"range":[0,105]},"height":360,"width":1250,"showlegend":true,"hovermode":"closest"},                        {"responsive": true}                    )                };                            </script>        </div>
+    <h2>Timestamp-Scanindex match (%) — All Radars</h2>
+    <div>                            <div id="5947396a-675f-4f57-a1f9-de57ab594519" class="plotly-graph-div" style="height:360px; width:1250px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("5947396a-675f-4f57-a1f9-de57ab594519")) {                    Plotly.newPlot(                        "5947396a-675f-4f57-a1f9-de57ab594519",                        [{"line":{"color":"red"},"marker":{"size":5},"mode":"lines+markers","name":"FLR","x":[1,2,3],"y":[95.43,82.84,96.51],"type":"scatter"},{"line":{"color":"green"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFL","x":[1,2,3],"y":[99.31,99.66,98.66],"type":"scatter"},{"line":{"color":"blue"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFR","x":[1,2,3],"y":[94.45,89.61,93.29],"type":"scatter"},{"line":{"color":"violet"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRL","x":[1,2,3],"y":[78.51,54.85,3.68],"type":"scatter"},{"line":{"color":"black"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRR","x":[1,2,3],"y":[99.29,99.99,99.28],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Timestamp-Scanindex match (%) \u2014 All Radars"},"xaxis":{"title":{"text":"Log Index"},"zeroline":false,"showgrid":false,"type":"category"},"yaxis":{"title":{"text":"Percentage"},"zeroline":false,"showgrid":false,"range":[0,105]},"height":360,"width":1250,"showlegend":true,"hovermode":"closest"},                        {"responsive": true}                    )                };                            </script>        </div>
+    <h2>Alignment Elevation match (%) — All Radars</h2>
+    <div>                            <div id="ce42b379-6eb0-4970-863b-2b1d74938350" class="plotly-graph-div" style="height:360px; width:1250px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("ce42b379-6eb0-4970-863b-2b1d74938350")) {                    Plotly.newPlot(                        "ce42b379-6eb0-4970-863b-2b1d74938350",                        [{"line":{"color":"red"},"marker":{"size":5},"mode":"lines+markers","name":"FLR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"green"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFL","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"blue"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"violet"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRL","x":[1,2,3],"y":[0.0,0.0,0.0],"type":"scatter"},{"line":{"color":"black"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Alignment Elevation match (%) \u2014 All Radars"},"xaxis":{"title":{"text":"Log Index"},"zeroline":false,"showgrid":false,"type":"category"},"yaxis":{"title":{"text":"Percentage"},"zeroline":false,"showgrid":false,"range":[0,105]},"height":360,"width":1250,"showlegend":true,"hovermode":"closest"},                        {"responsive": true}                    )                };                            </script>        </div>
+    <h2>Alignment Azimuth match (%) — All Radars</h2>
+    <div>                            <div id="77c0cc13-34a9-4647-bc94-b83ff9916b12" class="plotly-graph-div" style="height:360px; width:1250px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("77c0cc13-34a9-4647-bc94-b83ff9916b12")) {                    Plotly.newPlot(                        "77c0cc13-34a9-4647-bc94-b83ff9916b12",                        [{"line":{"color":"red"},"marker":{"size":5},"mode":"lines+markers","name":"FLR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"green"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFL","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"blue"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fFR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"},{"line":{"color":"violet"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRL","x":[1,2,3],"y":[0.0,0.0,0.0],"type":"scatter"},{"line":{"color":"black"},"marker":{"size":5},"mode":"lines+markers","name":"SRR\u002fRR","x":[1,2,3],"y":[100.0,100.0,100.0],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Alignment Azimuth match (%) \u2014 All Radars"},"xaxis":{"title":{"text":"Log Index"},"zeroline":false,"showgrid":false,"type":"category"},"yaxis":{"title":{"text":"Percentage"},"zeroline":false,"showgrid":false,"range":[0,105]},"height":360,"width":1250,"showlegend":true,"hovermode":"closest"},                        {"responsive": true}                    )                };                            </script>        </div>
+    
+    <h2>Data Tables</h2>
+    <div style="margin-top: 30px;">
+        <div style="margin-bottom: 30px; border: 2px solid #ddd; border-radius: 8px; padding: 15px;">
+            <h3 style="font-family: Arial, sans-serif; color: #333; margin-bottom: 15px;">
+                FLR - Statistics Summary
+            </h3>
+            <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead style="position: sticky; top: 0; background-color: #4CAF50; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Filename</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_input </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_output </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">scanindex_used_for_comparison </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">timestamp-scanindex match (%)</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">dets parameter match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment elevation match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment azimuth match (matches/total) %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120641_0000_CEER_PCAN_FLR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">288</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">281</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">275</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">95.43</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(67280/75542) 89.36</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(286/286) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(286/286) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120656_0001_CEER_PCAN_FLR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">268</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">248</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">82.84</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(62776/64869) 96.76</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(279/279) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(279/279) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120711_0002_CEER_PCAN_FLR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">291</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">289</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">96.51</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(68896/75134) 91.68</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(297/297) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(297/297) 100.00</td>
+                            </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 30px; border: 2px solid #ddd; border-radius: 8px; padding: 15px;">
+            <h3 style="font-family: Arial, sans-serif; color: #333; margin-bottom: 15px;">
+                SRR_FL - Statistics Summary
+            </h3>
+            <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead style="position: sticky; top: 0; background-color: #4CAF50; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Filename</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_input </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_output </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">scanindex_used_for_comparison </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">timestamp-scanindex match (%)</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">dets parameter match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment elevation match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment azimuth match (matches/total) %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120641_0000_CEER_PCAN_FL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">289</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">287</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">287</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">99.31</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(46971/48419) 97.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120656_0001_CEER_PCAN_FL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">298</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">298</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">99.66</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(50687/51100) 99.20</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120711_0002_CEER_PCAN_FL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">297</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">295</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">98.66</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(49924/52215) 95.59</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                            </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 30px; border: 2px solid #ddd; border-radius: 8px; padding: 15px;">
+            <h3 style="font-family: Arial, sans-serif; color: #333; margin-bottom: 15px;">
+                SRR_FR - Statistics Summary
+            </h3>
+            <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead style="position: sticky; top: 0; background-color: #4CAF50; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Filename</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_input </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_output </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">scanindex_used_for_comparison </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">timestamp-scanindex match (%)</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">dets parameter match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment elevation match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment azimuth match (matches/total) %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120641_0000_CEER_PCAN_FR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">289</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">279</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">273</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">94.45</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(33277/35806) 92.84</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120656_0001_CEER_PCAN_FR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">281</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">268</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">89.61</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(32342/34751) 93.04</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120711_0002_CEER_PCAN_FR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">286</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">279</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">93.29</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(35397/36369) 97.32</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                            </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 30px; border: 2px solid #ddd; border-radius: 8px; padding: 15px;">
+            <h3 style="font-family: Arial, sans-serif; color: #333; margin-bottom: 15px;">
+                SRR_RL - Statistics Summary
+            </h3>
+            <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead style="position: sticky; top: 0; background-color: #4CAF50; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Filename</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_input </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_output </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">scanindex_used_for_comparison </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">timestamp-scanindex match (%)</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">dets parameter match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment elevation match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment azimuth match (matches/total) %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120641_0000_CEER_PCAN_RL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">289</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">252</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">227</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">78.51</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(34301/39409) 86.82</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/285) 0.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/285) 0.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120656_0001_CEER_PCAN_RL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">219</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">164</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">54.85</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(28858/29074) 99.26</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/298) 0.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/298) 0.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120711_0002_CEER_PCAN_RL.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">64</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">11</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">3.68</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(1997/2019) 98.91</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/245) 0.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(0/245) 0.00</td>
+                            </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 30px; border: 2px solid #ddd; border-radius: 8px; padding: 15px;">
+            <h3 style="font-family: Arial, sans-serif; color: #333; margin-bottom: 15px;">
+                SRR_RR - Statistics Summary
+            </h3>
+            <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <thead style="position: sticky; top: 0; background-color: #4CAF50; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Filename</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_input </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">decoded_scanindex_output </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">scanindex_used_for_comparison </th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">timestamp-scanindex match (%)</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">dets parameter match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment elevation match (matches/total) %</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">alignment azimuth match (matches/total) %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120641_0000_CEER_PCAN_RR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">289</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">287</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">287</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">99.29</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(52492/57257) 91.68</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(288/288) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120656_0001_CEER_PCAN_RR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">99.99</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(51528/59482) 86.61</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(299/299) 100.00</td>
+                            </tr>
+                
+                            <tr style="background-color: #f9f9f9;">
+                                <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: left;">CCA_9010_3100099_BUS_20260119_120711_0002_CEER_PCAN_RR.xml</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">299</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">297</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">297</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">99.28</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(52937/59324) 89.24</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                                <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">(298/298) 100.00</td>
+                            </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </body>
+    </html>
+    

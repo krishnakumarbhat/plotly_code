@@ -1,0 +1,20 @@
+{
+  "hdf_source_selection": "MUDP",
+  "config_file_used": "C:\\Users\\ouymc2\\Desktop\\merge\\config.json",
+  "results": [
+    {
+      "project": "udp",
+      "return_code": 0,
+      "command": [
+        "C:\\Users\\ouymc2\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "C:\\Users\\ouymc2\\Desktop\\merge\\UDP_KPI\\kpi_server.py",
+        "C:\\Users\\ouymc2\\Desktop\\merge\\UDP_KPI\\kpi.json",
+        "C:\\Users\\ouymc2\\Desktop\\merge\\out_html"
+      ],
+      "working_dir": "C:\\Users\\ouymc2\\Desktop\\merge\\UDP_KPI",
+      "skipped": false,
+      "stdout": "",
+      "stderr": "2026-03-05 17:39:23,476 - __main__ - INFO - Processing KPI batches from JSON: C:\\Users\\ouymc2\\Desktop\\merge\\UDP_KPI\\kpi.json\n2026-03-05 17:39:23,480 - __main__ - ERROR - Input HDF not found: C:/Users/ouymc2/Desktop/KPI_DB/CCA_9010_3100099_DEBUG_20250828_163718_0001 1 (1).h5\n2026-03-05 17:39:23,480 - __main__ - INFO - JSON batch processing completed\n"
+    }
+  ]
+}

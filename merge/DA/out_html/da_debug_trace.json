@@ -1,0 +1,89 @@
+{
+  "events": [
+    {
+      "ts": "2026-03-05T12:18:21+00:00",
+      "stage": "config_loaded",
+      "message": "Configuration loaded",
+      "payload": {
+        "workspace_root": "C:\\Users\\ouymc2\\Desktop\\merge\\DA",
+        "config_file": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\config.json",
+        "output_dir": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\out_html",
+        "xml_config": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\ConfigInteractivePlots.xml",
+        "inputs_json": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\inputs.json",
+        "hdf_source_selection": "MUDP",
+        "hdf_file_mode": "HDF_WITH_ALLSENSOR",
+        "run_int": false,
+        "pairs": [
+          {
+            "input": "C:\\Users\\ouymc2\\Downloads\\CCA_9010_3100099_DEBUG_20251006_145301_0004_ORCAS 3 (1).h5",
+            "output": "C:\\Users\\ouymc2\\Downloads\\4X_DET_INJ_LATEST_ORCAS 3.h5"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-03-05T12:18:21+00:00",
+      "stage": "routing",
+      "message": "Selected projects for execution",
+      "payload": {
+        "projects": [
+          "udp"
+        ]
+      }
+    },
+    {
+      "ts": "2026-03-05T12:18:21+00:00",
+      "stage": "pair_start",
+      "message": "udp pair 1 started",
+      "payload": {
+        "input": "C:\\Users\\ouymc2\\Downloads\\CCA_9010_3100099_DEBUG_20251006_145301_0004_ORCAS 3 (1).h5",
+        "output": "C:\\Users\\ouymc2\\Downloads\\4X_DET_INJ_LATEST_ORCAS 3.h5"
+      }
+    },
+    {
+      "ts": "2026-03-05T12:18:21+00:00",
+      "stage": "pair_done",
+      "message": "udp pair 1 completed",
+      "payload": {
+        "report": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\out_html\\udp\\udp_pair_1.html"
+      }
+    }
+  ],
+  "project_results": [
+    {
+      "project": "udp",
+      "return_code": 0,
+      "index_html": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\out_html\\udp\\index.html",
+      "pair_results": [
+        {
+          "pair_index": 1,
+          "status": "ok",
+          "report": "C:\\Users\\ouymc2\\Desktop\\merge\\DA\\out_html\\udp\\udp_pair_1.html",
+          "metrics": {
+            "input_dataset_count": 188,
+            "output_dataset_count": 188,
+            "common_dataset_count": 188,
+            "input_only_count": 0,
+            "output_only_count": 0,
+            "shape_match_pct": 0.0,
+            "dtype_match_pct": 100.0,
+            "input_sensor_count": 4,
+            "output_sensor_count": 4,
+            "input_sensors": [
+              "FL",
+              "FR",
+              "RL",
+              "RR"
+            ],
+            "output_sensors": [
+              "FL",
+              "FR",
+              "RL",
+              "RR"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

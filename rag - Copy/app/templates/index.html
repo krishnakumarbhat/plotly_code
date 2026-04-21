@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local RAG Chat</title>
+    <link rel="stylesheet" href="/static/chat.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <main class="chat-shell">
+      <header class="chat-header">
+        <div>
+          <h1>Local RAG Chat</h1>
+          <p>Fast local Qwen + local embeddings</p>
+        </div>
+        <button id="newSessionBtn" class="ghost-btn" type="button">New Session</button>
+      </header>
+
+      <section id="chatWindow" class="chat-window" aria-live="polite"></section>
+
+      <form id="chatForm" class="chat-form">
+        <textarea id="questionInput" placeholder="Ask anything about your ingested docs..." rows="2" required></textarea>
+        <button id="sendBtn" type="submit">Send</button>
+      </form>
+    </main>
+
+    <script src="/static/chat.js"></script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: python:3.10-slim
+
+%labels
+    Author Demo
+
+%post
+    apt-get update && apt-get install -y build-essential wget ca-certificates
+    pip install --upgrade pip
+    # install runtime dependencies (kept minimal)
+    pip install flask plotly pandas numpy
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+%runscript
+    echo "Singularity container runscript: will run /project/app.py if present"
+    if [ -f /project/app.py ]; then
+        cd /project
+        exec python app.py
+    else
+        echo "No /project/app.py found. Bind your project into /project or run /bin/bash"
+        exec /bin/bash
+    fi

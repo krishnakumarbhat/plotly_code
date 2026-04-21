@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tool_name }} - HPC Tools Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Tool Configuration -->
+        <div class="col-lg-8">
+            <!-- Quick Launch Card -->
+            <div class="card shadow-sm mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-play-circle"></i> Quick Launch - Log Viewer
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        Launch the interactive Log Viewer to browse, view and analyze HTML reports and videos.
+                        Connect to cluster or upload local files.
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('hyperlink_viewer_app') }}" class="btn btn-primary btn-lg" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i> Open Log Viewer
+                        </a>
+                        <button type="button" class="btn btn-outline-info" onclick="checkClusterStatus()">
+                            <i class="bi bi-info-circle"></i> Check Cluster Status
+                        </button>
+                    </div>
+                    <div id="clusterStatus" class="mt-3" style="display: none;">
+                        <!-- Cluster status will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-link-45deg"></i> {{ tool_name }} - Batch Processing
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Generate hyperlinks and navigation structures for reports via Slurm job. 
+                        For interactive viewing, use the Log Viewer above.
+                    </p>
+                    
+                    <form method="POST" id="toolForm">
+                        <div class="mb-3">
+                            <label for="input_path" class="form-label">Input File/Directory Path</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="input_path" name="input_path" 
+                                       placeholder="/path/to/your/reports" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="openFileBrowser()">
+                                    <i class="bi bi-folder2-open"></i> Browse
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="output_path" class="form-label">Output Directory (Optional)</label>
+                            <input type="text" class="form-control" id="output_path" name="output_path"
+                                   placeholder="Leave empty to use .cache_html in project folder">
+                            <small class="text-muted">Default: all_services/.cache_html</small>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="link_type" class="form-label">Link Type</label>
+                                <select class="form-select" id="link_type" name="link_type">
+                                    <option value="relative">Relative Links</option>
+                                    <option value="absolute">Absolute Links</option>
+                                    <option value="web">Web URLs</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="output_format" class="form-label">Output Format</label>
+                                <select class="form-select" id="output_format" name="output_format">
+                                    <option value="html">HTML Index</option>
+                                    <option value="json">JSON Manifest</option>
+                                    <option value="markdown">Markdown</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="recursive" name="recursive" checked>
+                                <label class="form-check-label" for="recursive">Scan Subdirectories</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="validate_links" name="validate_links">
+                                <label class="form-check-label" for="validate_links">Validate Links</label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info">
+                                <i class="bi bi-play-fill"></i> Submit Batch Job
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Jobs Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="bi bi-geo-alt"></i> Cluster Detection</h6>
+                </div>
+                <div class="card-body">
+                    <div id="clusterInfo">
+                        <p class="text-muted mb-2">Detecting cluster...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Recent Hyperlink Jobs</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for job in recent_jobs %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="d-block text-truncate" style="max-width: 200px;">
+                                        {{ job.input_filename or job.input_path.split('/')[-1] }}
+                                    </strong>
+                                    <small class="text-muted">{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <span class="badge 
+                                    {% if job.status == 'COMPLETED' %}bg-success
+                                    {% elif job.status == 'RUNNING' %}bg-info
+                                    {% elif job.status == 'QUEUED' %}bg-warning text-dark
+                                    {% elif job.status == 'FAILED' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ job.status }}
+                                </span>
+                            </div>
+                            {% if job.status == 'COMPLETED' and job.output_path %}
+                            <div class="mt-2">
+                                <a href="{{ url_for('hyperlink_viewer_app') }}?path={{ job.output_path }}" 
+                                   class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-eye"></i> View Result
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center text-muted py-4">
+                            No Hyperlink jobs yet
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Browser Modal -->
+<div class="modal fade" id="fileBrowserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-folder2-open"></i> Browse Files</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="fileBrowserContent" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="selectFileBtn" disabled>Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/file_browser.js') }}"></script>
+<script>
+// Check cluster status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetchClusterInfo();
+});
+
+function fetchClusterInfo() {
+    fetch('/api/cluster-info')
+        .then(response => response.json())
+        .then(data => {
+            const infoDiv = document.getElementById('clusterInfo');
+            let html = '';
+            
+            if (data.is_cluster) {
+                html = `
+                    <div class="alert alert-success mb-0">
+                        <strong><i class="bi bi-check-circle"></i> Running on ${data.name.toUpperCase()} cluster</strong>
+                        <p class="mb-0 mt-1 small">Direct data access available. No upload needed.</p>
+                    </div>`;
+            } else {
+                html = `
+                    <div class="alert alert-warning mb-0">
+                        <strong><i class="bi bi-laptop"></i> Running on local machine</strong>
+                        <p class="mb-0 mt-1 small">Connect to cluster or upload files in the Log Viewer.</p>
+                    </div>`;
+            }
+            
+            infoDiv.innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('clusterInfo').innerHTML = 
+                '<p class="text-danger mb-0">Could not detect cluster status</p>';
+        });
+}
+
+function checkClusterStatus() {
+    const statusDiv = document.getElementById('clusterStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = '<div class="spinner-border spinner-border-sm"></div> Checking...';
+    
+    fetch('/api/cluster-info')
+        .then(response => response.json())
+        .then(data => {
+            let html = '<div class="alert ';
+            if (data.is_cluster) {
+                html += 'alert-success">';
+                html += `<strong>Connected to ${data.name.toUpperCase()} cluster</strong><br>`;
+                html += `<small>Server IP: ${data.server_ip}<br>`;
+                html += `User: ${data.user}</small>`;
+            } else {
+                html += 'alert-info">';
+                html += '<strong>Running locally</strong><br>';
+                html += '<small>Use the Log Viewer to connect to a cluster or upload local files.</small>';
+            }
+            html += '</div>';
+            statusDiv.innerHTML = html;
+        })
+        .catch(err => {
+            statusDiv.innerHTML = '<div class="alert alert-danger">Error checking status: ' + err + '</div>';
+        });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,4 @@
+flask>=2.0
+plotly>=5.0
+pandas
+numpy

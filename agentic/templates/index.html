@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; color: #111827; }
+    .wrap { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    p { margin: 4px 0 16px; color: #4b5563; }
+    #chat { height: 420px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: #fafafa; }
+    .msg { margin: 10px 0; }
+    .user { font-weight: 700; color: #0f172a; }
+    .assistant { font-weight: 700; color: #1d4ed8; }
+    .bubble { white-space: pre-wrap; margin-top: 4px; }
+    .row { display: flex; gap: 8px; margin-top: 12px; }
+    input { flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; }
+    button { padding: 10px 14px; border: 0; border-radius: 8px; background: #2563eb; color: white; cursor: pointer; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .meta { margin-top: 10px; font-size: 12px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Work Chat</h1>
+      <p>Local LangGraph + Chroma RAG + GGUF model chat interface.</p>
+      <div id="chat"></div>
+      <div class="row">
+        <input id="message" type="text" placeholder="Ask something..." />
+        <button id="send">Send</button>
+      </div>
+      <div class="meta" id="status">Ready</div>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('message');
+    const send = document.getElementById('send');
+    const statusEl = document.getElementById('status');
+
+    function appendMessage(role, text) {
+      const block = document.createElement('div');
+      block.className = 'msg';
+      const who = document.createElement('div');
+      who.className = role === 'user' ? 'user' : 'assistant';
+      who.textContent = role === 'user' ? 'You' : 'Work';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      block.appendChild(who);
+      block.appendChild(bubble);
+      chat.appendChild(block);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage('user', message);
+      input.value = '';
+      send.disabled = true;
+      statusEl.textContent = 'Thinking...';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          appendMessage('assistant', `Error: ${data.error || 'request failed'}`);
+        } else {
+          appendMessage('assistant', data.answer || '[No answer]');
+          statusEl.textContent = data.needs_retrieval ? 'Retrieved context used' : 'Direct response path';
+        }
+      } catch (err) {
+        const text = String(err && err.message ? err.message : err);
+        if (text.toLowerCase().includes('failed to fetch')) {
+          appendMessage('assistant', 'Error: Backend is not reachable. Start flask_app.py and refresh this page.');
+          statusEl.textContent = 'Backend offline';
+        } else {
+          appendMessage('assistant', `Error: ${text}`);
+          statusEl.textContent = 'Request failed';
+        }
+      } finally {
+        send.disabled = false;
+        input.focus();
+      }
+    }
+
+    send.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>

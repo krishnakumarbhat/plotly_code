@@ -1,0 +1,11 @@
+llama-cpp-python>=0.3.8
+chromadb>=0.5.5
+flask>=3.0.0
+langchain>=0.3.14
+langchain-core>=0.3.29
+langchain-community>=0.3.14
+langgraph>=0.2.60
+langsmith>=0.2.6
+langfuse>=2.58.0
+opentelemetry-exporter-otlp-proto-common==1.39.1
+opentelemetry-exporter-otlp-proto-grpc==1.39.1

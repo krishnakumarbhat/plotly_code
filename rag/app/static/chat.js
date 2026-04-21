@@ -30,21 +30,7 @@ async function askQuestion(question) {
   });
 
   if (!response.ok) {
-    let detail = "";
-    try {
-      const errorJson = await response.json();
-      detail = (errorJson.error || errorJson.message || "").toString().trim();
-    } catch {
-      try {
-        detail = (await response.text()).trim();
-      } catch {
-        detail = "";
-      }
-    }
-    const message = detail
-      ? `Request failed: ${response.status} (${detail})`
-      : `Request failed: ${response.status}`;
-    throw new Error(message);
+    throw new Error(`Request failed: ${response.status}`);
   }
 
   return response.json();
