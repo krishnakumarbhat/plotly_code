@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- PACKETLOSS_TOOL RELEASE NOTES -->
+<Packetloss_Tool_V2.4_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.4</RELEASE_NAME>
+			  <TOOL_LABEL>V16.0.3</TOOL_LABEL>
+			  <Release_Date>27/01/2023</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>17952</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>2594</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_5_RELEASE>
+<Packetloss_Tool_V2.3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.3</RELEASE_NAME>
+			  <TOOL_LABEL>V16.0.2</TOOL_LABEL>
+			  <Release_Date> 6/13/2022</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>16623</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>2286</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</Packetloss_Tool_V2.3_RELEASE>
+<Packetloss_Tool_V2.3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.3</RELEASE_NAME>
+			  <TOOL_LABEL>V16.0.1</TOOL_LABEL>
+			  <Release_Date> 5/18/2022</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>16449</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>2234</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</Packetloss_Tool_V2.3_RELEASE>
+<Packetloss_Tool_V2.1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.1</RELEASE_NAME>
+			  <TOOL_LABEL>V15.0.4</TOOL_LABEL>
+			  <Release_Date> 18/11/2021</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>15062</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>1813</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</Packetloss_Tool_V2.1_RELEASE>
+<Packetloss_Tool_V2.1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.1</RELEASE_NAME>
+			  <TOOL_LABEL>V13.0.1</TOOL_LABEL>
+			  <Release_Date> 03/16/2021</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>13197</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>1270</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</Packetloss_Tool_V2.1_RELEASE>
+<Packetloss_Tool_V2.0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>PACKETLOSS_TOOL_V2.0</RELEASE_NAME>
+			  <TOOL_LABEL>V12.0.3</TOOL_LABEL>
+			  <Release_Date> 01/27/2020</Release_Date>
+		
+			<PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</PacketLoss_Tool_Plastic_Repo>
+			<PacketLoss_Tool_Plastic_Repo_CS>12744</PacketLoss_Tool_Plastic_Repo_CS>
+			<PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</PacketLoss_Tool_Release_Plastic_Repo>
+			<PacketLoss_Tool_Release_CS>1133</PacketLoss_Tool_Release_CS>
+			
+	  </RELEASE_DESCRIPTION>
+</Packetloss_Tool_V2.0_RELEASE>

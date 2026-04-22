@@ -1,0 +1,1957 @@
+<!-- MUDP_LOG_DATA_EXTRACTOR_TOOL RELEASE NOTES -->
+<MUDP_Log_Data_ExtractertoolV18_0_55_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_55</RELEASE_NAME>
+			  <Release_Date>14/02/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20626</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3703</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added Alignment signals in C2 core of STLA FLR4 and corrected timing info
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-4282 [STLA_SCALE1] Decoder changes required for vehicle data, timing info c1,c2, Alignment data
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_55_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_54_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_54</RELEASE_NAME>
+			  <Release_Date>13/02/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20600</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3698</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added Alignment signals in C2 core of STLA SRR6P.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-4286 [STLA_SCALE1] Add alignment signals to the decoder and extractor tool for C2 core
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_54_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_53_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_53</RELEASE_NAME>
+			  <Release_Date>09/02/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20596</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3690</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added CDC Saturation Status Column in Data Quality Report
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-4273[MUDP_DATA_QUALITY]: Add CDC SATURATION Status Column in Data Quality Report
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_53_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_52</RELEASE_NAME>
+			  <Release_Date>01/02/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20546</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3668</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.RECU dump issue resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-4256 : [MUDP]: Remove CALIB STREAM Stream Tx Count Message in Data Quality Report
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_51_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_51</RELEASE_NAME>
+			  <Release_Date>31/01/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20535</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3662</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.RECU dump issue resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-4254 : [BMW_SP25] Resimulated DC logs are not getting extracted
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_51_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_50_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_50</RELEASE_NAME>
+			  <Release_Date>29/01/2024</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20512</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3652</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Honda CSV Dump Extraction Issue Fix
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_50_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_04_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_04</RELEASE_NAME>
+			  <Release_Date>29/12/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20490</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3644</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Updated latest CCA lib 4.3.0 in windows and linux
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:4100 - [SIL_FW] [CCA] Latest CCA library integration - Verification
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			  
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_52</RELEASE_NAME>
+			  <Release_Date>29/12/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20408</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3614</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added logic for no sensors are enabled MUDP will not proceed.
+				2[MUDP_EXTRACTOR] error messages printing on console.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-884:[MUDP EXTRACTOR] Add error check incase no sensors are enabled.
+				GPC-666:CLONE - [MUDP_EXTRACTOR] error messages printing on console.
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_52</RELEASE_NAME>
+			  <Release_Date>29/12/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20408</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3614</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added logic for no sensors are enabled MUDP will not proceed.
+				2[MUDP_EXTRACTOR] error messages printing on console.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-884:[MUDP EXTRACTOR] Add error check incase no sensors are enabled.
+				GPC-666:CLONE - [MUDP_EXTRACTOR] error messages printing on console.
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_52_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_49_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_49</RELEASE_NAME>
+			  <Release_Date>07/12/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20284</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3556</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added RIVIAN Support in MUDP
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-774:[RIVIAN] Add support in extractor tool
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_49_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_48_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_48</RELEASE_NAME>
+			  <Release_Date>16/11/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20084</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3488</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.csv dumps crash issues fixed for STLA SCALE3
+				2.New Object class and status elements added in xml treaces for FLR4P
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-4079 [STLA_SCALE3] Issues in extractor tool
+				2.CYW-4112 [MUDP][FLR4P] Update object class and status in XML traces. 
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_48_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_47_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_47</RELEASE_NAME>
+			  <Release_Date>13/11/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20068</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3479</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Index count mismatching in CSV and XML for PLATFORM_FLR4P resolve.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-664:CLONE - [DECODER] [PLATFORM_FLR4P] Decoder update for Baracuda (R19)
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_47_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_46_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_46</RELEASE_NAME>
+			  <Release_Date>09/11/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20052</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3464</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Index count mismatching in CSV and XML for STLA_FLR4 resolve.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-604:CLONE - [Gen6][FLR4][Thunder]Stream update for Platform R19 SW
+			</JIRA_Tickets>
+			<Known_Issues>
+              1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			  2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			  3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_46_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_43_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_43</RELEASE_NAME>
+			  <Release_Date>07/11/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20045</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3464</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Detection and Tracks values in xml Dump is not proper for STLA FLR4P issue fix.
+				2.Output file crash issues fixed for HONDA
+				3.Detection and Tracks values in xml Dump is not proper for Honda issue fix.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-4092[MUDP] Detection values in xml Dump is not proper for STLA FLR4P
+				2.CYW-4091[MUDP] CSV File do not have scan index Info for STLA FLR4P
+				3.CYW-4090[MUDP]MUDP crashes on xml Dump of Honda SIL Resim MF4
+				4.CYW-4089[MUDP]Xml Dump tracker data not correct for STLA FLR4P
+				5.CYW-4096[MUDP]Missing Track Info in xml for HONDA_SRR6+_FUSION_20231006_HOND_SW8.1DCFUS_C1_004
+				6.CYW-4097[MUDP]Crash Observed on xml dump of HONDA_SRR6+_FUSION_20231006_HOND_SW8.1DCFUS_C1_004_r00080300.mf4
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_43_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_42_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_42</RELEASE_NAME>
+			  <Release_Date>06/11/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>20023</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3454</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1. xml Dump Tracker data is Missing for Honda SW90E9 Logs issues fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-4088 [MUDP]xml Dump Tracker data is Missing for Honda SW90E9 Logs
+
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_42_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_41_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_41</RELEASE_NAME>
+			  <Release_Date>31/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19978</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3442</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1. In XML traces - Valid dets count tag updated for STLA SCALE1
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-4052 [STLA-SCALE1] No.of dets is not printing valid numbers even if detections are present
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_41_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_40_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_40</RELEASE_NAME>
+			  <Release_Date>27/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19954</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3429</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Tracker stream extraction is not working properly in XML traces issue fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-4070 [PLT_FLR4P][MUDP] Tracker stream extraction is not working properly in XML Mode
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_40_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_39_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_39</RELEASE_NAME>
+			  <Release_Date>20/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19924</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3419</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added support for FLR4P New stream order support for component streams and fixed the data quality isses. 
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-3942 [MUDP_EXTRACTOR] FLR4P New stream order support for component streams
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_39_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_38_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_38</RELEASE_NAME>
+			  <Release_Date>18/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19914</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3413</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.MUDP Extractor Console Print Changes Alignment Change , Platform changed to GPO and Radar Information added for Platform.
+				2.STLA SCALE1, STLA SCALE3 and STLA SCALE4 cust id support added.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-3899[MUDP_EXTRACTOR][DSPACE] Console print and Dataquality is incorrect
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_38_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_37_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_37</RELEASE_NAME>
+			  <Release_Date>10/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19871</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3386</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Data quality report has incorrect RESIM_STATUS
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-3864[PACKET_LOSS_TOOL]Data quality report has incorrect RESIM_STATUS
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_37_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_36_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_36</RELEASE_NAME>
+			  <Release_Date>09/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19836</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3379</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Memory leak issue resolved
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.GPC-512:CLONE - [MUDP_EXTRACTOR] [FLR4P]Stream data and XML Traces extraction causing exception
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_36_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_35_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_30</RELEASE_NAME>
+			  <Release_Date>03/10/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19770</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3362</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1. Added Platform GEN5 & SCALE4 Bpils support added in MUDP.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1. CYW-3904 [MUDP_EXTRACTOR]MUDP Extractor support for B pillar - GPO & STLA SRR6P
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_35_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_34_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_30</RELEASE_NAME>
+			  <Release_Date>29/09/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19747</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3358</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Calibration strem version printing in the console
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-3900 - [MUDP_EXTRACTOR] Calibration stream version not printed for FLR4P
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_34_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_30_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_30</RELEASE_NAME>
+			  <Release_Date>14/09/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19698</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3323</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Platform srr6p xml support added.
+				2.Detections issues fixed for STLA_FLR4 - xml traces
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				1.CYW-3846: [MUDP][Platform_SRR6P] Add Xml traces support
+				2.CYW-3884: [MUDP][STLA_FLR4] detections not printing in XML traces
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_30_RELEASE>
+<MUDP_Log_Data_ExtractertoolV18_0_29_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV18_0_29</RELEASE_NAME>
+			  <Release_Date>05/09/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19546</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3201</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1. Added CSV split support in MUDP tool
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				GPC-193: MUDP tool support for CSV Split-Columns wise for stream data extraction - Subtask for Linux
+				GPC-268: MUDP tool support for CSV Split-Windows
+				GPC-327: MUDP tool support for CSV Split-Windows-Extend
+			</JIRA_Tickets>
+			<Known_Issues>
+             1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV18_0_29_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_28_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_28</RELEASE_NAME>
+			  <Release_Date>23/08/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19457</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3201</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1. Added Tracker XML Traces support for FLR4P in MUDP tool
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3775: [MUDP][STLA_FLR4P] Add xml traces support for tracker stream
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_28_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_27_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_27</RELEASE_NAME>
+			  <Release_Date>23/08/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19449</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3197</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.Added new Debugging logging stream support in MUPD 
+				2.Updated config version to 2.7 and added new debug stream tag in config xml
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3780: [PLATFORM][FLR4p] [MUDP]:Add support for new debug_logging_stream FLR4p Platform Logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_27_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_26_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_26</RELEASE_NAME>
+			  <Release_Date>18/08/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19367</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3176</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.MUDP- Linux build issues fix, commented All CSV Splitter files. 
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_26_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_25_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_25</RELEASE_NAME>
+			  <Release_Date>14/08/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19343</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3150</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				1.STLA_SCALE1 console issues fixed.
+				2.decoder stream version colom added on console.
+				3.cdc support added for flr4.
+				4.Tracker stream issues fixed for STLA_FLR4P.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3742: [STLA_SCALE1][MUDP_EXTRACTOR] verification Stream Version info table update on console
+				CYW-3762: [STLA_FLR4P] MUDP extraction detections and size mismatch issues
+				CYW-3722: [STLA_SCALE1][MUDP_EXTRACTOR] Stream Version info table update on console
+				CYW-3715: [FLR4][DECODER]:Decoder update for CDC stream
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_25_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_24_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_24</RELEASE_NAME>
+			  <Release_Date>27/07/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19219</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3059</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.CDC data extractable with MUDP Extractor
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3709- [MUDP][PLATFORM] unable to extract CDC data
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_24_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_23_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_23</RELEASE_NAME>
+			  <Release_Date>18/07/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19148</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3035</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.XML Traces verification with Vehicle logs for STLA-FLR4
+			 2.Support added for VIGEM Mf4 in MUDP for STLA_SCALE1 
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3354 [FLR4-STLA] XML Traces verification with Vehicle logs.
+				CYW-3503 [FLR4-STLA] [MUDP_EXTRACTOR] Support to be added for VIGEM Mf4
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_23_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_22_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_22</RELEASE_NAME>
+			  <Release_Date>10/07/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>19100</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>3010</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.OSI Stream Extraction Support for NISSAN and HONDA is Supported
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3244: [MUDP Extractor] OSI Stream extraction support required for Nissan and Honda
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_22_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_19_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_19</RELEASE_NAME>
+			  <Release_Date>20/06/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>18986</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2941</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.Xml Tags Issues fixed for STLA_SCALE1
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3445: [MUDP_EXTRACTOR] All tags printing on XML_TRACE files for bench/ vehicle logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_19_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_19_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_19</RELEASE_NAME>
+			  <Release_Date>15/06/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>18945</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2922</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.CSV dump and  XML extraction for STLA SCALE1 [5 sensores ] data.
+			 2.DATA QUALITY issues for INPUT and OUTPUT logs SCANINDEX count.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3238- [STLA-FLR4][EXTRACTOR TOOL] Issues observed in extractor tool
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_19_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_18_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_18</RELEASE_NAME>
+			  <Release_Date>25/05/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2863</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1.TRACKER STREAM support added.Tacker tag also added in config. Now config version 2.6
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3439 - [MUDP]: Add Tracker Stream Support
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_18_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_17_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_17</RELEASE_NAME>
+			  <Release_Date>18/05/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2840</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. Look Index and Look ID Values will be printed with The Details.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3418 - [MUDP_XML_TRACES] : Print Look ID and Look Type Details in XML Traces
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_17_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_16_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_16</RELEASE_NAME>
+			  <Release_Date>13/03/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2678</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. FC data support added in xml trace of dspace logs.
+			 2. Added few parameters to output orcas mf4 detection print for CORE 2.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3217 - [STLA][EXTRACTOR TOOL] FC data to be extracted to xml trace for DSPACE logs
+				CYW-3218 - [STLA] RESIM output ORCAS file extractable to CSV for 5 radars
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_16_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_15_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_15</RELEASE_NAME>
+			  <Release_Date>10/03/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2673</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. HONDA_SRR6P dSPACE to XML TRACES is Added
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3214 - [HONDA_SRR6P] : MUDP Packetloss Check for SCAN_INDEX Drop
+				CYW-3188 - [MUDP]: dSPACE Logs to XML_TRACES Support Need to be added.
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_15_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_13_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_13</RELEASE_NAME>
+			  <Release_Date>09/03/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2668</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. Issue with multiple xml generation is fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3201 -[MUDP_Extractor] : Data Quality Report For THUNDER_FLR4 and THUNDER_SRR6P Logs
+				CYW-3209 -[MUDP_EXTRACTOR] Data quality/HDR/Stream data extraction support for DSAPCE logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_13_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_10_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_10</RELEASE_NAME>
+			  <Release_Date>07/03/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2660</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. Issue with multiple xml generation is fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3205 - [EXTRACTOR_TOOL] Xml creation based on sensor position is not working
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_10_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_9_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_9</RELEASE_NAME>
+			  <Release_Date>06/03/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2659</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. Detection and tracks print added for dspace xml trace for STLA logs.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3190 - [EXTRACTOR TOOL] Add xml support for dspace mode for STLA SRR6P
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_9_RELEASE>
+<MUDP_Log_Data_ExtractertoolV17_0_4_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV17_0_4</RELEASE_NAME>
+			  <Release_Date>19/01/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2594</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. Checksum error condition added for calculating status of RESIM in log quality summary.
+			 2. Log quality summary will npt be printed twice as before and status of resim and packet loss tool is made as two seperate columns.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3052
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV17_0_4_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_5_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_5</RELEASE_NAME>
+			  <Release_Date>03/01/2023</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS></MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2577</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+			 1. f_list_gen.py added to MUDP extractor tool folder. script required to generate list of file paths in jenkins job run. 
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-3041
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_5_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_5_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_5</RELEASE_NAME>
+			  <Release_Date>06/09/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>17120</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2415</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2799
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_5_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_3</RELEASE_NAME>
+			  <Release_Date>20/07/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16844</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2349</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2667
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_3_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_3</RELEASE_NAME>
+			  <Release_Date>20/06/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16666</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2295</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2647
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_3_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_2</RELEASE_NAME>
+			  <Release_Date>13/06/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16623</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2286</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2621
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_2_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_2</RELEASE_NAME>
+			  <Release_Date>24/05/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16497</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2245</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2579
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_2_RELEASE>
+<MUDP_Log_Data_ExtractertoolV16_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_1</RELEASE_NAME>
+			  <Release_Date>17/05/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16449</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2232</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_1_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV16_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV16_0_0</RELEASE_NAME>
+			  <Release_Date>15/03/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16080</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2146</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2309[Honda_SRR6P]: MUDP Extractor Support
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV16_0_0_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_9_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_8</RELEASE_NAME>
+			  <Release_Date>15/03/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16034</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2131</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2472 :[MUDP_Extractor] Crash observed from RadarMudpPrintHeader function after merge from main
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_9_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_8_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_8</RELEASE_NAME>
+			  <Release_Date>22/02/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>16004</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2128</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2430 :[Packetloss Tool]: Packetloss tool identifies the log as BAD LOG
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_8_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_7_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_7</RELEASE_NAME>
+			  <Release_Date>22/02/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>15813</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>2070</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2428:[MUDP_Extractor] : For Converted PCAP to VIGEM Log Data Quality Report is not getting generated
+				CYW-2440 : [Nissan_SRR6]: [MUDP_Extractor] To test the tool for new logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_7_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_5_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_5</RELEASE_NAME>
+			  <Release_Date>07/01/2022</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>15419</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1953</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_5_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV15_0_4_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_4</RELEASE_NAME>
+			  <Release_Date>18/11/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>15062</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1813</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_4_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_2</RELEASE_NAME>
+			  <Release_Date>27/8/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>14558</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1660</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-2056:[MUDP Extractor]: Autera Logs to use MDF Vector Lib Always from HDR and Data Dump
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_2_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_2</RELEASE_NAME>
+			  <Release_Date>30/7/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>14431</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1616</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1975:[MUDP_Extractor]: XML Extraction - RNA SRR5 (CDV / SUV )
+						[MUDP_Extractor]: XML Extraction - Changan SRR5
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_2_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV15_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_0</RELEASE_NAME>
+			  <Release_Date>30/7/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>14389</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1596</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-2027: [MUDP_Extractor]: Update to latest CCA Lib V 3.0.6
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			 3.AUTERA logs extraction will fail if CCA library is set to 1 in xml.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_1_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_0</RELEASE_NAME>
+			  <Release_Date>5/3/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>14166</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1565</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-2010: [MUDP_Extractor]: Self/Opposite detections and Tracker values are mismatching compared with Input
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_1_RELEASE>
+<MUDP_Log_Data_ExtractertoolV15_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV15_0_0</RELEASE_NAME>
+			  <Release_Date>5/3/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>14166</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1519</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1990: [MUDP_Extractor]: Develop cca ViGEM library based CAN & ETH data & PLP timestamp dump tool
+						CYW-1992: [MAN_SRR3]: MUDP Extractor Testing DSPACE Streams
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV15_0_0_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV14_0_4_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV14_0_4</RELEASE_NAME>
+			  <Release_Date>5/3/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13893</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1442</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1939: [MUDP_Extractor]: Update MUDP Created XML files - Single and Multiple XML files
+						CYW-1951: [MUDP Extractor]:Packet loss report on new vehicle logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV14_0_4_RELEASE>
+<MUDP_Log_Data_ExtractertoolV14_0_3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV14_0_3</RELEASE_NAME>
+			  <Release_Date>5/3/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13819</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1408</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1905: [MAN_SRR3]: [MUDP]: Extraction and validation of CDC frames to CSV
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV14_0_3_RELEASE>
+<MUDP_Log_Data_ExtractertoolV14_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV14_0_1</RELEASE_NAME>
+			  <Release_Date>5/3/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13664</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1370</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1798: [MAN_SRR3]: [MUDP_Extractor] : Add Support for DSPACE MAN Frames 5x
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV14_0_1_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV14_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV14_0_0</RELEASE_NAME>
+			  <Release_Date>19/04/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13553</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1329</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1798: [MAN_SRR3]: [MUDP_Extractor] : Add Support for DSPACE MAN Frames 5x
+						CYW-1815: [MUDP EXTRACTOR]: Scanindex drop count for cdc is very large
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV14_0_0_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV13_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV12_0_4</RELEASE_NAME>
+			  <Release_Date>2/04/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13197</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1255</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1790: Resim Toolset Z7A Z7B Extraction Issue CS 1248
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV13_0_1_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV13_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV12_0_4</RELEASE_NAME>
+			  <Release_Date>2/04/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>13139</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1163</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1744: STAND ALONE Decoder changes updated
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV13_0_0_RELEASE>
+<MUDP_Log_Data_ExtractertoolV12_0_4_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV12_0_4</RELEASE_NAME>
+			  <Release_Date>2/04/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>12867</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1163</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+						CYW-1688 :[MUDP EXTRACTOR]: Scanindex overflow check for sensors - Sensor Reset		
+						CYW-1710: [SGM_SRR5] :- MUDP Extractertool update
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV12_0_4_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV12_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV12_0_1</RELEASE_NAME>
+			  <Release_Date>1/19/2021</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>12522</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1106</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+								
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV12_0_1_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV11_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV11_0_0</RELEASE_NAME>
+			  <Release_Date> 12/1/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>12328</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>1052</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1503 :[MUDP_Extractor]:8. Add Xsum Failure counts to overall statistics . -> Radars + ECU + Internals (F360 and GDSR )
+				CYW-1585 : [MUDP_Extractor]:Verification of Packet loss tool for BMW				
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV11_0_0_RELEASE>
+<MUDP_Log_Data_ExtractertoolV10_0_7_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_7</RELEASE_NAME>
+			  <Release_Date> 10/23/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11970</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>987</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1511:[HKMC_SRR] MUDP Log extraction tool update for the stream data extraction
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_7_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV10_0_6_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_6</RELEASE_NAME>
+			  <Release_Date> 10/20/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11928</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>983</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1470:[MUDP_Extractor]:RECU+SENSORS Detailed info is not properly writing to Report
+				CYW-1273:[BMW-SRR5][MUDP-Extractor][MID] ECU3-Stream extraction does not work on many logs
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_6_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV10_0_3_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_1</RELEASE_NAME>
+			  <Release_Date> 9/30/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11660</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>945</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1458:[MUDP_Extractor]:Adding Third Command line argument to MUDP
+			</JIRA_Tickets>
+			<Known_Issues>
+			 1.logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			 2.with third command line argument  option in docker run one error is printing need to handle this but results are as expected
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_3_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV10_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_1</RELEASE_NAME>
+			  <Release_Date> 9/25/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11564</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>933</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				
+			</JIRA_Tickets>
+			<Known_Issues>
+			 logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_2_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV10_0_1_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_1</RELEASE_NAME>
+			  <Release_Date> 8/26/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11080</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>863</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				Option enabled to get only detailed info and to get only packetloss statistics
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1144::[MUDP_Extractor]:  Print statements for good log and condition check for Detailed info printing
+			</JIRA_Tickets>
+			<Known_Issues>
+			
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_1_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV10_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV10_0_0</RELEASE_NAME>
+			  <Release_Date> 8/26/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11080</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>863</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				overall summery table added at end of  packet loss report
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				[MUDP_Extractor]: Implementaion of Overall Summary
+			</JIRA_Tickets>
+			<Known_Issues>
+			 logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV10_0_0_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV9_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV9_0_0</RELEASE_NAME>
+			  <Release_Date> 25/8/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>11021</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>853</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<JIRA_Tickets>
+				CYW-1039 :[MUDP Extractor]: Change Input file list from txt file to Json file
+			</JIRA_Tickets>
+			
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV9_0_0_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV8_0_6_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV8_0_6</RELEASE_NAME>
+			  <Release_Date> 8/18/2020</Release_Date>
+		
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>10858</MUDP_Extractor_PacketLoss_Tool_Plastic_Repo_CS>
+			<MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</MUDP_Extractor_PacketLoss_Tool_Release_Plastic_Repo>
+			<MUDP_Extractor_PacketLoss_Tool_Release_CS>833</MUDP_Extractor_PacketLoss_Tool_Release_CS>
+			
+			<ChangeLog_Details>
+				cca_library issue in creating packetloss reports is fixed and Removed negative timestamp to check Async BiT
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1095:[MUDP Extractor] : Fix issue for async counter and not to consider negative timestamp to check Async Bit.
+			</JIRA_Tickets>
+			<Known_Issues>
+			 logs which starts with cal running count 0 and cal source 0 for first scan index of the log wrong statement printing ---> ex: [ In scan_Index  = 5899 duplicate cal_source found = 0 ] : need to handle this.
+			</Known_Issues>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV8_0_6_RELEASE>
+
+
+<MUDP_Log_Data_ExtractertoolV8_0_5_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV8_0_5</RELEASE_NAME>
+			  <Release_Date> 21-07-2020</Release_Date>
+			  <Framework_Release_Repo_CS>755</Framework_Release_Repo_CS>
+			
+			  <JIRA_Tickets>
+			    - CYW-993: Calib issue observed in Radars when running multiple logs
+			  </JIRA_Tickets>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV8_0_5_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV8_0_2_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV8_0_2</RELEASE_NAME>
+			  <Release_Date> 14-04-2020</Release_Date>
+			  <Framework_Release_Repo_CS>569</Framework_Release_Repo_CS>
+			
+			  <JIRA_Tickets>
+			    - CYW-763:MUDP Extractor -> XML file [Create Single XML File for all Radars /ECU ] 
+			    - CYW-720:Update MUDP Extractor tool / Packet Loss Report to Calculate KPI Errors for Probe Time Sync Error (PLP TS)
+			    - CYW-801:Update Tests for RECU Calibration Stream - Resim SIL Engine
+			    - CYW-800:Update Tests for RECU Calibration Stream - Packet loss Tool
+			  </JIRA_Tickets>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV8_0_2_RELEASE>
+
+
+<MUDP_Log_Data_ExtractertoolV8_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV8_0_0</RELEASE_NAME>
+			  <Release_Date> 14-04-2020</Release_Date>
+			  <Framework_Release_Repo_CS>503</Framework_Release_Repo_CS>
+			
+			  <JIRA_Tickets>
+			    - CYW-730: RECU MUDP Extractor -> XML file Windows 
+			    - CYW-447: MUDP Extractor / Packet Loss Tool - Shall work in Continuous mode Across files.
+			    - CYW-715: MUDP Extractor tool to take Packet loss / Extraction /Both XML file – Linux
+			    - CYW-607:MUDP extractor Create Embedded Lib UDP XML files - HIL Port Data (Wireshark)
+                - CYW-605:MUDP extractor Create Embedded Lib UDP XML files - ORCAS Input
+			  </JIRA_Tickets>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV8_0_0_RELEASE>
+
+
+<MUDP_Log_Data_ExtractertoolV7_0_5_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV7_0_5</RELEASE_NAME>
+			  <Release_Date> 11-12-2020</Release_Date>
+			  <Framework_Release_Repo_CS>410</Framework_Release_Repo_CS>
+			
+			  <JIRA_Tickets>
+			    - CYW-438:Test completely the PACKET LOSS tool for all error case.
+			    - CYW-462: Implement Read operation using Vigem lib in MUDP Extractor Tool.
+			    - CYW-494: SourceTXn Count drop should be handled in  the packet loss tool
+			  </JIRA_Tickets>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV7_0_5_RELEASE>
+
+<MUDP_Log_Data_ExtractertoolV6_0_0_RELEASE>
+		<RELEASE_DESCRIPTION>
+			  <RELEASE_NAME>MUDP_Log_Data_ExtractertoolV6_0_0</RELEASE_NAME>
+			  <Release_Date> 16-10-2019</Release_Date>
+			  <Framework_Release_Repo_CS>340</Framework_Release_Repo_CS>
+			
+			  <JIRA_Tickets>
+			    - CYW-15: Packet Loss Reporting to be ported to Extractor tool.
+			  </JIRA_Tickets>
+	  </RELEASE_DESCRIPTION>
+</MUDP_Log_Data_ExtractertoolV6_0_0_RELEASE>
+		

@@ -1,0 +1,23 @@
+{
+	"reprocessingInputFileStreams":
+	[
+		{
+			"key": "BN_CALIFR",
+				"files": [
+					"C:/Logs/STLA/CYW_3070/LogExtract/BMW-HIGH-DSPACE/RCTB_90_Approaching_left_50kmph_sm2.dvsu"
+					 ]
+		},
+		{
+			"key": "BN_FASETH",
+				"files": [
+					"C:/Logs/STLA/CYW_3070/LogExtract/BMW-HIGH-DSPACE/RCTB_90_Approaching_left_50kmph_sm2.dvsu"
+					 ]
+		},
+		{
+			"key": "SRR_DEBUG",
+				"files": [
+					"C:/Logs/STLA/CYW_3070/LogExtract/BMW-HIGH-DSPACE/RCTB_90_Approaching_left_50kmph_sm2.dvsu"
+					 ]
+		}
+	]
+}
