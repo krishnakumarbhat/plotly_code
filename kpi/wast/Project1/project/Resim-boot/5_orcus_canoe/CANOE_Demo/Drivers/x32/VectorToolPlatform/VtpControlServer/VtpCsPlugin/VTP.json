@@ -1,0 +1,2520 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "VTP Automation Interface",
+    "description": "This is the OpenAPI documentation of the VTP Automation Interface.\r\n\r\nDepending on the installed applications, you can select different API definitions.\r\n\r\nUsing an OpenAPI generator, you can generate the client code for the programming language that best suits your automation environment.",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/vtp/v1/Applications": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Gets all VTP applications installed.",
+        "description": "Returns all VTP applications installed on the device in a JSON string.",
+        "operationId": "api/vtp/v1/applications_GET",
+        "responses": {
+          "200": {
+            "description": "JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationModel"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationModel"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Installs a VTP application.",
+        "description": "Installs a VTP application. Expects the VTP application as binary content in the requests body.",
+        "operationId": "api/vtp/v1/applications_POST",
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Applications/{id}": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Gets a specific VTP application.",
+        "description": "Gets a specific VTP application by its identifier. Expects the parameter {id} as string in the query.\r\n            If the identifier is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}_GET",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON string formatted application model",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Deletes a specific VTP application.",
+        "description": "Deletes a specific VTP application by its identifier. Expects the parameter {id} as string in the query.\r\n            If the identifier is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}_DELETE",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Applications/{id}/Enable": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Enables a specific VTP application.",
+        "description": "Enables a specific VTP application by its identifier. Expects the parameter {id} as string in the query.\r\n            If the identifier is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}/enable_PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Applications/{id}/Disable": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Disables a specific VTP application.",
+        "description": "Disables a specific VTP application by its identifier. Expects the parameter {id} as string in the query.\r\n            If the identifier is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}/disable_PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Applications/{id}/Start": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Starts a specific VTP application.",
+        "description": "Starts a specific VTP application by its identifier. Expects the parameter {id} as string in the query and its alias in the header of the request.\r\n            If the identifier or alias is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}/start_PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "alias",
+            "in": "header",
+            "description": "Represents the alias of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Applications/{id}/Stop": {
+      "put": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Stops a specific VTP application.",
+        "description": "Stops a specific VTP application by its identifier. Expects the parameter {id} as string in the query and its alias in the header of the request.\r\n            If the identifier or alias is not known, query for all applications and look for your desired applications displayed parameters.",
+        "operationId": "api/vtp/v1/applications/{id}/stop_PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Represents the identifier of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "alias",
+            "in": "header",
+            "description": "Represents the alias of a VTP application.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Certificates/{store}": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Gets a list of all certificates of a specific store.",
+        "description": "Gets a list of all certificates of a specific store. Expects the certificate stores name as parameter {store} as string in the query.",
+        "operationId": "api/vtp/v1/certificates/{store}_GET",
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Represents the name of the certificate store.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VCertStore"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateModel"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CertificateModel"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Removes a certificate from a certificate store.",
+        "description": "Remove the certificate identified by header parameters. Expects the certificate stores name as parameter {store} as string in the query.\r\n            Expects the values for Hash, Subject, Issuer, NotBefore, NotAfter in the requests header as string parameters.",
+        "operationId": "api/vtp/v1/certificates/{store}_DELETE",
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Represents the name of the certificate store.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VCertStore"
+            }
+          },
+          {
+            "name": "Hash",
+            "in": "header",
+            "description": "Hash of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Subject",
+            "in": "header",
+            "description": "Subject of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Issuer",
+            "in": "header",
+            "description": "Issuer of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NotBefore",
+            "in": "header",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NotAfter",
+            "in": "header",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Adds a certificate to a certificate store.",
+        "description": "Adds a certificate to a certificate store. Expects the certificate stores name as parameter {store} as string in the query.\r\n            Expects the certificates name in the requests header as string parameter.\r\n            Expects the certificate as binary content in the requests body.",
+        "operationId": "api/vtp/v1/certificates/{store}_POST",
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Represents the name of the certificate store.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VCertStore"
+            }
+          },
+          {
+            "name": "fileName",
+            "in": "header",
+            "description": "Represents the name including file extension of the certificate.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Certificates/{store}/Base64": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Gets a certificate in Base64 format.",
+        "description": "Gets a certificate identified by header parameters in Base64 format. Expects the certificate stores name as parameter {store} as string in the query.\r\n            Expects the values for Hash, Subject, Issuer, NotBefore, NotAfter in the requests header as string parameters.",
+        "operationId": "api/vtp/v1/certificates/{store}/base64_GET",
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Represents the name of the certificate store.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VCertStore"
+            }
+          },
+          {
+            "name": "Hash",
+            "in": "header",
+            "description": "Hash of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Subject",
+            "in": "header",
+            "description": "Subject of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Issuer",
+            "in": "header",
+            "description": "Issuer of the certificate, formatted as string.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NotBefore",
+            "in": "header",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NotAfter",
+            "in": "header",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/ChannelConfiguration": {
+      "get": {
+        "tags": [
+          "ChannelConfiguration"
+        ],
+        "summary": "Gets the current channel configuration.",
+        "description": "Gets the current channel configuration of the device. Returns the file stream that can be written to disk as a *.vtpcc file containing the configuration in JSON format.",
+        "operationId": "api/vtp/v1/channelconfiguration_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Stream containing the channel configuration",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ChannelConfiguration"
+        ],
+        "summary": "Imports a channel configuration.",
+        "description": "Imports a channel configuration to the device.\r\n            Expects a valid *.vtpcc file as binary content in the requests body.",
+        "operationId": "api/vtp/v1/channelconfiguration_PUT",
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/ChannelConfiguration/DriverSyncState": {
+      "get": {
+        "tags": [
+          "ChannelConfiguration"
+        ],
+        "summary": "Gets the USB driver synchronization state.",
+        "description": "Gets the current state of the USB driver synchronization of the device.",
+        "operationId": "api/vtp/v1/channelconfiguration/driversyncstate_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "JSON string formatted USB driver synchronization state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsbDriverSyncStateModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsbDriverSyncStateModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ChannelConfiguration"
+        ],
+        "summary": "Sets the state of the USB driver synchronization.",
+        "description": "Sets the current state of the USB driver synchronization of the device.\r\n            Expects the state as Boolean parameter in the query.",
+        "operationId": "api/vtp/v1/channelconfiguration/driversyncstate_PUT",
+        "parameters": [
+          {
+            "name": "enabled",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "JSON string formatted USB driver synchronization state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsbDriverSyncStateModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsbDriverSyncStateModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DateAndTime": {
+      "get": {
+        "tags": [
+          "DateAndTime"
+        ],
+        "summary": "Gets the date and time settings.",
+        "description": "Gets the date and time settings of the device, formatted as JSON string.",
+        "operationId": "api/vtp/v1/dateandtime_GET",
+        "responses": {
+          "200": {
+            "description": "JSON string formatted date and time settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeInfoModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DateAndTime"
+        ],
+        "summary": "Sets the date and time settings.",
+        "description": "Sets the date and time settings of the device to the settings provided in the requests body.\r\n            Expects the settings in JSON format, analog to the response of the corresponding GET request. Expects at least a valid entry for dateTime and timeZoneInfo.",
+        "operationId": "api/vtp/v1/dateandtime_PUT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DateTimeInfoModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DateTimeInfoModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DateTimeInfoModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Plain text string.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/DiskInfo": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets hard disk information.",
+        "description": "Gets the free and used space of the devices hard disk.",
+        "operationId": "api/vtp/v1/deviceinfos/diskinfo_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Hard disk information, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiskSpaceInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiskSpaceInfoModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/Version": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets VTP version information.",
+        "description": "Gets the VTP version installed on the device.",
+        "operationId": "api/vtp/v1/deviceinfos/version_GET",
+        "responses": {
+          "200": {
+            "description": "Version information, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/ImageInfo": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets VTP image information.",
+        "description": "Gets the image information of the image installed on the device.",
+        "operationId": "api/vtp/v1/deviceinfos/imageinfo_GET",
+        "responses": {
+          "200": {
+            "description": "Image information, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfoModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/OperatingSystem": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the Operating System.",
+        "description": "Gets the Operating System (OS) of the device.",
+        "operationId": "api/vtp/v1/deviceinfos/operatingsystem_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OS information, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatingSystemInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatingSystemInfoModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/HostName": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the host name.",
+        "description": "Gets the host name of the device.",
+        "operationId": "api/vtp/v1/deviceinfos/hostname_GET",
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/ArticleNumber": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the article number.",
+        "description": "Gets the article number of the device.",
+        "operationId": "api/vtp/v1/deviceinfos/articlenumber_GET",
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/SerialNumber": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the serial number.",
+        "description": "Gets the serial number of the device.",
+        "operationId": "api/vtp/v1/deviceinfos/serialnumber_GET",
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/DeviceDescription": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the device description.",
+        "description": "Gets the device description set by the user.",
+        "operationId": "api/vtp/v1/deviceinfos/devicedescription_GET",
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/DateAndTime": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the date and time settings.",
+        "description": "Gets the date and time settings of the device, formatted as JSON string.",
+        "operationId": "api/vtp/v1/deviceinfos/dateandtime_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "JSON string formatted date and time settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeInfoModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/ErtStatus": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets the ERT status.",
+        "description": "Gets the status of ERT on the device, formatted as JSON string.",
+        "operationId": "api/vtp/v1/deviceinfos/ertstatus_GET",
+        "responses": {
+          "200": {
+            "description": "JSON string formatted ERT status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErtInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErtInfoModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/DeviceInfos/SupportReport": {
+      "get": {
+        "tags": [
+          "DeviceInfos"
+        ],
+        "summary": "Gets a Vector support report.",
+        "description": "Gets a Vector support report for the device. Returns the report as stream that can be written to disk as a *.vsupportrep file.",
+        "operationId": "api/vtp/v1/deviceinfos/supportreport_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Stream containing the Vector support report",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/Ert": {
+      "get": {
+        "tags": [
+          "Ert"
+        ],
+        "summary": "Gets the ERT status.",
+        "description": "Gets the status of ERT on the device, formatted as JSON string.",
+        "operationId": "api/vtp/v1/ert_GET",
+        "responses": {
+          "200": {
+            "description": "JSON string formatted ERT status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErtInfoModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErtInfoModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Ert"
+        ],
+        "summary": "Activate/Deactivate ERT.",
+        "description": "Activates or deactivates ERT on the device.\r\n            Expects the desired state as Boolean in the requests query.",
+        "operationId": "api/vtp/v1/ert_PUT",
+        "parameters": [
+          {
+            "name": "desiredStatus",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/NetworkAdapters": {
+      "get": {
+        "tags": [
+          "NetworkAdapters"
+        ],
+        "summary": "Gets a list of all network adapters.",
+        "description": "Gets a list containing information on all network adapters of the device formatted as JSON string.",
+        "operationId": "api/vtp/v1/networkadapters_GET",
+        "responses": {
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of all network adapters, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NetworkAdapterModel"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NetworkAdapterModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "NetworkAdapters"
+        ],
+        "summary": "Configure a network adapter.",
+        "description": "Configure a specific network adapter on the device.\r\n            Expects the network adapters parameters in the requests body, formatted as JSON string, analog to the response of a GET query.",
+        "operationId": "api/vtp/v1/networkadapters_PUT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkAdapterModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkAdapterModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkAdapterModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Plain text string"
+          }
+        }
+      }
+    },
+    "/api/vtp/v1/NetworkAdapters/{name}": {
+      "get": {
+        "tags": [
+          "NetworkAdapters"
+        ],
+        "summary": "Gets a network adapter.",
+        "description": "Gets information of a specific network adapter on the device.\r\n            Expects the name of the network adapter in the requests query.",
+        "operationId": "api/vtp/v1/networkadapters/{name}_GET",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Network adapter information, formatted as JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetworkAdapterModel"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetworkAdapterModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Plain text string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicationModel": {
+        "required": [
+          "allowRemove",
+          "enabled",
+          "exclusive",
+          "executables",
+          "hasPlugin",
+          "id",
+          "name",
+          "partition",
+          "running",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "running": {
+            "type": "boolean"
+          },
+          "exclusive": {
+            "type": "boolean"
+          },
+          "allowRemove": {
+            "type": "boolean"
+          },
+          "hasPlugin": {
+            "type": "boolean"
+          },
+          "executables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExecutableModel"
+            },
+            "readOnly": true
+          },
+          "partition": {
+            "$ref": "#/components/schemas/VInstallationPartition"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CertificateModel": {
+        "required": [
+          "hash",
+          "issuer",
+          "notAfter",
+          "notBefore",
+          "subject"
+        ],
+        "type": "object",
+        "properties": {
+          "hash": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Hash of the certificate, formatted as string."
+          },
+          "subject": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Subject of the certificate, formatted as string."
+          },
+          "issuer": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Issuer of the certificate, formatted as string."
+          },
+          "notBefore": {
+            "type": "string",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "format": "date-time"
+          },
+          "notAfter": {
+            "type": "string",
+            "description": "Validation time of the certificate, string in DateTime format, e.g. \"2028-08-01T23:59:59\".",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Provides information about a certificate. Also used as identifier for a certificate."
+      },
+      "DateTimeInfoModel": {
+        "required": [
+          "dateTime"
+        ],
+        "type": "object",
+        "properties": {
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeZoneInfo": {
+            "$ref": "#/components/schemas/TimeZoneModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiskSpaceInfoModel": {
+        "type": "object",
+        "properties": {
+          "partitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MemoryModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErtInfoModel": {
+        "type": "object",
+        "properties": {
+          "supported": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExecutableModel": {
+        "required": [
+          "alias",
+          "execPath"
+        ],
+        "type": "object",
+        "properties": {
+          "alias": {
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true
+          },
+          "execPath": {
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageInfoModel": {
+        "type": "object",
+        "properties": {
+          "isVectorImage": {
+            "type": "boolean"
+          },
+          "imageVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageSubType": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MemoryModel": {
+        "type": "object",
+        "properties": {
+          "partitionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "used": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "free": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Provides information about the memory usage of a specific partition (free/used)."
+      },
+      "NetworkAdapterModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "dhcpEnabled": {
+            "type": "boolean"
+          },
+          "ipv4Gateway": {
+            "type": "string",
+            "nullable": true
+          },
+          "ipv4Netmask": {
+            "type": "string",
+            "nullable": true
+          },
+          "ipv4Address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dnsServerIp": {
+            "type": "string",
+            "nullable": true
+          },
+          "connectionState": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentSpeed": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "interruptModState": {
+            "$ref": "#/components/schemas/VInterruptModerationState"
+          },
+          "macAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "mtuSize": {
+            "$ref": "#/components/schemas/VMtuSize"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperatingSystemInfoModel": {
+        "type": "object",
+        "properties": {
+          "remoteDesktopEnabled": {
+            "type": "boolean"
+          },
+          "osType": {
+            "type": "string",
+            "nullable": true
+          },
+          "osVersion": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeZoneModel": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "standardName": {
+            "type": "string",
+            "nullable": true
+          },
+          "daylightName": {
+            "type": "string",
+            "nullable": true
+          },
+          "baseUtcOffset": {
+            "type": "string",
+            "nullable": true
+          },
+          "supportsDaylightSavingTime": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UsbDriverSyncStateModel": {
+        "required": [
+          "synchronizationState"
+        ],
+        "type": "object",
+        "properties": {
+          "synchronizationState": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VCertStore": {
+        "enum": [
+          "My",
+          "Root",
+          "Trust",
+          "CA",
+          "TrustedPublisher",
+          "Disallowed",
+          "AuthRoot",
+          "TrustedPeople"
+        ],
+        "type": "string"
+      },
+      "VInstallationPartition": {
+        "enum": [
+          "Unspecified",
+          "SystemPartitionProtected",
+          "SystemPartitionUnprotected",
+          "DataPartitionUnprotected"
+        ],
+        "type": "string"
+      },
+      "VInterruptModerationState": {
+        "enum": [
+          "Unknown",
+          "Disabled",
+          "Enabled"
+        ],
+        "type": "string"
+      },
+      "VMtuSize": {
+        "enum": [
+          "Unknown",
+          "Bytes1500",
+          "Bytes4074",
+          "Bytes9000"
+        ],
+        "type": "string"
+      },
+      "Version": {
+        "type": "object",
+        "properties": {
+          "major": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minor": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "build": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "majorRevision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minorRevision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

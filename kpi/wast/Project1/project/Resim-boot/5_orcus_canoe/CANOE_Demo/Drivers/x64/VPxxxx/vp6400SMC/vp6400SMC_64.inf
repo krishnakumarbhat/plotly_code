@@ -1,0 +1,96 @@
+;
+; Copyright 2020 Vector Informatik GmbH
+;
+[Version]
+Signature      = "$CHICAGO$"
+Class          = Vector-Hardware
+ClassGuid      = {D20399E0-47BD-4219-8C5B-A10B87CEB545}
+Provider       = %MFGNAME%
+DriverVer=06/25/2020,11.5.12.0
+CatalogFile.NTamd64 = vp6400SMC_64.cat
+
+;-------------------------------------------------------------------------
+; Driver Disk
+;-------------------------------------------------------------------------
+[DestinationDirs]
+DefaultDestDir = 12
+CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1=%INSTDISK%,
+
+[SourceDisksFiles]
+vp6400SMC.sys  = 1
+WdfCoInstaller01009.dll=1 ; make sure the number matches with SourceDisksNames
+
+;------------------------------------------------------------------------------
+;  Class Install Section
+;------------------------------------------------------------------------------
+
+[ClassInstall32]
+Addreg=CanClassReg
+
+[CanClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,"-5"
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%MFGNAME%=DeviceList,NTamd64
+
+; For XP and later
+[DeviceList.NTamd64]
+%vp6400SMC.DRVDESC%=vp6400SMC_Inst, USB\VID_2B5F&PID_0007
+
+[vp6400SMC_Inst.NTamd64]
+CopyFiles = @vp6400SMC.sys
+AddReg    = vp6400SMC.registry
+
+;-------------- Service installation
+[vp6400SMC_Inst.NTamd64.Services]
+AddService = vp6400SMC,0x00000002, vp6400SMC_Service
+
+; -------------- dynambus driver install sections
+[vp6400SMC_Service]
+DisplayName    = %vp6400SMC.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START 
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vp6400SMC.sys
+
+;
+;--- Coinstaller installation ------
+;
+[vp6400SMC_Inst.NTamd64.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+[vp6400SMC_Inst.NTamd64.Wdf]
+KmdfService = vp6400SMC, vp6400SMC_wdfsect
+
+[vp6400SMC_wdfsect]
+KmdfLibraryVersion = 1.9
+
+;------------------------------------------------------------------------------
+;  Add Registry Entrys
+;------------------------------------------------------------------------------
+[vp6400SMC.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vp6400SMC",UseDeviceInterface,0x10001,1
+
+[Strings]
+;DriverSetupDirectory="vp6400SMC"
+MFGNAME="Vector Informatik GmbH"
+ClassName        = "Vector-Hardware"
+vp6400SMC.DRVDESC = "VP6400SMC"
+vp6400SMC.SVCDESC = "VP6400SMC"
+INSTDISK         = "vp6400SMC-Driver"

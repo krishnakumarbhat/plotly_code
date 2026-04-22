@@ -1,0 +1,15 @@
+[Version]
+Signature="$WINDOWS NT$"
+
+[vnIpClient.NT.Wdf]
+KmdfService = vnIpClient, vnIpClient_Service_kmdfInst
+
+[vnIpClient_Service_kmdfInst]
+KmdfLibraryVersion = 1.9
+
+[SourceDisksFiles]
+vnIpClient.sys = 1
+WdfCoInstaller01009.dll = 1
+
+[Strings]
+;DriverSetupDirectory="vnIpClient"

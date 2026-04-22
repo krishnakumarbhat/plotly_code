@@ -1,0 +1,1420 @@
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_3083>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    18
+				Release week :    31
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 1-8-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>19248</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>3083</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Resimulated ORCAS to SOMEIP CANoe conversion done
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3726 : [CONVERTOR TOOL] [STLA FLR4] Convert STLA Resimulated output file to Canoe
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_3083>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_3072>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    17
+				Release week :    31
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 31-7-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>19239</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>3072</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  BMWSP25 support added for vigem to SOMEIP CANoe conversion
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3711 : [CONVERTOR TOOL] [BMWSP25]Check the vigem to canoe conversion issues
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_3072>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_3060>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    16
+				Release week :    30
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 27-7-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>19222</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>3060</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Issue with canoe conversion for STLA vigem files fixed
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3646 : [STLA] [CONVERTER] Convert STLA VIGEM file to Canoe
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_3060>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_3028>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    15
+				Release week :    28
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 14-7-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>19125</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>3028</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  "Enable tag is removed from convertor tool config file.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3387 : [CONVERTOR_TOOL] Remove the "enable" from input and output tags in the config
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_3028>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2975>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    14
+				Release week :    26
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 28-6-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>19036</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2975</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Visual studio 19 support is added 
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3393 : [CONVERTOR TOOL] Update to VS19
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2975>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2722>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    13
+				Release week :    14
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 11-4-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>18530</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2722</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  FLR4 ethernet data support added in pcap to canoe conversion
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3211 : [CONVERTOR_TOOL] PCAP to CANoe conversion to convert FLR4 ethernet data
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2722>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2618>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    12
+				Release week :    8
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 8-2-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>18065</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2618</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Hanging issue for big size logs in pcap to orcas conversion fixed
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3130 : [CONVERTOR TOOL] Issues in pcap to orcas conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2618>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2596>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    11
+				Release week :    4
+				Release year :    2023
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 24-1-2023 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17971</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2596</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to ORCAS issue for chunks loss resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3095 : [MDF4_Converter_Tool] Chunks lost observed in PCAP to ORCAS conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2596>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2535>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    10
+				Release week :    48
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 30-11-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17722</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2535</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to ORCAS issue resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:3007 : [STLA-SRR6P] [CONVERTOR_TOOL] PCAP to ORCAS converted log has extra chunks
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2535>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2520>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    9
+				Release week :    47
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 22-11-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17669</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2520</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  ORCAS to canoe conversion issues resolved
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2969 : [CONVERTOR TOOL] Issue in orcas to canoe conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2520>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2486>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    8
+				Release week :    44
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 2-11-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17480</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2486</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Video output issues resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2784 : [CONVERTOR_TOOL] Video output not getting generated
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2486>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2445>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    7
+				Release week :    39
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 28-9-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17276</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2445</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  SRR6 logs support added in convertor tool.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2916 : [CONVERTOR_TOOL] Add support for SRR6 logs
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2445>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2410>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    6
+				Release week :    35
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 30-8-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>17114</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2410</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP port specification added.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2791 : [MDF4_Converter_Tool] [MAN_SRR3] Update Port Specification when Input provided as PCAP format
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2410>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2363>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    6
+				Release week :    31
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 1-8-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16915</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2363</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Wireshark to ORCAS(SOMEIP) added
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2602 : [Converter Tool ] Wireshark to ORCAS(SOMEIP)
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2363>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2315>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    5
+				Release week :    26
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 1-7-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16750</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2315</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  ORCAS to canoe conversion issue fixed
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2688 : [CONVERTOR TOOL] Conversion fails for ORCAS to canoe
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2315>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2300>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    5
+				Release week :    26
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 28-6-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16727</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2309</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to CANoe conversion added in convertor tool
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:983 : [Converter Tool ] Wireshark to Canoe (CAN)
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2300>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2300>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    5
+				Release week :    25
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 21-6-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16684</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2300</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to SOMEIP conversion added in convertor tool
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW:2603 : [CONVERTOR TOOL] PCAP to ViGEM conversion for SOMEIP data
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2300>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2258>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    21
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 30-5-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16531</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2258</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Linux build tested and working fine in main branch
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				[CONVERTOR_TOOL] Linux build needs to be tested in main branch
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2258>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2236>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    19
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 18-5-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16457</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2236</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  issues with SOMEIP write fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2583 [CONVERTOR TOOL] SOMEIP output write has to be checked
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2236>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2231>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    19
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 17-5-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16446</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2231</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  issues with SOMEIP write fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2545 [MDF4_Convertor _Tool] MUDP tool does not support log merging functionality for CANoe replay able output log
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2231>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2193>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    17
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 25-4-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16313</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2193</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Merging functionality added for vigem to canoe conversion
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2545 [MDF4_Convertor _Tool] MUDP tool does not support log merging functionality for CANoe replay able output log
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2193>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2171>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    14
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 8-4-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16235</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2171</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  One more option added in config file for generating the output file next to SRR debug in a folder named CONV. 
+				   This option is applicable only when remote pc log path is given as input in json.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2541 [MDF4 Converter] No Output created, but processing time consumed
+				CYW-2542 [MDF4 Converter] Issues when operating on non-local data
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2171>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2156>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    13
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 31-3-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>16163</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2156</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  CAN Bus spec id 80 and 90 added for MAN.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2539 [CONVERTOR_TOOL] Converted CANoe log not replayable in CANoe
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2156>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2110>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    10
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 7-3-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15954</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2110</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  SOMEIP datalength corrected for ViGEM to ORCAS conversion
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW 2381 : [CONVERTOR TOOL] ViGEM to ORCAS conversion : SOMEIP datalength has to be checked
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2110>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2029>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    6
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 8-2-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15688</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2029</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  New error statements are added in convertor tool.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW 2328 : [CONVERTER TOOL]: Converter tool issues
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2029>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_2017>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    5
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 4-2-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15656</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>2017</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Issues with multiple output enabling is fixed.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW 2363 : [IT&V] [Resim][MF4-Converter_Tool] Vehicle log to Canoe Replayable Log conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_2017>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1982>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    3
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 21-1-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15525</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1982</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Error print added in vigem to orcas conversion if CAN data is not present
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW 2362 : [BMW][SRR5] MDF4 converter tool is not working
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1982>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1958>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    2
+				Release year :    2022
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 10-1-2022 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15434</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1958</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to ORCAS convertor timestamp correction
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW 2354 : [CONVERTOR TOOL] PCAP to ORCAS convertor timestamp correction
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1958>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1896>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    50
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 16-12-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15268</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1896</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to ORCAS conversion added
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2219 :[CONVERTOR TOOL] Pcap to ORCAS conversion Direct Conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1896>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1879>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    49
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 10-12-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15228</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1879</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to vigem TS error fix
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2251 :[CONVERTOR TOOL][NISSAN_GEN5]: Converted PCAP To MF4 Log has repeated Timestamps.
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1879>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1855>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    48
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 30-11-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15148</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1855</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  BRR to ORCAS conversion bug fix
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2191 :[BMW_SRR5]:Verification of BMW BRR to ORCAS for customer program
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1855>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1793>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    45
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 8-11-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>15015</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1793</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  BRR to ORCAS conversion added
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2129 :[ADP_HIL Converter Tool]: ADP BRR Log to ORCAS MF4 Validation
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1793>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1775>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    43
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 27-10-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14978</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1775</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  CAN 8 and 9 busspc id's added for AUTERA to ORCAS conversion
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2161 :[Converter Tool] : Autera to Orcas conversion of CAN 8 & CAN 9 channels
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1775>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1566>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    29
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 20-7-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14322</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1566</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Updated to CCA lib version 3.0.6
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-828 :[Converter_Tool]: Convert Canoe Vector MDF to Canape Signal MDF using CAnoe (Low Prio)
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1566>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1542>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    27
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 9-7-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14254</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1542</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Updated to CCA lib version 3.0.6
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2026 - [Converter Tool]: Update to latest CCA Lib V 3.0.6
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1542>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1536>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    27
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 7-7-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14228</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1536</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Support for channel name "Payload" added in CANoe to ORCAS convertor
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-2011 - [Converter_Tool]: Renault logs support in convertor tool
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1536>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1520>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    26
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 1-7-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14187</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1520</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Bug fix in PCAP to CANoe SOMEIP mf4 conversion.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1996 - [Converter_Tool]: Wireshark to Canoe SOMEIP Conversion
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1520>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1512>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    26
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 29-6-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14164</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1512</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Bug fix in PCAP to vigem mf4 conversion.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1987 - [Converter_Tool]: Wireshark to MF4 conversion not happening
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1512>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1508>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    26
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 29-6-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>14154</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1508</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  AUTERA to CANoe conversion.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1991 - [Converter_Tool]: Autera to Canoe converter
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1508>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1448>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    22
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 4-6-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13931</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1448</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to ViGEM conversion added.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1808 - [Converter_Tool]: BMW SRR5 - Convert PCAP to CARMEN/VIGEM MF4 format (Someip )
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1448>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1358>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    16
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 23-04-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13605</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1358</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  AUTERA TO ORCAS conversion added
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1748 - [MAN_SRR3] :[CONVERTER_TOOL] MAN SRR3 Autera Logs to ORCAS MF4 format
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1358>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1353>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    16
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 22-04-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13600</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1353</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  PCAP to CANoe SOMEIP convertor and JSON file path made as an argument
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1811 - JSON file path made as an argument
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1353>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1347>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    16
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 21-04-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13575</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1347</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Sample count print done only in twice a second.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1809 - [Resim Tools] Redraw counter only once per second
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1347>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1303>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    13
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 29-03-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13367</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1303</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Added more error messages in console in case of problems in config or json.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1783: [MF4 Converter] Improve Error Handling
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1303>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1260>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    11
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 15-03-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13206</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1260</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Added a tag in cofig xml to ignore CDC while converting to ORCAS
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1770: [Resim Tools] Ignore CDC while converting to ORCAS
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1260>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1258>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    10
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 12-03-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13203</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1258</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Mismatch in sample count between input and output issue resolved.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1767: [CONVERTOR TOOL] Mismatch in sample count between input and converted output
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1258>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1226>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    10
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 01-03-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13120</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1226</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  merge the datas of respective streams to independent file.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1752: [CONVERTOR TOOL] Add mechanism to merge the datas of respective streams to independent file
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1226>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1217>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    9
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 26-02-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13080</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1217</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Refined config xml.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1751: [Converter Tool] : Refine config xml of convertor tool
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1217>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1213>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    9
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 25-02-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13065</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1213</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Removed radar stream decoder and mudp decoder module.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1757: [Converter Tool] : Remove Radar Stream Decoder Project
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1213>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1195>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    8
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 18-02-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>13012</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1195</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Fix done for converting only SRR_DEBUG files
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1755: [[CONVERTOR_TOOL]Convert_only_srr_debug option failed 
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1195>
+
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_1185>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    3
+				Release week :    8
+				Release year :    2021
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 16-02-2021 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>12980</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>1185</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Fix for the vigem to orcas convertor in timestamp.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1668: [Converter_Tool]: [Resim TOOLS] ORCAS VIGEM Conversion still not working 
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_1185>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_907>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    2
+				Release week :    39
+				Release year :    2020
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 21-09-2020 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>11450</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>907</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Input of convertor tool changed from flist to json.
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1038: [Converter_Tool]: Converter tool file list input to be JSON file instead of txt 
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_907>
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_886>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    1
+				Release week :    37
+				Release year :    2020
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 08-09-2020 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>11260</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>886</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Added resimulated ViGEM to ORCAS convertor
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1117: [Converter_Tool]: Resimulated ViGEM Output Logs not replayable in ORCAS
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_886>
+
+<MDF4_CONVERTOR_TOOL_RELEASE_CS_859>
+		<RELEASE_DESCRIPTION>
+			<RELEASE_NAME>MDF4_CONVERTOR_TOOL</RELEASE_NAME>
+			<MDF4_CONVERTOR_TOOL_Version> 
+				Major version:    3 
+				Minor version:    1
+				Release week :    35
+				Release year :    2020
+			</MDF4_CONVERTOR_TOOL_Version>
+			<Release_Date> 26-08-2020 </Release_Date>
+			<Convertor_tool_Plastic_Repo>10030156_03_Analysis_Framework_Suite</Convertor_tool_Plastic_Repo>
+			<Convertor_tool_Plastic_Repo_CS>11082</Convertor_tool_Plastic_Repo_CS>
+			<Convertor_tool_Release_Plastic_Repo>10028634_01_SRR_RESIM_Release</Convertor_tool_Release_Plastic_Repo>
+			<Convertor_tool_Release_CS>859</Convertor_tool_Release_CS>
+			
+			<ChangeLog_Details>
+				-  Added calib 2.2.4 dlls
+			</ChangeLog_Details>
+			
+			<JIRA_Tickets>
+				CYW-1057: [Converter Tool] Integrate Latest V2.2.4 CCA Framework MDF 
+			</JIRA_Tickets>
+
+			
+		</RELEASE_DESCRIPTION> 
+</MDF4_CONVERTOR_TOOL_RELEASE_CS_859>

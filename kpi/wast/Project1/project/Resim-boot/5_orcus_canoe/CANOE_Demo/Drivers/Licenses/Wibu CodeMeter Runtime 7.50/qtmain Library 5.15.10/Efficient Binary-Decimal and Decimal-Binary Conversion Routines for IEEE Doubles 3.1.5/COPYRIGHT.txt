@@ -1,0 +1,1 @@
+Copyright 2006-2012, the V8 project authors

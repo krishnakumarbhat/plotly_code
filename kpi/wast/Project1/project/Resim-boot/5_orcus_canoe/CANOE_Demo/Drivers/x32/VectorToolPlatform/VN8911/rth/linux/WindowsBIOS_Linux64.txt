@@ -1,0 +1,140 @@
+# RTH CONFIG
+# Project: VN8911
+# CPU: ATOM E3845
+# 4 cores (no HT)
+
+################################################################################
+# System
+#
+
+[/SYSTEM]
+    "CPU_frequency"             = uint32: 99999     # set maximum CPU frequency
+
+    # "CPU_resource_partitioning"                   # setting is not supported for VN8911
+    # "IOMMU"                                       # setting is not supported for VN8911
+
+    "CPU_turbo_boost"           = uint32: 1         # enable turbo boost
+
+    "XML_partition_number"      = uint32: 1         # write system configuration XML to shm partition (rthXmlPartition, /SHM/1)
+
+################################################################################
+# OS
+#
+
+[/OS/0]
+
+    "name"                      = "Windows"
+    "boot_priority"             = uint32: 1         # fix for Hypervisor 5.5
+    "virtualized"               = uint32: 1         # use virtualized mode for GPOS
+
+    "CPU"                       = bytelist: 1,2     # assignment of CPU cores
+
+    "trace_partition_number"    = uint32: 0         # write log for readtrace to /SHM/0
+
+    "mem_access_throttle"       = uint32: 23        # simultaneous memory access has less effect on RTOS. 
+                                                    # Needs to be recalibrated with Hypervisor 5.5
+
+    "default_shutdown_action"   = uint32: 3         # shut down the entire system if this OS shuts down
+    "default_reboot_action"     = uint32: 4         # reboot the entire system if this OS reboots
+
+    [/OS/0/RUNTIME/0]
+
+        "image_0"               = "(hd0,0)"
+
+[/OS/1]
+
+    "name"                      = "Linux"
+    "boot_priority"             = uint32: 2         # fix for Hypervisor 5.5
+
+    "CPU"                       = bytelist: 3,4     # assignment of CPU cores
+    "memory_size"               = uint64: 0x80000000 # 2 GiB
+    "virtual_MMU"               = uint32: 1         # better timer performance
+
+    [/OS/1/RUNTIME/0]
+
+        "bootline"              = "root=/dev/ram ip=192.168.2.2/255.255.255.0"
+        "image_0"               = "mbLinuz64"
+        "image_1"               = "initrd-mbLinux64.gz"
+
+################################################################################
+# Interrupts
+#
+
+[/IRQ]
+
+    "default"                   = uint32: 0         # default is Windows
+
+################################################################################
+# PCI
+#
+
+### Static section. This section can be modified manually. Use sections ids from /PCI/0 to /PCI/24. Do not change or remove this comment! ###
+
+[/PCI]
+
+    "default"                   = uint32: 0         # by default PCI devices are visible to OS 0 (Windows)
+    "auto_interrupt_mode"       = uint32: 1         # automatically use MSI to avoid IRQ conflicts
+
+# Assignment of one of the I210 NICs to Linux
+[/PCI/0]
+    "OS"                        = uint32: 1
+    "bus"                       = uint32: 2
+    "device"                    = uint32: 0
+    "function"                  = bytelist: 0
+    "interrupt_mode"            = uint32: 2         # use MSI to avoid IRQ conflict
+
+### Dynamic section. This section will be modified automatically. Do not change or remove this comment! ###
+### End of dynamic section. Do not change or remove this comment! ###
+
+################################################################################
+# Shared Memory
+#
+
+# SHM for readtrace logs. Note, ID must match with trace_partition_number
+
+[/SHM/0]
+    "name"      = "trace"
+    "size"      = uint64: 0x8000        # 32 KiB
+
+# SHM for AssignmentManager. Note, ID must match with XML_partition_number
+[/SHM/1]
+    "name"      = "rthXmlPartition"
+    "size"      = uint64: 0x8000        # 32 KiB
+
+# SHM space for VN8970/VN8972/VN7570/VN7572 WES and Linux Singlecard driver
+[/SHM/2]
+    "name"      = "vn8970_DMA"
+    "size"      = uint64: 0x300000      # 3 MiB
+    "base"      = uint64: 0x7A733000    # physical address, do not change
+
+# Multicard SHM table
+[/SHM/3]
+    "name"      = "VNiMultiCard_TABLE_SHM"
+    "size"      = uint64: 0x1000        # 4 KiB
+    "base"      = uint64: 0x7AA39000    # physical address, do not change
+    "fill_byte" = uint32: 0x0
+
+# Transfer ERT logs from RTOS to GPOS
+[/SHM/4]
+    "name"      = "vrtptrace"
+    "size"      = uint64: 0x20000       # 128 KiB
+
+# Config information from RtpCfg.json to be read by ERT process
+[/SHM/5]
+    "name"      = "vtpcfg"
+    "size"      = uint64: 0x1000        # 4 KiB
+    "file"      = "RtpCfg.json"
+
+# Data exchange between GPOS and RTOS
+
+[/SHM/6]
+    "name"      = "oscom"
+    "size"      = uint64: 0x1000000     # 16 MiB
+
+################################################################################
+# Events
+#
+
+[/EVENTS]
+
+ "max_number_of_events" = uint32: 128 # allow a maximum of 128 events

@@ -1,0 +1,1 @@
+Copyright © 1996 - 2021, Daniel Stenberg, daniel@haxx.se, and many contributors

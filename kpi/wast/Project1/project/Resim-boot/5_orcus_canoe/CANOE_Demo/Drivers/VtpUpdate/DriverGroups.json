@@ -1,0 +1,79 @@
+{
+    "Vector Tool Platform": [
+        "VTP Control Server",
+        "USB Client",
+        "IP Server",
+        "IP Client",
+        "VN8900 Interface Family",
+        "VN8950",
+        "VN8970",
+        "VN8972",
+        "VT6104A",
+        "VT6104B",
+        "VT6204",
+        "VT6204B",
+        "VT6306",
+        "VT6306B"
+    ],
+    "Common": [
+        "Common Components",
+        "CodeMeter Runtime"
+    ],
+    "Misc": [
+        "Vector Keyman (License Dongle)",
+        "XL Network Isolator",
+        "VP6400 System Management Controller"
+    ],
+    "XL Interfaces": [
+        "CANcardXL",
+        "CANcardXLe",
+        "CANcaseXL / CANcaseXL log",
+        "CANboardXL / PCIe / PXI"
+    ],
+    "VH Interfaces": [
+        "VH6501"
+    ],
+    "ARINC Interfaces": [
+        "VN0601"
+    ],
+    "CAN/LIN Interfaces": [
+        "VN1530 / VN1531",
+        "VN1610 / VN1611 / VN1630 / VN1640",
+        "VN1630 log",
+        "VN1670"
+    ],
+    "MOST Interfaces": [
+        "VN2600/VN2610",
+        "VN2640"
+    ],
+    "FlexRay Interfaces": [
+        "VN3300",
+        "VN3600",
+        "VN7570",
+        "VN7572",
+        "VN7600",
+        "VN7610",
+        "VN7640"
+    ],
+    "Ethernet Interfaces": [
+        "VN5240",
+        "VN5430",
+        "VN5610 / VN5610A",
+        "VN5620",
+        "VN5640",
+        "VN5650",
+        "VN5601",
+        "VN5611",
+        "VN5612"
+    ],
+    "W11p/GNSS": [
+        "VN4610",
+        "VP GNSS Module"
+    ],
+    "VX Interfaces": [
+        "VX0312",
+        "VX1131 / VX1132",
+        "VX1135",
+        "VX1161.41A / VX1161.41B"
+    ]
+}

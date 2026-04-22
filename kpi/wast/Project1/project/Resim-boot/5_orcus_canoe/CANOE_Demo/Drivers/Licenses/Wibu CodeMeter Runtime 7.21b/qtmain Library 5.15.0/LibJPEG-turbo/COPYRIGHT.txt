@@ -1,0 +1,12 @@
+This software is copyright © 1991-2016, Thomas G. Lane, Guido Vollbeding. All Rights Reserved.
+Copyright © 2009-2020 D. R. Commander
+Copyright © 2011-2016 Siarhei Siamashka
+Copyright © 2015-2016, 2018 Matthieu Darbois
+Copyright © 2015 Intel Corporation
+Copyright © 2015 Google, Inc.
+Copyright © 2013-2014 MIPS Technologies, Inc.
+Copyright © 2013 Linaro Limited
+Copyright © 2009-2011 Nokia Corporation and/or its subsidiary(-ies)
+Copyright © 2009 Pierre Ossman for Cendio AB
+Copyright © 1999-2006 MIYASAKA Masaru
+Copyright © 1991-2016 Thomas G. Lane, Guido Vollbeding

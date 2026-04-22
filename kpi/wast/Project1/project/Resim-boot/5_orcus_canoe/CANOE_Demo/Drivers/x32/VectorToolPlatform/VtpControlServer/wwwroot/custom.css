@@ -1,0 +1,87 @@
+﻿body {
+  margin: 0;
+  background: #fafafa;
+}
+
+.swagger-ui .topbar {
+  background-color: #bbbbbb;
+}
+
+  .swagger-ui .topbar .download-url-wrapper .select-label select {
+    border: 2px solid #B70032;
+  }
+
+.swagger-ui .info a {
+  color: #B70032;
+}
+
+.swagger-ui .info .title small:first-child {
+  visibility: hidden;
+}
+
+.swagger-ui .info .title small:last-child {
+  visibility: hidden;
+}
+
+.swagger-ui .wrapper .expand-operation svg {
+  stroke: #B70032;
+  fill: #B70032;
+}
+
+.swagger-ui .wrapper .models svg {
+  fill: #B70032;
+}
+
+.topbar-wrapper img {
+  content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='283.464px' height='65.857px' viewBox='0 0 283.464 65.857' enable-background='new 0 0 283.464 65.857' xml:space='preserve'>\
+                <polygon fill='%23B70032' points='226.43,49.393 226.43,65.857 283.464,32.929 226.43,0 226.43,16.464 254.947,32.929'/>\
+                <polygon points='24.697,18.672 32.929,18.672 16.464,47.189 0,18.672 8.232,18.672 16.464,32.931'/>\
+                <path d='M151.897,17.961c-8.269,0-14.972,6.703-14.972,14.972c0,8.269,6.703,14.971,14.972,14.971 c8.269,0,14.972-6.703,14.972-14.971C166.869,24.665,160.166,17.961,151.897,17.961z M151.897,40.811 c-4.351,0-7.878-3.527-7.878-7.878c0-4.351,3.527-7.877,7.878-7.877c4.351,0,7.878,3.527,7.878,7.877 C159.775,37.284,156.248,40.811,151.897,40.811z'/>\
+                <path d='M89.264,40.811c-4.351,0-7.878-3.527-7.878-7.878c0-4.351,3.527-7.877,7.878-7.877c2.174,0,4.143,0.881,5.568,2.305 l5.016-5.016c-2.709-2.708-6.451-4.383-10.584-4.383c-8.269,0-14.972,6.703-14.972,14.972c0,8.269,6.703,14.971,14.972,14.971 c4.136,0,7.879-1.676,10.589-4.387l-5.016-5.016C93.41,39.928,91.44,40.811,89.264,40.811z'/>\
+                <polygon points='105.589,25.088 115.214,25.088 115.214,47.189 122.343,47.189 122.343,25.088 131.968,25.088 131.968,18.672 105.589,18.672'/>\
+                <polygon points='42.211,47.189 64.313,47.189 64.313,40.773 49.341,40.773 49.341,35.782 61.034,35.782 61.034,29.508 49.341,29.508 49.341,25.088 64.313,25.088 64.313,18.672 42.211,18.672'/>\
+                <path d='M204.33,28.189c0-5.25-4.255-9.518-9.505-9.518h-17.587v28.518h7.129v-9.482h6.244l5.487,9.482h8.231l-5.899-10.231 C201.891,35.537,204.33,32.162,204.33,28.189z M194.166,31.362h-9.798v-6.346h9.796c1.689,0.074,3.037,1.466,3.037,3.173 C197.2,29.896,195.854,31.288,194.166,31.362z'/>\
+                </svg>");
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border-color: #B70032;
+  background: rgba(183,0,50,.1)
+}
+
+  .swagger-ui .opblock.opblock-delete .opblock-summary-method {
+    background: #B70032
+  }
+
+  .swagger-ui .opblock.opblock-delete .opblock-summary {
+    border-color: #B70032
+  }
+
+  .swagger-ui .opblock.opblock-delete .tab-header .tab-item.active h4 span:after {
+    background: #B70032
+  }
+
+.swagger-ui .opblock.opblock-put {
+  border-color: #646464;
+  background: rgba(100,100,100,.1)
+}
+
+  .swagger-ui .opblock.opblock-put .opblock-summary-method {
+    background: #646464
+  }
+
+  .swagger-ui .opblock.opblock-put .opblock-summary {
+    border-color: #646464
+  }
+
+  .swagger-ui .opblock.opblock-put .tab-header .tab-item.active h4 span:after {
+    background: #646464
+  }
+
+.swagger-ui .parameter__name.required * {
+  color: rgba(183,0,50,.9) !important
+}
+
+.swagger-ui .parameter__name.required:after {
+  color: rgba(183,0,50,.9) !important
+}

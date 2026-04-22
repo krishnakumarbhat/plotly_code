@@ -1,0 +1,15 @@
+[Version]
+Signature="$WINDOWS NT$"
+
+[vnIpServer.NT.Wdf]
+KmdfService = vnIpServer, vnIpServer_Service_kmdfInst
+
+[vnIpServer_Service_kmdfInst]
+KmdfLibraryVersion = 1.9
+
+[SourceDisksFiles]
+vnIpServer8914Win10.sys = 1
+WdfCoInstaller01009.dll = 1
+
+[Strings]
+

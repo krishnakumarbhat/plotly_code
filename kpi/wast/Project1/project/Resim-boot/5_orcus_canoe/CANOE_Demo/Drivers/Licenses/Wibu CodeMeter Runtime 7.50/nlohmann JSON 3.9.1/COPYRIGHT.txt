@@ -1,0 +1,1 @@
+Copyright © 2013-2020 Niels Lohmann

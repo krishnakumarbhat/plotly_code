@@ -1,0 +1,48 @@
+{
+	"JsonFileFormat": "1",
+	"VtpComponents":
+	{
+		"RTH": "5.5.00.28607",
+		"RTH-note": "The entry RTH above is the version of the Hypervisor itself, not the Hypervisor tools",
+		"VTP": "5.0.49.0",
+		"Grub": "1.1",
+		"ControlServer": "5.0.49.0"
+	},
+	"DependentDrivers":
+	{
+		"VN8911":
+		{
+			"VN8970": "true"
+		},
+		"VN8912A":
+		{
+			"PlxUSBCl": "true",
+			"vnIpServer": "true",
+			"VN8970": "true",
+			"VN8972": "true"
+		},
+		"VN8914":
+		{
+			"VN8970": "true",
+			"VN8972": "true"
+		},
+		"VT6051A":
+		{
+			"VT6104A": "true",
+			"VT6204": "true"
+		},
+		"VT6060":
+		{
+			"VT6104A": "true",
+			"VT6204": "true",
+			"VT6104B": "true",
+			"VT6204B": "true"
+		},
+		"RTRack_AS246E":
+		{
+		},
+		"RTRack_CS246E":
+		{
+		}
+	}
+}

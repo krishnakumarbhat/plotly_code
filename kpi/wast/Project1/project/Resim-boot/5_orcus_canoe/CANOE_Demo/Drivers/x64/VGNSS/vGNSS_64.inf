@@ -1,0 +1,121 @@
+; Copyright 2023 Vector Informatik GmbH
+[Version]
+Signature      = "$CHICAGO$"
+Class          = Vector-Hardware
+ClassGuid      = {D20399E0-47BD-4219-8C5B-A10B87CEB545}
+Provider       = %MFGNAME%
+DriverVer=09/01/2023,23.20.20.0
+CatalogFile.NTamd64=vGNSS_64.cat
+
+[Manufacturer]
+%MFGNAME%=DeviceList,NTamd64
+
+;------------------------------------------------------------------------------
+;  Supported Devices
+;------------------------------------------------------------------------------
+[DeviceList.NTamd64]
+%DESCRIPTION_VGNSS%=DI_vGNSS, USB\VID_1546&PID_01A8
+;-------------------------------------------------------------------------
+;  Class Install Section
+;-------------------------------------------------------------------------
+[ClassInstall32]
+Addreg=CanClassReg
+
+[CanClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,"-5"
+
+;------------------------------------------------------------------------------
+;  Installation Disk Information
+;------------------------------------------------------------------------------
+[SourceDisksFiles]
+vGNSS.sys = 1
+WdfCoInstaller01009.dll = 1 ; make sure the number matches with SourceDisksNames
+
+[SourceDisksNames]
+1=%INSTDISK%,
+
+;------------------------------------------------------------------------------
+; DestinationDirs 
+;------------------------------------------------------------------------------
+[DestinationDirs]
+DefaultDestDir=12
+CoInstaller_CopyFiles = 11
+
+;------------------------------------------------------------------------------
+;  Windows Sections
+;------------------------------------------------------------------------------
+[DI_vGNSS.NTamd64]
+CopyFiles      = @vGNSS.sys
+AddReg=vGNSS.registry,options.registry
+
+[DI_vGNSS.NTamd64.Services]
+AddService     = vGNSS,0x00000002,vGNSS_Service
+
+[vGNSS_Service]
+DisplayName    = %SVCDESC_VGNSS%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vGNSS.sys
+
+;-------------------------------------------------------------------------
+; WDF Coinstaller installation
+;-------------------------------------------------------------------------
+[DI_vGNSS.NTamd64.CoInstallers]
+AddReg         = CoInstaller_AddReg
+CopyFiles      = CoInstaller_CopyFiles
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[DI_vGNSS.NTamd64.Wdf]
+KmdfService    = vGNSS, vGNSS_wdfsect
+
+[vGNSS_wdfsect]
+KmdfLibraryVersion = 1.9
+
+;------------------------------------------------------------------------------
+;  Add Registry Entrys
+;------------------------------------------------------------------------------
+[vGNSS.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",MaxCards,0x10001,1
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",ChannelsPerCard,0x10001,1
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",HwType,0x10001,116
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",HwName,,"vGNSS"
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",DriverName,,vGNSS
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VGNSS",UseDeviceInterface,0x10001,1
+
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Hardware\VGNSS",UseCardSerialNumber,0x10003,0
+
+;------------------------------------------------------------------------------
+;  Add GNSS assignment registry entries
+;------------------------------------------------------------------------------
+
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANalyzer.GNSS0",hwType,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANalyzer.GNSS0",hwIndex,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANalyzer.GNSS0",hwChannel,0x10003,0
+
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANoe.GNSS0",hwType,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANoe.GNSS0",hwIndex,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Software\CANoe.GNSS0",hwChannel,0x10003,0
+
+[options.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",OEMInstallation,0x10001,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",DebugFlags,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",EnableTimeSync,0x10003,1
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",VirtualBus,0x10003,1
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+[Strings]
+;DriverSetupDirectory="VGNSS"
+MFGNAME            = "Vector Informatik GmbH"
+INSTDISK           = "VGNSS-Driver"
+DESCRIPTION_VGNSS  = "VGNSS"
+ClassName          = "Vector-Hardware"
+SVCDESC_VGNSS      = "VGNSS"

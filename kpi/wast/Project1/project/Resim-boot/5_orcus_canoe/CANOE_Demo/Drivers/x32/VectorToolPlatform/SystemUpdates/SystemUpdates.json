@@ -1,0 +1,493 @@
+{
+  "Microsoft Root Certificate Authority 2010": {
+    "GUID": "{7BDD1C69-AB45-431F-B8D4-8D6936EDF96D}",
+    "Name": "Microsoft Root Certificate Authority 2010",
+    "PackageDirectory": "\\Certificates\\Microsoft_RootCertificateAuthority_2010",
+    "InstallationFile": "MicRooCerAut_2010-06-23.crt",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 3,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "28 cc 3a 25 bf ba 44 ac 44 9a 9b 58 6b 43 39 aa",
+      "Fingerprint": "3b 1e fd 3a 66 ea 28 b1 66 97 39 47 03 a7 2c a3 40 a0 5b d5"
+    }
+  },
+  "Microsoft Root Certificate Authority 2011": {
+    "GUID": "{101D7E69-0824-4A05-9480-66DA1DA2BF16}",
+    "Name": "Microsoft Root Certificate Authority 2011",
+    "PackageDirectory": "\\Microsoft_RootCertificateAuthority_2011",
+    "InstallationFile": "MicrosoftRootCertificateAuthority2011.cer",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 3,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "3f 8b c8 b5 fc 9f b2 96 43 b5 69 d6 6c 42 e1 44",
+      "Fingerprint": "8f 43 28 8a d2 72 f3 10 3b 6f b1 42 84 85 ea 30 14 c0 bc fe"
+    }
+  },
+  "DigiCert Assured ID Root CA": {
+    "GUID": "{04ED673B-ABCD-4733-9493-71D07CA47D76}",
+    "Name": "DigiCert Assured ID Root CA",
+    "PackageDirectory": "\\Certificates\\DigiCertAssuredIDRootCA",
+    "InstallationFile": "DigiCertAssuredIDRootCA.cer",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 3,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "0c e7 e0 e5 17 d8 46 fe 8f e5 60 fc 1b f0 30 39",
+      "Fingerprint": "05 63 b8 63 0d 62 d7 5a bb c8 ab 1e 4b df b5 a8 99 b2 4d 43"
+    }
+  },
+  "Entrust Root Certificate Authority G2": {
+    "GUID": "{04ED673B-ABCD-4733-9493-71D07CA47D76}",
+    "Name": "Entrust Root Certificate Authority G2",
+    "PackageDirectory": "\\Certificates\\EntrustRootCA_G2",
+    "InstallationFile": "entrust_g2_ca.cer",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 3,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "4a 53 8c 28",
+      "Fingerprint": "8c f4 27 fd 79 0c 3a d1 66 06 8d e8 1e 57 ef bb 93 22 72 d4"
+    }
+  },
+  "DigiCert Trusted Root G4": {
+    "GUID": "{BFD90232-2650-4B19-B18C-386F24B198ED}",
+    "Name": "DigiCert Trusted Root G4",
+    "PackageDirectory": "\\Certificates\\DigiCertTrustedRootG4",
+    "InstallationFile": "digicert_trusted_root_g4.cer",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 3,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "05 9b 1b 57 9e 8e 21 32 e2 39 07 bd a7 77 75 5c",
+      "Fingerprint": "dd fb 16 cd 49 31 c9 73 a2 03 7d 3f c8 3a 4d 7d 77 5d 05 e4"
+    }
+  },
+  "DotNet Framework 4_7_1": {
+    "GUID": "{3376916A-5AD5-4606-BBA3-CB004C970DA6}",
+    "Name": ".NET Framework 4.7.1",
+    "PackageDirectory": "\\DotNet_Framework_4.7.1",
+    "InstallationFile": "NDP471-KB4033342-x86-x64-AllOS-ENU.exe",
+    "InstallationSize": 235380736,
+    "UploadSize": 333922304,
+    "TemporaryInstallationSize": 600000000,
+    "InstallationDuration": 1250,
+    "InstallationTimeout": 3000,
+    "OS": {
+        "Type": "Windows",
+        "TargetArchitecture": [ 32, 64 ],
+        "MinVersion": "6.1"
+    },
+    "EXE": {
+        "Parameters": "/install /msioptions \"DISABLEROLLBACK='1'\" /passive /norestart"
+    }
+  },
+  "Visual C++ Redistributables 2010 Service Pack 1": {
+    "GUID": "{569E1D2A-D9DA-32CF-9909-48485DA06DD5}",
+    "Name": "Visual C++ Redistributables 2010 SP1",
+    "PackageDirectory": "\\VC_Redistributables_2010_SP1",
+    "InstallationFile": "vc_red.msi",
+    "InstallationSize": 7340032,
+    "UploadSize": 7176192,
+    "InstallationDuration": 30,
+    "InstallationTimeout": 600,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ]
+    },
+    "MSI": {
+      "ProductCode": "{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}",
+      "UpgradeCode": "{1F4F1D2A-D9DA-32CF-9909-48485DA06DD5}",
+      "ProductVersion": "10.0.40219"
+    }
+  },
+  "Visual C++ Redistributables Minimum 2013": {
+    "GUID": "{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}",
+    "Name": "Visual C++ Redistributables 2013 Minimum",
+    "PackageDirectory": "\\VC_Redistributables_2013_Minimum",
+    "InstallationFile": "vc_runtimeMinimum_x86.msi",
+    "InstallationSize": 3145728,
+    "UploadSize": 1163264,
+    "InstallationDuration": 90,
+    "InstallationTimeout": 600,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ]
+    },
+    "MSI": {
+      "Transform": "vc_runtimeMinimum_x86.mst",
+      "ProductCode": "{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}",
+      "UpgradeCode": "{B59F5BF1-67C8-3802-8E59-2CE551A39FC5}",
+      "ProductVersion": "12.0.21005"
+    }
+  },
+  "Visual C++ Redistributables Additional Redistributables 2013": {
+    "GUID": "{D19B1C2A-D9DA-32CF-9909-48485DA06DD5}",
+    "Name": "Visual C++ Redistributables 2013 Additional",
+    "PackageDirectory": "\\VC_Redistributables_2013_Additional",
+    "InstallationFile": "vc_runtimeAdditional_x86.msi",
+    "InstallationSize": 7340032,
+    "UploadSize": 5099520,
+    "InstallationDuration": 30,
+    "InstallationTimeout": 600,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ]
+    },
+    "MSI": {
+      "Transform": "vc_runtimeAdditional_x86.mst",
+      "ProductCode": "{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}",
+      "UpgradeCode": "{936E696B-0C8D-3A48-98DF-344FEA4E1139}",
+      "ProductVersion": "12.0.21005"
+    }
+  },
+  "Visual C++ Redistributables 2017 (x86)": {
+    "GUID": "{58957C81-161A-4E29-B516-246022F0D5E5}",
+    "Name": "Visual C++ Redistributables 2017 (x86)",
+    "PackageDirectory": "\\VC_Redistributables_2017_x86",
+    "InstallationFile": "VC_redist.x86.exe",
+    "InstallationSize": 2113536,
+    "UploadSize": 14651392,
+    "InstallationDuration": 120,
+    "InstallationTimeout": 600, 
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": "/install /passive /norestart"
+    }
+  },
+  "Visual C++ Redistributables 2017 (x64)": {
+    "GUID": "{1D5AE2DA-4227-4F8B-9B24-3C020D7C9511}",
+    "Name": "Visual C++ Redistributables 2017 (x64)",
+    "PackageDirectory": "\\VC_Redistributables_2017_x64",
+    "InstallationFile": "VC_redist.x64.exe",
+    "InstallationSize": 2513536,
+    "UploadSize": 15331328,
+    "InstallationDuration": 45,
+    "InstallationTimeout": 600, 
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": "/install /passive /norestart"
+    }
+  },
+  "Visual C++ Redistributables 2019 (x86)": {
+    "GUID": "{9120EF0F-13D9-49EB-9D87-E7C44BFB19F1}",
+    "Name": "Visual C++ Redistributables 2019 (x86)",
+    "PackageDirectory": "\\VC_Redistributables\\2019\\x86",
+    "InstallationFile": "VC_redist.x86.exe",
+    "InstallationSize": 3313536,
+    "UploadSize": 14327808,
+    "InstallationDuration": 120,
+    "InstallationTimeout": 600, 
+    "TemporaryInstallationSize": 8306688,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": "/install /passive /norestart"
+    }
+  },
+  "Visual C++ Redistributables 2019 (x64)": {
+    "GUID": "{25C6EE10-AFC4-48DC-9F0A-2E3FF9E2B87E}",
+    "Name": "Visual C++ Redistributables 2019 (x64)",
+    "PackageDirectory": "\\VC_Redistributables\\2019\\x64",
+    "InstallationFile": "VC_redist.x64.exe",
+    "InstallationSize": 954368,
+    "UploadSize": 14884864,
+    "InstallationDuration": 45,
+    "InstallationTimeout": 600, 
+    "TemporaryInstallationSize": 21823488,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": "/install /passive /norestart"
+    }
+  },
+  "KB 2758857 for Windows 7 (x64)": {
+    "GUID": "{188CEF5C-3CB8-4035-BBCD-947F51BB14AA}",
+    "Name": "Windows 7 Update 2758857 (x64)",
+    "PackageDirectory": "\\WindowsUpdates\\x64\\KB2758857",
+    "InstallationFile": "Windows6.1-KB2758857-x64.msu",
+    "InstallationDuration": 30,
+    "InstallationSize" :  38366592,
+    "TemporaryInstallationSize": 200000000,
+    "UploadSize": 10579968,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB": "KB2758857"
+    }
+  },
+  "KB 2921916 for Windows 7 (x64)": {
+    "GUID": "{7A9FE683-23C0-4F29-BF45-7533E2BD1B91}",
+    "Name": "Windows 7 Update KB2921916 (x64)",
+    "PackageDirectory": "\\WindowsUpdates\\x64\\KB2921916",
+    "InstallationFile": "Windows6.1-KB2921916-x64.msu",
+    "InstallationDuration": 30,
+    "InstallationSize" :  4308992,
+    "UploadSize": 1245184,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB": "KB2921916"
+    }
+  },
+  "KB 3033929 for Windows 7 (x64)": {
+    "GUID": "{12783AD7-3FA1-48DC-B19B-4403B7D62E7D}",
+    "Name": "Windows 7 Update KB3033929 (x64)",
+    "PackageDirectory": "\\WindowsUpdates\\x64\\KB3033929",
+    "InstallationFile": "Windows6.1-KB3033929-x64.msu",
+    "InstallationDuration": 30,
+    "InstallationSize" :  170908928,
+    "UploadSize": 45920256,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB": "KB3033929"
+    }
+  },
+  "KB 2758857 for Windows 7 (x86)": {
+    "GUID": "{BFD7A6A3-39FF-42B0-9B0C-229A8585EC94}",
+    "Name": "Windows 7 Update 2758857 (x86)",
+    "PackageDirectory": "\\WindowsUpdates\\x86\\KB2758857",
+    "InstallationFile": "Windows6.1-KB2758857-x86.msu",
+    "InstallationDuration": 30,
+    "InstallationSize" :  32366592,
+    "UploadSize": 5275648,
+    "TemporaryInstallationSize": 200000000,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB": "KB2758857"
+    }
+  },
+  "KB 2921916 for Windows 7 (x86)": {
+    "GUID": "{44636744-40BB-4E96-BD9A-3835A8A6520A}",
+    "Name": "Windows 7 Update KB2921916 (x86)",
+    "PackageDirectory": "\\WindowsUpdates\\x86\\KB2921916",
+    "InstallationFile": "Windows6.1-KB2921916-x86.msu",
+    "InstallationDuration": 180,
+    "InstallationSize" :  4308992,
+    "UploadSize": 819200,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB": "KB2921916"
+    }
+  },
+  "KB 3033929 for Windows 7 (x86)" :  
+  {
+    "GUID": "{4A40F4FD-0FC0-4E79-898E-0185093D6D73}",
+    "Name": "Windows 7 Update KB3033929 (x86)",
+    "PackageDirectory": "\\WindowsUpdates\\x86\\KB3033929",
+    "InstallationFile": "Windows6.1-KB3033929-x86.msu",
+    "InstallationDuration": 250,
+    "InstallationSize" :  150908928,
+    "UploadSize": 27693056,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "MSU": {
+      "KB" :  "KB3033929" 
+    }
+  },
+  "VeriSign Universal Root Certification Authority": {
+    "GUID": "{CF354CD0-9FCB-4CA0-A6A8-6FB8B70924F3}",
+    "Name": "VeriSign Universal Root Certification Authority",
+    "PackageDirectory": "\\Certificates\\VerisignUniversalRootCA",
+    "InstallationFile": "VerisignUniversalRootCertificationAuthority.cer",
+    "InstallationSize": 4096,
+    "UploadSize": 4096,
+    "InstallationDuration": 10,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32, 64 ],
+      "MinVersion": "6.1"
+    },
+    "CER": {
+      "Parameters": "-addstore -f \"root\"",
+      "SerialNumber": "40 1a c4 64 21 b3 13 21 03 0e bb e4 12 1a c5 1d",
+      "Fingerprint": "36 79 ca 35 66 87 72 30 4d 30 a5 fb 87 3b 0f a7 7b b7 0d 54"
+    }
+  },
+    "DotNet Core Runtime 3_1_6 x86": {
+    "GUID": "{50FB7412-7523-439F-98CB-800EAA62D7B6}",
+    "Name": ".NET Core Runtime 3.1.6 x86",
+    "PackageDirectory": "\\DotNetCore_3.1.6\\x86",
+    "InstallationFile": "dotnet-runtime-3.1.6-win-x86.exe",
+    "InstallationSize": 124542976,
+    "UploadSize": 26136576,
+    "TemporaryInstallationSize": 1478656,
+    "InstallationDuration": 60,
+    "InstallationTimeout": 300,
+    "OS": {
+        "Type": "Windows",
+        "TargetArchitecture": [ 32, 64 ],
+        "MinVersion": "6.1"
+    },
+    "EXE": {
+        "Parameters": "/install /msioptions \"DISABLEROLLBACK='1'\" /passive /norestart"
+    }
+  },
+  "DotNet Core Runtime 3_1_6 x64": {
+    "GUID": "{951153C9-CE52-48B2-B20E-430A8C8553E4}",
+    "Name": ".NET Core Runtime 3.1.6 x64",
+    "PackageDirectory": "\\DotNetCore_3.1.6\\x64",
+    "InstallationFile": "dotnet-runtime-3.1.6-win-x64.exe",
+    "InstallationSize": 124542976,
+    "UploadSize": 26136576,
+    "TemporaryInstallationSize": 1478656,
+    "InstallationDuration": 60,
+    "InstallationTimeout": 300,
+    "OS": {
+        "Type": "Windows",
+        "TargetArchitecture": [ 64 ],
+        "MinVersion": "6.1"
+    },
+    "EXE": {
+        "Parameters": "/install /msioptions \"DISABLEROLLBACK='1'\" /passive /norestart"
+    }
+  },
+  "ASP DotNet Core Runtime 3_1_6 x86": {
+    "GUID": "{4E3ECAE4-FF9A-4916-A93A-CF0C519EE013}",
+    "Name": "ASP .NET Core Runtime 3.1.6 x86",
+    "PackageDirectory": "\\DotNetCore_3.1.6\\x86",
+    "InstallationFile": "aspnetcore-runtime-3.1.6-win-x86.exe",
+    "InstallationSize": 35876864,
+    "UploadSize": 7155712,
+    "TemporaryInstallationSize": 1437696,
+    "InstallationDuration": 60,
+    "InstallationTimeout": 300,
+    "OS": {
+        "Type": "Windows",
+        "TargetArchitecture": [ 32, 64 ],
+        "MinVersion": "6.1"
+    },
+    "EXE": {
+        "Parameters": "/install /msioptions \"DISABLEROLLBACK='1'\" /passive /norestart"
+    }
+  },
+  "ASP DotNet Core Runtime 3_1_6 x64": {
+    "GUID": "{F79ED0AA-B8CF-4909-B3C2-31ACED153D68}",
+    "Name": "ASP .NET Core Runtime 3.1.6 x64",
+    "PackageDirectory": "\\DotNetCore_3.1.6\\x64",
+    "InstallationFile": "aspnetcore-runtime-3.1.6-win-x64.exe",
+    "InstallationSize": 35876864,
+    "UploadSize": 7155712,
+    "TemporaryInstallationSize": 1437696,
+    "InstallationDuration": 60,
+    "InstallationTimeout": 300,
+    "OS": {
+        "Type": "Windows",
+        "TargetArchitecture": [ 64 ],
+        "MinVersion": "6.1"
+    },
+    "EXE": {
+        "Parameters": "/install /msioptions \"DISABLEROLLBACK='1'\" /passive /norestart"
+    }
+  },
+  "WinEmb-HelpEngine (x86)": {
+    "GUID": "{95C3886F-19D5-4770-85FB-6E7A02DDBB9B}",
+    "Name": "WinEmb-HelpEngine (x86)",
+    "PackageDirectory": "\\WES7Components\\x86\\WinEmb-HelpEngine",
+    "InstallationFile": "HelpEngineInstaller.bat",
+    "InstallationSize": 1029530,
+    "UploadSize": 1032192,
+    "InstallationDuration": 30,
+    "InstallationTimeout": 600,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 32 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": ""
+    }
+  },
+  "WinEmb-HelpEngine (x64)": {
+    "GUID": "{1241F64B-6D7C-43D7-AB4F-E5EEA3B72F29}",
+    "Name": "WinEmb-HelpEngine (x64)",
+    "PackageDirectory": "\\WES7Components\\x64\\WinEmb-HelpEngine",
+    "InstallationFile": "HelpEngineInstaller.bat",
+    "InstallationSize": 2016441,
+    "UploadSize": 2019328,
+    "InstallationDuration": 30,
+    "InstallationTimeout": 600,
+    "OS": {
+      "Type": "Windows",
+      "TargetArchitecture": [ 64 ],
+      "MinVersion": "6.1",
+      "MaxVersion": "6.1"
+    },
+    "EXE": {
+      "Parameters": ""
+    }
+  }
+}

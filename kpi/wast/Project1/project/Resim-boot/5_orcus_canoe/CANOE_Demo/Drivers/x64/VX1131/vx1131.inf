@@ -1,0 +1,15 @@
+[Version]
+Signature="$WINDOWS NT$"
+
+[vx1131.NT.Wdf]
+KmdfService = vx1131, vx1131_Service_kmdfInst
+
+[vx1131_Service_kmdfInst]
+KmdfLibraryVersion = 1.9
+
+[SourceDisksFiles]
+vx1131.sys = 1
+WdfCoInstaller01009.dll = 1
+
+[Strings]
+;DriverSetupDirectory="vx1131"

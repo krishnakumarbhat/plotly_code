@@ -1,0 +1,41 @@
+Copyright (c) 2001-2004 Swedish Institute of Computer Science. All rights reserved
+Copyright (c) 2001-2004 Axon Digital Design B.V., The Netherlands. All rights reserved
+Copyright (c) 2001-2004 Leon Woestenberg <leon.woestenberg@gmx.net>
+Copyright (c) 2001 by Cognizant Pty Ltd.
+Copyright (c) 2003, 2006 by Marc Boucher, Services Informatiques (MBSI) inc.
+Copyright (c) 2001 by Sun Microsystems, Inc. All rights reserved
+Copyright (c) 2001, Swedish Institute of Computer Science. All rights reserved
+Copyright (c) 2002,2003,2004 Google, Inc.
+Copyright (c) 2002-2003, Adam Dunkels. All rights reserved
+Copyright (c) 2002 CITEL Technologies Ltd. All rights reserved
+Copyright (c) 2002 Google, Inc. All rights reserved
+Copyright (c) 2002 The NetBSD Foundation, Inc. All rights reserved
+Copyright (c) 2003-2004 Axon Digital Design B.V., The Netherlands. All rights reserved
+Copyright (c) 2003 Paul Mackerras. All rights reserved
+Copyright (C) 2006-2008 Christophe Devine
+Copyright (c) 2006 Axon Digital Design B.V., The Netherlands. All rights reserved
+Copyright (c) 2007 Dominik Spies <kontakt@dspies.de> All rights reserved
+Copyright (c) 2008 Paul Mackerras. All rights reserved
+Copyright (C) 2009 Paul Bakker <polarssl_maintainer at polarssl dot org> All rights reserved
+Copyright (c) 2010 Inico Technologies Ltd. All rights reserved
+Copyright (c) Deltatee Enterprises Ltd. 2013 All rights reserved
+Copyright (c) 2013-2017, tinydir authors: - Cong Xu - Lautis Sun - Baudouin Feildel - Andargor <andargor@yahoo.com> All rights reserved
+Copyright (c) 2014 Simon Goldschmidt All rights reserved
+Copyright (c) 2015 Dirk Ziegelmeier All rights reserved
+Copyright (c) 2015 Inico Technologies Ltd. All rights reserved
+Copyright (c) 2015 Inico Technologies Ltd. , Author: Ivan Delamer <delamer@inicotech.com> All rights reserved
+Copyright (c) 2015 Verisure Innovation AB All rights reserved
+Copyright (c) 2016 Elias Oenal. All rights reserved
+Copyright (c) 2016 Elias Oenal and Dirk Ziegelmeier. All rights reserved
+Copyright (c) 2016 Erik Andersson <erian747@gmail.com> All rights reserved
+Copyright (c) 2017 Benjamin Aigner
+Copyright (c) 2017 Dirk Ziegelmeier. All rights reserved
+Copyright (C) 2017 Free Software Foundation, Inc. Written by Joan Lledó.
+Copyright (c) 2017 Joel Cunningham, Garmin International, Inc. <joel.cunningham@garmin.com> All rights reserved
+Copyright (c) 2017 Simon Goldschmidt <goldsimon@gmx.de> All rights reserved
+Copyright (c) 2017 The MINIX 3 Project. All rights reserved
+Copyright (c) 2017-2018 Samuel Thibault <sthibault@debian.org>
+Copyright (C) 2018 Free Software Foundation, Inc. Written by Joan Lledó.
+Copyright (c) 2018 Simon Goldschmidt <goldsimon@gmx.de> All rights reserved
+Copyright (c) 2018 Swedish Institute of Computer Science. All rights reserved
+Copyright (c) 2019 Joan Lledó

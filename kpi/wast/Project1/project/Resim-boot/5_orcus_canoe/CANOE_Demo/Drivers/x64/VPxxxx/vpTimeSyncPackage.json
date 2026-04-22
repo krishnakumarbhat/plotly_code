@@ -1,0 +1,37 @@
+{
+  "VP6400":  {
+    "version":  "23.20.20",
+    "description":  "VP6400 Time-Sync Package",
+    "dependencies":  {
+      "vxlapinic_lwf":  "^11.5.10",
+      "vxlapinic_64":  "^23.20.20",
+      "vii210n65x64":  "^23.20.10",
+      "vix550n65x64":  "^23.20.10",
+      "vGNSS":  "^23.20.20",
+      "VP6400SMC":  "^11.5.12"
+      }
+    },
+  "VP7400":  {
+    "version":  "23.20.20",
+    "description":  "VP7400 Time-Sync Package",
+    "dependencies":  {
+    "vxlapinic_lwf":  "^11.5.10",
+    "vxlapinic_64":  "^23.20.20",
+    "vii210n65x64":  "^23.20.10",
+    "vix540n65x64":  "^23.20.10",
+    "vix550n65x64":  "^23.20.10",
+    "vGNSS":  "^23.20.20"
+    }
+  },
+  "VP7500":  {
+  "version":  "23.20.20",
+  "description":  "VP7500 Time-Sync Package",
+  "dependencies":  {
+    "vxlapinic_lwf":  "^11.5.10",
+    "vxlapinic_64":  "^23.20.20",
+    "vii210n65x64":  "^23.20.10",
+    "vix550n65x64":  "^23.20.10",
+    "vGNSS":  "^23.20.20"
+    }
+  }
+}

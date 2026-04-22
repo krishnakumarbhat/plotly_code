@@ -1,0 +1,43 @@
+//<<vtpcfg>> V<1> do not remove this comment
+{
+    "Network": {
+        "1": {
+            "Name": "Intel(R) I210 Gigabit Network Connection #1 (ERT)",
+            "EnableDhcpV4": "false",
+            "AddressV4": "0.0.0.0",
+            "NetMaskV4": "255.255.255.0",
+            "GatewayV4": "0.0.0.0",
+            "Bus": [
+                "1"
+            ],
+            "Device": "0",
+            "Function": "0",
+            "Connector": "Eth1"
+        },
+        "2": {
+            "Name": "Intel(R) I210 Gigabit Network Connection #2",
+            "EnableDhcpV4": "false",
+            "AddressV4": "0.0.0.0",
+            "NetMaskV4": "255.255.255.0",
+            "GatewayV4": "0.0.0.0",
+            "Bus": [
+                "3",
+                "4"
+            ],
+            "Device": "0",
+            "Function": "0",
+            "Connector": "Eth2"
+        }
+    },
+    "Debug": {
+        "Level": "4",
+        "Modules": [
+            "module1",
+            "module2"
+        ]
+    },
+    "Timer": {
+        "WaitDelayCondVarNs": 60000
+    }
+}
+//<</vtpcfg>> end tag do not remove

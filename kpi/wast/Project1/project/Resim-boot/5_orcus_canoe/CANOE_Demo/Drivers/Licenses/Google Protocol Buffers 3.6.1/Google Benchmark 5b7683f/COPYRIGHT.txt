@@ -1,0 +1,1 @@
+Copyright © The Authors of Google Benchmark

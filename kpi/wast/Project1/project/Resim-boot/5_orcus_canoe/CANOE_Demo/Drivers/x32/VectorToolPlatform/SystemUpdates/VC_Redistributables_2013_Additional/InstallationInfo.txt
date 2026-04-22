@@ -1,0 +1,8 @@
+[Installation]
+InstallationType=MSI
+InstallationPackage=vc_runtimeAdditional_x86.msi
+ProductCode={F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}
+UpgradeCode={936E696B-0C8D-3A48-98DF-344FEA4E1139}
+ProductVersion=12.0.21005
+TRANSFORMS=vc_runtimeAdditional_x86.mst
+AdditionalSize=7340032

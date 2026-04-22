@@ -1,0 +1,109 @@
+;
+; Copyright 2023 Vector Informatik GmbH
+;
+[Version]
+Signature      = "$CHICAGO$"
+Class          = VectorSystemServices
+ClassGuid      = {39C8444F-C6BD-4C12-9DED-E2111C1DF458}
+Provider       = %MFGNAME%
+DriverVer=09/01/2023,23.20.20.0
+CatalogFile.NTamd64 = vxlapinic_64.cat
+
+;-------------------------------------------------------------------------
+; Driver Disk
+;-------------------------------------------------------------------------
+[DestinationDirs]
+DefaultDestDir = 12
+CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1=%INSTDISK%,
+
+[SourceDisksFiles]
+vxlapinic.sys  = 1
+WdfCoInstaller01009.dll=1 ; make sure the number matches with SourceDisksNames
+
+;------------------------------------------------------------------------------
+;  Class Install Section
+;------------------------------------------------------------------------------
+
+[ClassInstall32]
+Addreg=VectorSystemServicesClassReg
+
+[VectorSystemServicesClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,"-27"
+HKR,,NoInstallClass,,1
+HKR,,NoDisplayClass,,1
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%MFGNAME%=DeviceList,NTamd64
+
+; For XP and later
+[DeviceList.NTamd64]
+%vxlapinic.DRVDESC%=vxlapinic_Inst, root\vxlapinic
+
+[vxlapinic_Inst.NTamd64]
+CopyFiles = @vxlapinic.sys
+AddReg    = vxlapinic.registry
+
+[vxlapinic_Inst.NTamd64.HW]
+AddReg=vxlapinic_Inst.NTamd64.AddReg
+
+[vxlapinic_Inst.NTamd64.AddReg]                            
+;HKR,,DeviceCharacteristics,0x10001,0x0100         ; Use same security checks on relative opens
+;HKR,,Security,,"D:P(A;;GA;;;BA)(A;;GA;;;SY)"      ; Allow generic-all access to Built-in administrators and Local system 
+
+;-------------- Service installation
+[vxlapinic_Inst.NTamd64.Services]
+AddService = vxlapinic,0x00000002, vxlapinic_Service
+
+; -------------- dynambus driver install sections
+[vxlapinic_Service]
+DisplayName    = %vxlapinic.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START 
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vxlapinic.sys
+
+;
+;--- Coinstaller installation ------
+;
+[vxlapinic_Inst.NTamd64.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[vxlapinic_Inst.NTamd64.Wdf]
+KmdfService = vxlapinic, vxlapinic_wdfsect
+
+[vxlapinic_wdfsect]
+KmdfLibraryVersion = 1.9
+
+;------------------------------------------------------------------------------
+;  Add Registry Entrys
+;------------------------------------------------------------------------------
+[vxlapinic.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",MaxCards,0x10001,8
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",ChannelsPerCard,0x10001,1
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",HwType,0x10001,118
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",HwName,,"vxlApiNic"
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",DriverName,,vxlApiNic
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\vxlapinic",UseDeviceInterface,0x10001,1
+
+[Strings]
+;DriverSetupDirectory="vxlapinic"
+MFGNAME="Vector Informatik GmbH"
+ClassName        = "Vector System Services"
+vxlapinic.DRVDESC = "Vector XLAPI-NIC Enumerator"
+vxlapinic.SVCDESC = "Vector XLAPI-NIC Enumerator"
+INSTDISK         = "XLAPI-NIC-Driver"

@@ -1,0 +1,7 @@
+[Installation]
+InstallationType=MSI
+InstallationPackage=vc_red.msi
+ProductCode={F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}
+AdditionalSize=7340032
+ProductVersion=10.0.40219
+UpgradeCode={1F4F1D2A-D9DA-32CF-9909-48485DA06DD5}

@@ -1,0 +1,122 @@
+; Copyright 2023 Vector Informatik GmbH
+[Version]
+Signature      = "$CHICAGO$"
+Class          = Vector-Hardware
+ClassGuid      = {D20399E0-47BD-4219-8C5B-A10B87CEB545}
+Provider       = %MFGNAME%
+DriverVer=09/01/2023,23.20.20.0
+CatalogFile.NTamd64=vn5430_64.cat
+
+[Manufacturer]
+%MFGNAME%=DeviceList,NTamd64
+
+;------------------------------------------------------------------------------
+;  Supported Devices
+;------------------------------------------------------------------------------
+; Windows 7 and later versions
+[DeviceList.NTamd64]
+%DESCRIPTION_VN5430%=DI_vn5430, {731CB318-600C-48FB-AB27-C8B8D5045D6C}\PID_007187
+;-------------------------------------------------------------------------
+; Class Section
+;-------------------------------------------------------------------------
+[ClassInstall32]
+Addreg=CanClassReg
+
+[CanClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,"-5"
+
+;-------------------------------------------------------------------------
+; Device Install Section
+;-------------------------------------------------------------------------
+[ControlFlags]
+ExcludeFromSelect = *
+
+;------------------------------------------------------------------------------
+;  Installation Disk Information
+;------------------------------------------------------------------------------
+[SourceDisksFiles]
+vn5430.sys = 1
+WdfCoInstaller01009.dll = 1 ; make sure the number matches with SourceDisksNames
+
+[SourceDisksNames]
+1=%INSTDISK%,
+
+;------------------------------------------------------------------------------
+; DestinationDirs 
+;------------------------------------------------------------------------------
+[DestinationDirs]
+DefaultDestDir=12
+CoInstaller_CopyFiles = 11
+
+;------------------------------------------------------------------------------
+;  Windows Sections
+;------------------------------------------------------------------------------
+[DI_vn5430.NTamd64]
+CopyFiles      = @vn5430.sys
+AddReg=vn5430.registry,options.registry
+
+[DI_vn5430.NTamd64.Services]
+AddService     = vn5430,0x00000002,vn5430_Service
+
+[vn5430_Service]
+DisplayName    = %SVCDESC_VN5430%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vn5430.sys
+
+
+;-------------------------------------------------------------------------
+; WDF Coinstaller installation
+;-------------------------------------------------------------------------
+[DI_vn5430.NTamd64.CoInstallers]
+AddReg         = CoInstaller_AddReg
+CopyFiles      = CoInstaller_CopyFiles
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[DI_vn5430.NTamd64.Wdf]
+KmdfService    = vn5430, vn5430_wdfsect
+
+[vn5430_wdfsect]
+KmdfLibraryVersion = 1.9
+
+;------------------------------------------------------------------------------
+;  Add Registry Entrys
+;------------------------------------------------------------------------------
+[vn5430.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",MaxCards,0x10001,8
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",TimerEligibility,0x10001,0x200
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",ChannelsPerCard,0x10001,6
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",HwType,0x10001,109
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",HwName,,"vn5430"
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",DriverName,,vn5430
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Drivers\VN5430",UseDeviceInterface,0x10001,1
+
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Hardware\VN5430",UseCardSerialNumber,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Hardware\VN5430",RxTransferCycleTime,0x10003,250
+
+;------------------------------------------------------------------------------
+;  Add common registry entries
+;------------------------------------------------------------------------------
+[options.registry]
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",OEMInstallation,0x10001,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",DebugFlags,0x10003,0
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",EnableTimeSync,0x10003,1
+HKLM,"SOFTWARE\VECTOR\CANDriver 1.0\Options",VirtualBus,0x10003,1
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+[Strings]
+;DriverSetupDirectory="VN5430"
+MFGNAME               = "Vector Informatik GmbH"
+INSTDISK              = "VN5430-Driver"
+DESCRIPTION_VN5430    = "VN5430"
+ClassName             = "Vector-Hardware"
+SVCDESC_VN5430        = "VN5430"
