@@ -1,2 +1,0 @@
-Copyright (c) 2000 Computing Research Labs, New Mexico State University
-Copyright (c) 2001-2014 Francesco Zappa Nardelli

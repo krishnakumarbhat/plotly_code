@@ -1,5 +1,0 @@
-24
-uint64_t utc_timestamp_ns
-uint64_t sensor_timestamp_us
-uint32_t streamRefIndex
-uint32_t padding

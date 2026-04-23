@@ -17,6 +17,9 @@ class KPI_DataModelStorage:
         # Main data container for storing scan index data
         self._data_container: Dict[str, List] = {}
 
+        # Optional ordered row indices to keep when ingesting datasets
+        self._selected_indices = None
+
         # Optional set of scan indices to skip when ingesting datasets
         self._missing_indices = set()
 
@@ -24,7 +27,7 @@ class KPI_DataModelStorage:
         self._parent_counter: int = -1
         self._child_counter: int = -1
 
-    def initialize(self, scan_index, sensor, missing_idx=None) -> None:
+    def initialize(self, scan_index, sensor, missing_idx=None, selected_idx=None) -> None:
         """
         Initialize the data container with scan indices.
 
@@ -33,6 +36,7 @@ class KPI_DataModelStorage:
         """
 
         # Track indices that should be skipped later, if provided
+        self._selected_indices = tuple(selected_idx) if selected_idx is not None else None
         self._missing_indices = set(missing_idx) if missing_idx is not None else set()
 
         # Check if scan_index is sorted and sequential
@@ -135,6 +139,28 @@ class KPI_DataModelStorage:
         self._child_counter = -1
         self.stream_name = stream_name
 
+    def _align_dataset_rows(self, dataset: Any, signal_name: str):
+        if dataset is None:
+            return None
+
+        if self._selected_indices is not None:
+            dataset_len = len(dataset)
+            aligned = []
+            for idx in self._selected_indices:
+                if idx >= dataset_len:
+                    logging.debug(
+                        f"Skipping aligned row {idx} for {signal_name}: dataset length is {dataset_len}"
+                    )
+                    continue
+                aligned.append(dataset[idx])
+            return aligned
+
+        if self._missing_indices:
+            missing_set = self._missing_indices
+            return [item for idx, item in enumerate(dataset) if idx not in missing_set]
+
+        return dataset
+
     def set_value(self, dataset: Any, signal_name: str, grp_name: str) -> str:
         """
         Set a value in the storage with group relationship.
@@ -154,6 +180,8 @@ class KPI_DataModelStorage:
             grp_name not in self._signal_to_value and self._child_counter == -1
         )
 
+        dataset = self._align_dataset_rows(dataset, signal_name)
+
         if is_new_parent:
             # Handle new parent group
             key_grp = f"{self._parent_counter}_None"
@@ -161,19 +189,9 @@ class KPI_DataModelStorage:
             key_stream = f"{self._parent_counter}_{self._child_counter}"
 
             # Process and store the data
-            if self._missing_indices:
-                missing_set = set(self._missing_indices)
-                # Filter out missing indices in a single pass
-                dataset = [item for idx, item in enumerate(dataset) if idx not in missing_set]
-            
             self._process_dataset(dataset, key_stream, signal_name, key_grp)
 
             return key_stream
-
-        # Filter out missing indices from the dataset before processing
-        if self._missing_indices:
-            missing_set = set(self._missing_indices)
-            dataset = [item for idx, item in enumerate(dataset) if idx not in missing_set]
 
         # Get the length of dataset and data_container
         # dataset_len = len(dataset)- len(getattr(self, "_missing_indices", set())) if dataset is not None else 0
@@ -253,6 +271,8 @@ class KPI_DataModelStorage:
         self._value_to_signal.clear()
         self._signal_to_value.clear()
         self._data_container.clear()
+        self._selected_indices = None
+        self._missing_indices = set()
         self._parent_counter = 0
         self._child_counter = -1
 
@@ -404,184 +424,203 @@ class KPI_DataModelStorage:
             - 'mismatch': Count of mismatched elements
         """
         data_dict = {
-            "SI": None,  # Scan indices for matched data
-            "I": None,  # All input values
-            "O": None,  # All output values
-            "MI": [[], []],  # for missing in input
-            "MO": [[], []],  # for missing in output
+            "SI": None,
+            "I": None,
+            "O": None,
+            "MI": [[], []],
+            "MO": [[], []],
             "match": 0,
             "mismatch": 0,
+            "scan_input_values": {},
+            "scan_output_values": {},
+            "scan_input_counts": {},
+            "scan_output_counts": {},
+            "common_scan_indices": [],
+            "input_only_scan_indices": [],
+            "output_only_scan_indices": [],
+            "input_point_total": 0,
+            "output_point_total": 0,
         }
 
-        # Check if signal exists in input and output maps
-        unique_in = (
-            input_data._signal_to_value.get(signal_name)
-            if input_data._signal_to_value
-            else None
-        )
-        unique_out = (
-            output_data._signal_to_value.get(signal_name)
-            if output_data._signal_to_value
-            else None
-        )
+        def _normalize_signal_name(name):
+            return "".join(
+                ch for ch in str(name or "").strip().lower() if ch.isalnum()
+            )
 
-        # Return early if signal not found in either map
+        def _candidate_normalized_names(name):
+            normalized = _normalize_signal_name(name)
+            alias_groups = [
+                {"ran", "range", "detectionrange"},
+                {"vel", "velocity", "detectionvelocity", "rr", "rangerate"},
+                {"phi", "elevation", "eli"},
+                {"theta", "azimuth", "azi"},
+            ]
+            for group in alias_groups:
+                if normalized in group:
+                    return group
+            return {normalized}
+
+        def _resolve_signal_mapping(data_obj, requested_name):
+            signal_map = getattr(data_obj, "_signal_to_value", None)
+            if not signal_map:
+                return None
+
+            direct = signal_map.get(requested_name)
+            if direct:
+                return direct
+
+            candidate_names = _candidate_normalized_names(requested_name)
+            for existing_name, existing_value in signal_map.items():
+                if (
+                    _normalize_signal_name(existing_name) in candidate_names
+                    and existing_value
+                ):
+                    return existing_value
+            return None
+
+        def _parse_index_pair(unique_value):
+            if isinstance(unique_value, str) and unique_value:
+                return map(int, unique_value.split("_"))
+            if isinstance(unique_value, list) and unique_value:
+                try:
+                    return map(int, list(unique_value[0].values())[0].split("_"))
+                except Exception:
+                    return (None, None)
+            return (None, None)
+
+        unique_in = _resolve_signal_mapping(input_data, signal_name)
+        unique_out = _resolve_signal_mapping(output_data, signal_name)
+
         if not unique_in and not unique_out:
             return "no_data_in_hdf", {}
 
-        grp_idx_in = None
-        plt_idx_in = None
+        grp_idx_in, plt_idx_in = _parse_index_pair(unique_in)
+        grp_idx_out, plt_idx_out = _parse_index_pair(unique_out)
 
-        grp_idx_out = None
-        plt_idx_out = None
-        # try:
-        # Parse group and plot indices for input and output
-        if isinstance(unique_in, str) and isinstance(unique_out, str):
-            grp_idx_in, plt_idx_in = (
-                map(int, unique_in.split("_")) if unique_in else (None, None)
-            )
-            grp_idx_out, plt_idx_out = (
-                map(int, unique_out.split("_")) if unique_out else (None, None)
-            )
-        elif isinstance(unique_in, list) and isinstance(unique_out, list):
-            grp_idx_in, plt_idx_in = (
-                map(int, list(unique_in[0].values())[0].split("_"))
-                if unique_in
-                else (None, None)
-            )
-            grp_idx_out, plt_idx_out = (
-                map(int, list(unique_out[0].values())[0].split("_"))
-                if unique_out
-                else (None, None)
-            )
+        scan_indices = sorted(
+            set(getattr(input_data, "_data_container", {}).keys())
+            | set(getattr(output_data, "_data_container", {}).keys())
+        )
 
-        # Pre-filter valid scan indices to avoid if it thier in innput not ouput data viceversa
-        scan_indices = list(input_data._data_container.keys())
-        for key in output_data._data_container.keys():
-            if key not in input_data._data_container:
-                scan_indices.append(key)
-
-        # Process all scan indices at once
         for scan_idx in scan_indices:
             data_in = None
             data_out = None
 
-            # Get input data if available
             if (
                 input_data._data_container.get(scan_idx) is not None
                 and grp_idx_in is not None
                 and plt_idx_in is not None
             ):
-                if grp_idx_in < len(
-                    input_data._data_container[scan_idx]
-                ) and plt_idx_in < len(
+                if grp_idx_in < len(input_data._data_container[scan_idx]) and plt_idx_in < len(
                     input_data._data_container[scan_idx][grp_idx_in]
                 ):
-                    data_in = input_data._data_container[scan_idx][grp_idx_in][
-                        plt_idx_in
-                    ]
+                    data_in = input_data._data_container[scan_idx][grp_idx_in][plt_idx_in]
+                    data_in = np.array([data_in]) if np.isscalar(data_in) else np.array(data_in)
 
-                    # Convert scalar to 1D numpy array
-                    if np.isscalar(data_in):
-                        data_in = np.array([data_in])
-                    else:
-                        data_in = np.array(data_in)
-
-            # Get output data if available
             if (
                 output_data._data_container.get(scan_idx) is not None
                 and grp_idx_out is not None
                 and plt_idx_out is not None
             ):
-                if grp_idx_out < len(
-                    output_data._data_container[scan_idx]
-                ) and plt_idx_out < len(
+                if grp_idx_out < len(output_data._data_container[scan_idx]) and plt_idx_out < len(
                     output_data._data_container[scan_idx][grp_idx_out]
                 ):
-                    data_out = output_data._data_container[scan_idx][grp_idx_out][
-                        plt_idx_out
-                    ]
+                    data_out = output_data._data_container[scan_idx][grp_idx_out][plt_idx_out]
+                    data_out = np.array([data_out]) if np.isscalar(data_out) else np.array(data_out)
 
-                    # Convert scalar to 1D numpy array
-                    if np.isscalar(data_out):
-                        data_out = np.array([data_out])
-                    else:
-                        data_out = np.array(data_out)
+            if data_in is None and data_out is None:
+                continue
 
-            # Proceed if at least one of data_in or data_out is not None
-            if data_in is not None or data_out is not None:
-                # Replace None with empty arrays for consistent handling
-                data_in = np.array([]) if data_in is None else data_in
-                data_out = np.array([]) if data_out is None else data_out
+            data_in = np.array([]) if data_in is None else data_in
+            data_out = np.array([]) if data_out is None else data_out
 
-                len_in, len_out = data_in.size, data_out.size
+            len_in, len_out = data_in.size, data_out.size
+            scan_idx_int = int(scan_idx)
 
-                # Equal length case - both arrays have matching data
-                if len_in == len_out and len_in > 0:
-                    n = len_in
+            data_dict["scan_input_values"][scan_idx_int] = data_in.tolist()
+            data_dict["scan_output_values"][scan_idx_int] = data_out.tolist()
+            data_dict["scan_input_counts"][scan_idx_int] = int(len_in)
+            data_dict["scan_output_counts"][scan_idx_int] = int(len_out)
+            data_dict["input_point_total"] += int(len_in)
+            data_dict["output_point_total"] += int(len_out)
 
-                    if data_dict["SI"] is None:
-                        data_dict["SI"] = np.full(n, scan_idx)
-                        data_dict["I"] = data_in
-                        data_dict["O"] = data_out
-                    else:
-                        data_dict["SI"] = np.append(
-                            data_dict["SI"], np.full(n, scan_idx)
-                        )
-                        data_dict["I"] = np.append(data_dict["I"], data_in)
-                        data_dict["O"] = np.append(data_dict["O"], data_out)
+            if len_in > 0 and len_out > 0:
+                data_dict["common_scan_indices"].append(scan_idx_int)
+            elif len_in > 0:
+                data_dict["input_only_scan_indices"].append(scan_idx_int)
+            elif len_out > 0:
+                data_dict["output_only_scan_indices"].append(scan_idx_int)
 
-                    data_dict["match"] += n
-
-                # Mismatched lengths case
+            if len_in == len_out and len_in > 0:
+                n = len_in
+                if data_dict["SI"] is None:
+                    data_dict["SI"] = np.full(n, scan_idx)
+                    data_dict["I"] = data_in
+                    data_dict["O"] = data_out
                 else:
-                    n_min = min(len_in, len_out)
-                    n_diff = max(len_in, len_out) - n_min
+                    data_dict["SI"] = np.append(data_dict["SI"], np.full(n, scan_idx))
+                    data_dict["I"] = np.append(data_dict["I"], data_in)
+                    data_dict["O"] = np.append(data_dict["O"], data_out)
 
-                    # Handle matched portion first (if any)
-                    if n_min > 0:
-                        if data_dict["SI"] is None:
-                            data_dict["SI"] = np.full(n_min, scan_idx)
-                            data_dict["I"] = data_in[:n_min]
-                            data_dict["O"] = data_out[:n_min]
-                        else:
-                            data_dict["SI"] = np.append(
-                                data_dict["SI"], np.full(n_min, scan_idx)
-                            )
-                            data_dict["I"] = np.append(data_dict["I"], data_in[:n_min])
-                            data_dict["O"] = np.append(data_dict["O"], data_out[:n_min])
+                data_dict["match"] += n
+                continue
 
-                        data_dict["match"] += n_min
+            n_min = min(len_in, len_out)
+            n_diff = max(len_in, len_out) - n_min
 
-                    # Handle mismatched portion
-                    if n_diff > 0:
-                        if len_in > len_out:
-                            # Input has extra values
-                            extra_values = data_in[n_min:]
-                            if not data_dict["MI"][0]:  # First mismatch
-                                data_dict["MI"] = [
-                                    [scan_idx] * len(extra_values),
-                                    extra_values.tolist(),
-                                ]
-                            else:
-                                data_dict["MI"][0].extend(
-                                    [scan_idx] * len(extra_values)
-                                )
-                                data_dict["MI"][1].extend(extra_values.tolist())
-                            data_dict["mismatch"] += len(extra_values)
-                        else:
-                            # Output has extra values
-                            extra_values = data_out[n_min:]
-                            if not data_dict["MO"][0]:  # First mismatch
-                                data_dict["MO"] = [
-                                    [scan_idx] * len(extra_values),
-                                    extra_values.tolist(),
-                                ]
-                            else:
-                                data_dict["MO"][0].extend(
-                                    [scan_idx] * len(extra_values)
-                                )
-                                data_dict["MO"][1].extend(extra_values.tolist())
-                            data_dict["mismatch"] += len(extra_values)
+            if n_min == 0 and n_diff > 0 and (len_in == 0 or len_out == 0):
+                n_only = max(len_in, len_out)
+                si_only = np.full(n_only, scan_idx)
+                if len_in == 0:
+                    i_only = np.full(n_only, np.nan)
+                    o_only = data_out
+                else:
+                    i_only = data_in
+                    o_only = np.full(n_only, np.nan)
+
+                if data_dict["SI"] is None:
+                    data_dict["SI"] = si_only
+                    data_dict["I"] = i_only
+                    data_dict["O"] = o_only
+                else:
+                    data_dict["SI"] = np.append(data_dict["SI"], si_only)
+                    data_dict["I"] = np.append(data_dict["I"], i_only)
+                    data_dict["O"] = np.append(data_dict["O"], o_only)
+
+            if n_min > 0:
+                if data_dict["SI"] is None:
+                    data_dict["SI"] = np.full(n_min, scan_idx)
+                    data_dict["I"] = data_in[:n_min]
+                    data_dict["O"] = data_out[:n_min]
+                else:
+                    data_dict["SI"] = np.append(data_dict["SI"], np.full(n_min, scan_idx))
+                    data_dict["I"] = np.append(data_dict["I"], data_in[:n_min])
+                    data_dict["O"] = np.append(data_dict["O"], data_out[:n_min])
+
+                data_dict["match"] += n_min
+
+            if n_diff > 0:
+                if len_in > len_out:
+                    extra_values = data_in[n_min:]
+                    if not data_dict["MI"][0]:
+                        data_dict["MI"] = [
+                            [scan_idx] * len(extra_values),
+                            extra_values.tolist(),
+                        ]
+                    else:
+                        data_dict["MI"][0].extend([scan_idx] * len(extra_values))
+                        data_dict["MI"][1].extend(extra_values.tolist())
+                    data_dict["mismatch"] += len(extra_values)
+                else:
+                    extra_values = data_out[n_min:]
+                    if not data_dict["MO"][0]:
+                        data_dict["MO"] = [
+                            [scan_idx] * len(extra_values),
+                            extra_values.tolist(),
+                        ]
+                    else:
+                        data_dict["MO"][0].extend([scan_idx] * len(extra_values))
+                        data_dict["MO"][1].extend(extra_values.tolist())
+                    data_dict["mismatch"] += len(extra_values)
 
         return data_dict

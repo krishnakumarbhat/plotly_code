@@ -1,1 +1,0 @@
-Copyright jQuery Foundation and other contributors, https://jquery.org/

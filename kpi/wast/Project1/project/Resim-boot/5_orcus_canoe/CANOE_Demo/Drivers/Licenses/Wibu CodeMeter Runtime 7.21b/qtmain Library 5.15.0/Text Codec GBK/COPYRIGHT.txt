@@ -1,3 +1,0 @@
-Copyright © 2000 TurboLinux, Inc.  Written by Justin Yu and Sean Chen.
-Copyright © 2001, 2002 Turbolinux, Inc.  Written by James Su.
-Copyright © 2001, 2002 ThizLinux Laboratory Ltd.  Written by Anthony Fok

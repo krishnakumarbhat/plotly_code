@@ -1,5 +1,5 @@
-# Build from Docker Hub in WSL:
-#   apptainer build --fakeroot intplot_kpi/interactiveplot.simg intplot_kpi/singularity_interactiveplot.def
+# Build from workspace root in WSL:
+#   apptainer build --fakeroot simg_sh_hpcc/interactiveplot.simg KPI/intplot_kpi/singularity_interactiveplot.def
 Bootstrap: docker
 From: python:3.11-slim
 
@@ -10,22 +10,22 @@ From: python:3.11-slim
 
 %files
     # Copy requirements
-    intplot_kpi/requirements.txt /app/requirements.txt
+    KPI/intplot_kpi/requirements.txt /app/requirements.txt
     
     # Copy main application
-    intplot_kpi/ResimHTMLReport.py /app/ResimHTMLReport.py
+    KPI/intplot_kpi/ResimHTMLReport.py /app/ResimHTMLReport.py
     
     # Copy configuration files
-    intplot_kpi/ConfigInteractivePlots.xml /app/ConfigInteractivePlots.xml
-    intplot_kpi/InputsInteractivePlot.json /app/InputsInteractivePlot.json
-    intplot_kpi/InputsPerSensorInteractivePlot.json /app/InputsPerSensorInteractivePlot.json
-    intplot_kpi/Inputperstreamplot.json /app/Inputperstreamplot.json
+    KPI/intplot_kpi/ConfigInteractivePlots.xml /app/ConfigInteractivePlots.xml
+    KPI/intplot_kpi/InputsInteractivePlot.json /app/InputsInteractivePlot.json
+    KPI/intplot_kpi/InputsPerSensorInteractivePlot.json /app/InputsPerSensorInteractivePlot.json
+    KPI/intplot_kpi/Inputperstreamplot.json /app/Inputperstreamplot.json
     
     # Copy InteractivePlot module
-    intplot_kpi/InteractivePlot /app/InteractivePlot
+    KPI/intplot_kpi/InteractivePlot /app/InteractivePlot
     
     # Copy UDP_KPI module (needed for protobuf definitions and optional co-location)
-    UDP_KPI /app/UDP_KPI
+    KPI/UDP_KPI /app/UDP_KPI
 
 %post
     # Update system packages

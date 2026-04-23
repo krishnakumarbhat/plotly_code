@@ -61,6 +61,44 @@ class KPIHDFWrapper:
         self.stream_input_model = KPI_DataModelStorage()
         self.stream_output_model = KPI_DataModelStorage()
 
+    @staticmethod
+    def _build_aligned_scan_plan(scan_index_in, scan_index_out):
+        out_positions = {}
+        for out_idx, scan_id in enumerate(scan_index_out):
+            out_positions.setdefault(int(scan_id), []).append(out_idx)
+
+        common_scan_index = []
+        selected_in_indices = []
+        selected_out_indices = []
+        seen_scan_ids = set()
+
+        for in_idx, scan_id in enumerate(scan_index_in):
+            scan_id_int = int(scan_id)
+            if scan_id_int in seen_scan_ids:
+                continue
+
+            out_idx_list = out_positions.get(scan_id_int)
+            if not out_idx_list:
+                continue
+
+            common_scan_index.append(scan_id_int)
+            selected_in_indices.append(in_idx)
+            selected_out_indices.append(out_idx_list.pop(0))
+            seen_scan_ids.add(scan_id_int)
+
+        selected_in_set = set(selected_in_indices)
+        selected_out_set = set(selected_out_indices)
+        missing_in_indices = [idx for idx in range(len(scan_index_in)) if idx not in selected_in_set]
+        missing_out_indices = [idx for idx in range(len(scan_index_out)) if idx not in selected_out_set]
+
+        return (
+            common_scan_index,
+            selected_in_indices,
+            selected_out_indices,
+            missing_in_indices,
+            missing_out_indices,
+        )
+
     def parse(self) -> Dict[str, Any]:
         """Parse configured KPI streams from input/output HDF5 files and forward to KPI factory."""
         results: Dict[str, Any] = {
@@ -167,28 +205,34 @@ class KPIHDFWrapper:
 
 
 
-            # Convert lists to sets for comparison
-            set_in = set(scan_index_in)
-            set_out = set(scan_index_out)
-
-            # Find missing and common scan indices
-            missing = sorted((set_in - set_out) | (set_out - set_in))
-            common_scan_index = sorted(set_in & set_out)
-
-            # Get indices of missing scan indices in their original arrays
-            missing_in_indices = [i for i, sid in enumerate(scan_index_in) if sid in missing]
-            missing_out_indices = [i for i, sid in enumerate(scan_index_out) if sid in missing]
+            (
+                common_scan_index,
+                selected_in_indices,
+                selected_out_indices,
+                missing_in_indices,
+                missing_out_indices,
+            ) = self._build_aligned_scan_plan(scan_index_in, scan_index_out)
 
             # Log details for debugging
             logger.debug(
-                f"Stream {stream}: missing_in={missing} (indices: {missing_in_indices}), "
-                f"missing_out={missing} (indices: {missing_out_indices}), "
-                f"common_count={len(common_scan_index)}"
+                f"Stream {stream}: common_count={len(common_scan_index)}, "
+                f"input_rows={len(selected_in_indices)}, output_rows={len(selected_out_indices)}, "
+                f"missing_in_indices={missing_in_indices}, missing_out_indices={missing_out_indices}"
             )
 
-            # Initialize models with common scan indices and per-side missing sets
-            self.stream_models[stream]['input'].initialize(common_scan_index, sensor, missing_idx=missing_in_indices)
-            self.stream_models[stream]['output'].initialize(common_scan_index, sensor, missing_idx=missing_out_indices)
+            # Initialize models with aligned common scan indices and per-side row selection.
+            self.stream_models[stream]['input'].initialize(
+                common_scan_index,
+                sensor,
+                missing_idx=missing_in_indices,
+                selected_idx=selected_in_indices,
+            )
+            self.stream_models[stream]['output'].initialize(
+                common_scan_index,
+                sensor,
+                missing_idx=missing_out_indices,
+                selected_idx=selected_out_indices,
+            )
 
             # Set stream-specific parent 
             self.stream_models[stream]['input'].init_parent(stream)

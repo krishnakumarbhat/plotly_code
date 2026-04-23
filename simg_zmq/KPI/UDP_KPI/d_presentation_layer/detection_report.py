@@ -81,6 +81,7 @@ detection_html = """<html>
 
     <div class="kpi-box">
         <div class="kpi-header">Summary</div>
+        <div>Matching Mode: <span class="kpi-value">{matching_mode}</span></div>
         <div>Min Accuracy: <span class="kpi-value">{min_accuracy}%</span></div>
         <div>Max Accuracy: <span class="kpi-value">{max_accuracy}%</span></div>
         <div>Scans (vehicle/simulation): <span class="kpi-value">{veh_si_count}/{sim_si_count}</span></div>
@@ -114,7 +115,7 @@ detection_html = """<html>
                 <tr>
                     <th>Scan Index</th>
                     <th>Matches</th>
-                    <th>Detections (Vehicle)</th>
+                    <th>{denominator_label}</th>
                     <th>Accuracy (%)</th>
                 </tr>
             </thead>

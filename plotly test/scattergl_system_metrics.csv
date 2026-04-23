@@ -1,6 +1,0 @@
-Temporal level,Points per scatter,Sampled points per scatter,Plots per HTML,RAM before (MB),RAM after (MB),RAM used (MB),CPU usage (%),GPU usage (%),GPU memory used (MB),Time taken (seconds),HTML file size (MB),Output file,CPU model,CPU core count,CPU thread count,Total RAM (GB),OS name and version
-1,100000,100000,10,79.26,163.29,84.03,12.7,,,1.24,24.13,scattergl_temporal_01.html,"Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",14,20,31.69,Windows 11 (10.0.22631)
-2,300000,300000,10,100.45,261.58,161.13,4.1,,,1.55,63.32,scattergl_temporal_02.html,"Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",14,20,31.69,Windows 11 (10.0.22631)
-3,900000,900000,10,100.61,565.39,464.78,16.8,,,4.35,180.89,scattergl_temporal_03.html,"Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",14,20,31.69,Windows 11 (10.0.22631)
-4,2700000,1000000,10,100.62,618.92,518.3,7.1,,,7.49,201.91,scattergl_temporal_04.html,"Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",14,20,31.69,Windows 11 (10.0.22631)
-5,8100000,1000000,10,100.62,619.98,519.36,30.5,,,6.18,202.44,scattergl_temporal_05.html,"Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",14,20,31.69,Windows 11 (10.0.22631)

@@ -1,3 +1,0 @@
-bootstrap: docker-archive
-from: tools_mudp.tar
-

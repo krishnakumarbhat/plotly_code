@@ -809,15 +809,26 @@ def main_online(html_root: str = None, video_root: str = None) -> None:
         try:
             data = request.get_json() or {}
             force = data.get('force', False)
+            video_path = (data.get('video_path') or data.get('path') or '').strip()
 
             # Import lazily so online viewer doesn't require heavy VLM deps unless used.
             try:
-                from vlm import process_videos_with_vlm  # type: ignore
+                from vlm import process_video_with_vlm, process_videos_with_vlm  # type: ignore
             except Exception as e:
                 return jsonify({
                     'success': False,
                     'error': f'VLM dependencies not available in this environment: {e}'
                 }), 500
+
+            if video_path:
+                if video_path.startswith('/data/video/'):
+                    rel = video_path[len('/data/video/'):]
+                    abs_video_path = os.path.abspath(os.path.join(dynamic_video_root, rel))
+                else:
+                    abs_video_path = os.path.abspath(video_path)
+
+                result = process_video_with_vlm(abs_video_path, dynamic_video_root, force=force)
+                return jsonify(result), (200 if result.get('success') else 500)
 
             processed, skipped, errors = process_videos_with_vlm(dynamic_video_root, force=force)
             

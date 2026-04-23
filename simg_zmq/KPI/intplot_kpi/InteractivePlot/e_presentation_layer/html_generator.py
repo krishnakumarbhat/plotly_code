@@ -15,6 +15,8 @@ from InteractivePlot.e_presentation_layer.main_front_end import css, js, master_
 class HtmlGenerator:
     """Lightweight HTML generator: fewer helpers, same behavior."""
 
+    MAX_PLOTS_PER_PAGE = 8
+
     def __init__(
         self,
         signal_plot_paths: dict,
@@ -87,11 +89,16 @@ class HtmlGenerator:
 
     def _categorize_plot(self, plot_key: str) -> str:
         plot_key_lower = plot_key.lower()
-        if 'histogram' in plot_key_lower: return 'histogram'
-        if 'mismatch' in plot_key_lower: return 'mismatch'
-        if 'kpi' in plot_key_lower: return 'kpi'
-        if 'sensor' in plot_key_lower: return 'sensor_data'
-        if 'stream' in plot_key_lower: return 'stream_plots'
+        if 'histogram' in plot_key_lower:
+            return 'histogram'
+        if 'mismatch' in plot_key_lower:
+            return 'mismatch'
+        if 'kpi' in plot_key_lower:
+            return 'kpi'
+        if 'sensor' in plot_key_lower:
+            return 'sensor_data'
+        if 'stream' in plot_key_lower:
+            return 'stream_plots'
         return 'general'
 
     def _load_and_categorize_plots(self) -> Dict[str, List[dict]]:
@@ -111,14 +118,37 @@ class HtmlGenerator:
         
         return categorized_plots
 
-    def generate_html_content_for_category(self, category: str) -> str:
+    def _build_page_nav(self, page_links: List[dict], current_page: int) -> str:
+        if len(page_links) <= 1:
+            return ""
+
+        prev_link = ""
+        next_link = ""
+        if current_page > 0:
+            prev_link = f'<a href="{page_links[current_page - 1]["filename"]}">Previous</a>'
+        if current_page < len(page_links) - 1:
+            next_link = f'<a href="{page_links[current_page + 1]["filename"]}">Next</a>'
+
+        return (
+            '<div class="page-nav">'
+            f'<div>{prev_link}</div>'
+            f'<div class="page-count">Page {current_page + 1} of {len(page_links)}</div>'
+            f'<div>{next_link}</div>'
+            '</div>'
+        )
+
+    def generate_html_content_for_category(
+        self,
+        category: str,
+        plots_data: List[dict],
+        current_page: int = 0,
+        page_links: Optional[List[dict]] = None,
+    ) -> str:
         """Generate HTML content for a specific plot category."""
-        if category not in self.plots or not self.plots[category]:
+        if not plots_data:
             raise ValueError(f"No plots available for category '{category}'.")
 
-        plots_data = self.plots[category]
-        
-        content_html = '<div class="tab-content"><div class="plot-grid">'
+        content_html = '<div class="plot-grid">'
         
         for plot_info in plots_data:
             plot_path = plot_info['path']
@@ -142,9 +172,15 @@ class HtmlGenerator:
                     figure = go.Figure(plot_data)
                     plot_content = figure.to_html(
                         full_html=False,
-                        include_plotlyjs='cdn',  # This will include Plotly.js from CDN
-                        config={'displayModeBar': True, 'scrollZoom': True}
-                        )  
+                        include_plotlyjs=False,
+                        config={
+                            'displayModeBar': True,
+                            'scrollZoom': True,
+                            'responsive': True,
+                            'doubleClick': False,
+                            'displaylogo': False,
+                        },
+                    )
             except Exception as e:
                 self.logger.error(f"Failed to load plot content from {plot_path}: {e}")
                 plot_content = f"<p>Error loading plot: {e}</p>"
@@ -152,39 +188,28 @@ class HtmlGenerator:
             # Create individual plot container
             plot_title = f"{self.sensor_position} {plot_key}" if self.sensor_position else plot_key
             plot_html = f'''
-            <div class="plot-container" data-category="{category}">
-                <div class="plot-header">
+            <section class="plot-shell" data-category="{category}">
+                <div class="plot-head">
                     <h4>{plot_title}</h4>
+                    <div class="plot-tools">
+                        <button type="button" class="plot-expand-btn" aria-expanded="false">Expand</button>
+                    </div>
                 </div>
-                <div class="plot-content">
+                <div class="plot-body">
                     {plot_content}
                 </div>
-            </div>
+            </section>
             '''
             content_html += plot_html
             
-        content_html += "</div></div>"
+        content_html += "</div>"
 
         generation_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        page_nav = self._build_page_nav(page_links or [], current_page)
         complete_content = f'''
-        <div class="metadata">
-            <h3>📋 Report Information</h3>
-            <div class="metadata-grid">
-                <div class="metadata-item">
-                    <strong>Generated:</strong> {generation_time}
-                </div>
-                <div class="metadata-item">
-                    <strong>Tool run on:</strong> win32
-                </div>
-                <div class="metadata-item">
-                    <strong>Tool Version:</strong> 1.0
-                </div>
-                <div class="metadata-item">
-                    <strong>HTML Generated Time Info:</strong> {generation_time}
-                </div>
-            </div>
-        </div>
+        {page_nav}
         {content_html}
+        {page_nav}
         '''
         
         final_html = (
@@ -210,9 +235,8 @@ class HtmlGenerator:
                 html_template.replace("{{TABS}}", "")
                 .replace(
                     "{{CONTENT}}",
-                    "<div class=\"metadata\">"
-                    "<h3>📋 Report Information</h3>"
-                    "<p><strong>No plots were generated for this sensor/stream.</strong></p>"
+                    "<div class=\"empty-state\">"
+                    "<strong>No plots were generated for this sensor/stream.</strong>"
                     "</div>",
                 )
                 .replace("{{INPUT_FILENAME}}", self.input_filename)
@@ -233,31 +257,45 @@ class HtmlGenerator:
         
         category_files = []
         
-        for category in self.plots.keys():
+        for category, category_plots in self.plots.items():
             try:
-                html_content = self.generate_html_content_for_category(category)
-                
-                # Create filename for this category
-                filename = f"{self.html_name}_{category}.html"
-                
-                # Save directly to streams folder (no 4th level categories)
                 streams_folder = self.folder_structure['streams_direct']
-                file_path = streams_folder / filename
-                
-                with open(file_path, "w", encoding="utf-8") as file:
-                    file.write(html_content)
+                page_count = max(1, math.ceil(len(category_plots) / self.MAX_PLOTS_PER_PAGE))
+                page_links = []
+                for page_idx in range(page_count):
+                    suffix = "" if page_idx == 0 else str(page_idx + 1)
+                    filename = f"{self.html_name}_{category}{suffix}.html"
+                    page_links.append({
+                        'filename': filename,
+                        'page': page_idx + 1,
+                    })
 
-                content_size_kb = len(html_content) / 1024
-                self.logger.info(f"Category HTML saved: {file_path} ({content_size_kb:.1f} KB)")
+                for page_idx in range(page_count):
+                    start = page_idx * self.MAX_PLOTS_PER_PAGE
+                    end = start + self.MAX_PLOTS_PER_PAGE
+                    html_content = self.generate_html_content_for_category(
+                        category,
+                        category_plots[start:end],
+                        current_page=page_idx,
+                        page_links=page_links,
+                    )
 
-                # Add to category files list with updated relative path
-                relative_path = f"{self.sensor_position}/{self.stream_name}/{filename}"
-                category_files.append({
-                    'display_name': filename,
-                    'relative_path': relative_path,
-                    'category': category,
-                    'file_path': file_path
-                })
+                    filename = page_links[page_idx]['filename']
+                    file_path = streams_folder / filename
+                    with open(file_path, "w", encoding="utf-8") as file:
+                        file.write(html_content)
+
+                    content_size_kb = len(html_content) / 1024
+                    self.logger.info(f"Category HTML saved: {file_path} ({content_size_kb:.1f} KB)")
+
+                    relative_path = f"{self.sensor_position}/{self.stream_name}/{filename}"
+                    display_name = filename if page_count == 1 else f"{self.html_name}_{category} page {page_idx + 1}"
+                    category_files.append({
+                        'display_name': display_name,
+                        'relative_path': relative_path,
+                        'category': category,
+                        'file_path': file_path
+                    })
 
             except ValueError as e:
                 self.logger.warning(f"Warning: {str(e)}")
@@ -499,8 +537,8 @@ class HtmlGenerator:
                 file_info = files_sorted[0]
                 category_cards.append({
                     'category': cat,
-                    'count': 1,
-                    'name': f"{self.sensor_position} {cat}",
+                    'count': len(files_sorted),
+                    'name': f"{self.sensor_position} {cat} ({len(files_sorted)} page{'s' if len(files_sorted) != 1 else ''})",
                     'file_path': file_info['relative_path']
                 })
 
@@ -684,10 +722,32 @@ class HtmlGenerator:
         return float("nan")
 
     @classmethod
+    def _extract_kpi_metric_from_html(cls, file_path: Path, metric_name: str) -> float:
+        try:
+            txt = file_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            return float("nan")
+
+        escaped = re.escape(metric_name)
+        patterns = [
+            re.compile(rf"<tr><td>{escaped}</td><td>([^<]+)</td></tr>", re.IGNORECASE),
+            re.compile(rf"{escaped}\s*[:=]\s*([0-9]*\.?[0-9]+)", re.IGNORECASE),
+        ]
+        for pat in patterns:
+            match = pat.search(txt)
+            if not match:
+                continue
+            try:
+                return float(match.group(1).strip())
+            except Exception:
+                continue
+        return float("nan")
+
+    @classmethod
     def _compute_sensor_accuracy(cls, sensor_stream_data: dict) -> Dict[str, float]:
         accuracy_map: Dict[str, float] = {}
         for sensor_name, streams in sensor_stream_data.items():
-            f1_values: List[float] = []
+            accuracy_values: List[float] = []
             for categories in streams.values():
                 for category_name, plots in categories.items():
                     if category_name != "kpi":
@@ -695,17 +755,68 @@ class HtmlGenerator:
                     for plot_info in plots:
                         if "sil_validation_report" not in plot_info["name"].lower():
                             continue
-                        f1 = cls._extract_f1_from_html(Path(plot_info["path"]))
-                        if not math.isnan(f1):
-                            f1_values.append(f1)
-            accuracy_map[sensor_name] = (sum(f1_values) / len(f1_values)) if f1_values else float("nan")
+                        file_path = Path(plot_info["path"])
+                        f1 = cls._extract_f1_from_html(file_path)
+                        if not math.isnan(f1) and 0.0 <= f1 <= 1.0:
+                            accuracy_values.append(f1)
+                            continue
+
+                        avg_scan_match_pct = cls._extract_kpi_metric_from_html(file_path, "avg_scan_match_pct")
+                        if not math.isnan(avg_scan_match_pct) and 0.0 <= avg_scan_match_pct <= 100.0:
+                            accuracy_values.append(avg_scan_match_pct / 100.0)
+            accuracy_map[sensor_name] = (
+                (sum(accuracy_values) / len(accuracy_values)) if accuracy_values else float("nan")
+            )
         return accuracy_map
+
+    @classmethod
+    def _compute_sensor_scan_summary(cls, sensor_stream_data: dict) -> Dict[str, Dict[str, float]]:
+        summary_map: Dict[str, Dict[str, float]] = {}
+        for sensor_name, streams in sensor_stream_data.items():
+            common_total = 0.0
+            input_only_total = 0.0
+            output_only_total = 0.0
+            has_scan_data = False
+
+            for categories in streams.values():
+                for category_name, plots in categories.items():
+                    if category_name != "kpi":
+                        continue
+                    for plot_info in plots:
+                        if "sil_validation_report" not in plot_info["name"].lower():
+                            continue
+                        file_path = Path(plot_info["path"])
+                        common = cls._extract_kpi_metric_from_html(file_path, "common_scan_count")
+                        input_only = cls._extract_kpi_metric_from_html(file_path, "input_only_scan_count")
+                        output_only = cls._extract_kpi_metric_from_html(file_path, "output_only_scan_count")
+                        if math.isnan(common) and math.isnan(input_only) and math.isnan(output_only):
+                            continue
+                        has_scan_data = True
+                        common_total += 0.0 if math.isnan(common) else common
+                        input_only_total += 0.0 if math.isnan(input_only) else input_only
+                        output_only_total += 0.0 if math.isnan(output_only) else output_only
+
+            if has_scan_data:
+                summary_map[sensor_name] = {
+                    "matched_scans": common_total,
+                    "input_scans": common_total + input_only_total,
+                    "output_scans": common_total + output_only_total,
+                }
+            else:
+                summary_map[sensor_name] = {
+                    "matched_scans": float("nan"),
+                    "input_scans": float("nan"),
+                    "output_scans": float("nan"),
+                }
+
+        return summary_map
 
     @classmethod
     def _generate_master_index_html(cls, sensor_stream_data: dict, base_filename: str) -> str:
         """Generate master index HTML with nested dropdowns."""
         generation_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sensor_accuracy = cls._compute_sensor_accuracy(sensor_stream_data)
+        sensor_scan_summary = cls._compute_sensor_scan_summary(sensor_stream_data)
         valid_sensor_acc = [v for v in sensor_accuracy.values() if not math.isnan(v)]
         avg_accuracy = (sum(valid_sensor_acc) / len(valid_sensor_acc)) if valid_sensor_acc else float("nan")
         avg_accuracy_text = f"{avg_accuracy:.4f}" if not math.isnan(avg_accuracy) else "NA"
@@ -749,7 +860,7 @@ class HtmlGenerator:
                         </div>
                     </div>
                     <div class="sensors-container">
-                        {cls._generate_sensors_html(sensor_stream_data, sensor_accuracy)}
+                        {cls._generate_sensors_html(sensor_stream_data, sensor_accuracy, sensor_scan_summary)}
                     </div>
                 </div>
             </div>
@@ -764,7 +875,7 @@ class HtmlGenerator:
         return html_content
 
     @classmethod
-    def _generate_sensors_html(cls, sensor_stream_data: dict, sensor_accuracy: dict) -> str:
+    def _generate_sensors_html(cls, sensor_stream_data: dict, sensor_accuracy: dict, sensor_scan_summary: dict) -> str:
         """Generate HTML for sensors section."""
         html_parts = []
         
@@ -777,16 +888,31 @@ class HtmlGenerator:
             streams = sensor_stream_data[sensor_name]
             display_sensor_name = "Others" if str(sensor_name).strip().lower() == "unknown" else sensor_name
             acc = sensor_accuracy.get(sensor_name, float("nan"))
+            scan_summary = sensor_scan_summary.get(sensor_name, {})
+            input_scans = scan_summary.get("input_scans", float("nan"))
+            matched_scans = scan_summary.get("matched_scans", float("nan"))
+            if (
+                not math.isnan(input_scans)
+                and not math.isnan(matched_scans)
+                and input_scans > 0
+            ):
+                scan_match_pct = (matched_scans / input_scans) * 100.0
+                scan_txt = f" Scanindex Match % : {scan_match_pct:.2f}"
+            else:
+                scan_txt = " Scanindex Match % : NA"
             if not math.isnan(acc):
                 match_pct = acc * 100.0
                 mismatch_pct = max(0.0, (1.0 - acc) * 100.0)
-                acc_txt = f"Sensor {display_sensor_name} - Match % : {match_pct:.2f}  Missmatch % : {mismatch_pct:.2f}"
+                primary_txt = f"Sensor {display_sensor_name} - Match % : {match_pct:.2f}  Missmatch % : {mismatch_pct:.2f}"
             else:
-                acc_txt = f"Sensor {display_sensor_name} - Match % : NA  Missmatch % : NA"
+                primary_txt = f"Sensor {display_sensor_name} - Match % : NA  Missmatch % : NA"
             html_parts.append(f'''
             <div class="sensor-section">
                 <div class="sensor-title" onclick="toggleSection(this)">
-                    <span>🔧 {acc_txt}</span>
+                    <span class="sensor-summary">
+                        <span class="sensor-summary-primary">🔧 {primary_txt}</span>
+                        <span class="sensor-summary-secondary">{scan_txt.strip()}</span>
+                    </span>
                     <span class="toggle-icon">▶</span>
                 </div>
                 <div class="sensor-content">

@@ -1,235 +1,153 @@
-# plotly_code
+# simg_zmq Documentation Hub
 
-Integrated toolkit for automotive log processing and visualization. This repository contains multiple related tools:
+This folder now documents the current HPCC runtime stack that uses `main_html` as the single user-facing entrypoint, `hpcc_main.py` as the runtime broker/supervisor, containerized KPI and RAG services, and the integrated Hyperlink viewer.
 
-- CAN KPI report generation from HDF inputs
-- Interactive HTML/video log viewer (offline and online)
-- RAG-based assistant for querying ingested HTML logs with local models
-- HPC-oriented service packaging (Singularity images and helper scripts)
+The documentation in this folder is intended to describe the current architecture, deployment model, operational flow, and extension points for the stack that was validated with:
 
-## Overview
+- `python .\\hpcc_main.py`
+- `http://127.0.0.1:5001/html`
+- `http://127.0.0.1:5100/health`
+- `127.0.0.1:9100` broker access
 
-The codebase is organized as several runnable modules that share a similar workflow:
+## Documentation Set
 
-1. Read source logs/configuration.
-2. Parse and transform data.
-3. Generate KPI/HTML outputs or serve web APIs.
-4. Optionally package and run on HPC infrastructure.
+### 1. Platform Overview
 
-## Architecture Diagram
+This file is the entrypoint into the documentation set.
 
-```mermaid
-flowchart LR
-        subgraph Inputs
-                HDF[HDF files]
-                HTML[HTML log trees]
-                VIDEO[Video files]
-                CFG[JSON/XML config]
-        end
+### 2. Integration And Operations Guide
 
-        subgraph CoreApps[Core Applications]
-                CKPI[can_kpi]
-                MHTML[main_html]
-                RAG[rag]
-                SZ[simg_zmq]
-        end
+See `README_hpcc_integration.md` for:
 
-        subgraph Services
-                WEB[Flask web apps]
-                JOBS[Slurm/Singularity scripts]
-                IDX[Vector/SQLite stores]
-        end
+- end-to-end runtime topology
+- build and launch commands
+- port mappings
+- user-visible tool behavior
+- broker and runtime-store behavior
+- operational troubleshooting
 
-        subgraph Outputs
-                KPIHTML[KPI HTML reports]
-                VIEWER[Interactive log viewer]
-                CHAT[RAG chat responses]
-                IMG[Container images]
-        end
+### 3. System Design Deep Dive
 
-        HDF --> CKPI
-        CFG --> CKPI
-        HTML --> MHTML
-        VIDEO --> MHTML
-        HTML --> RAG
-        CFG --> RAG
-        CKPI --> KPIHTML
-        MHTML --> WEB
-        MHTML --> VIEWER
-        RAG --> WEB
-        RAG --> CHAT
-        RAG --> IDX
-        SZ --> WEB
-        SZ --> JOBS
-        JOBS --> IMG
-```
+See `HPCC_RUNTIME_SYSTEM_DESIGN.md` for:
 
-## Repository Structure
+- high-level design goals and constraints
+- low-level component responsibilities
+- startup and request sequence flows
+- data ownership and persistence model
+- architectural decisions and extension guidance
+
+### 4. Diagram Pack
+
+See `hpcc_integration.drawio` for multi-page diagrams covering:
+
+- `System Design`
+- `HLD`
+- `LLD`
+- `UML`
+- `Project Architecture`
+- `Runtime Flow`
+
+## Current Platform Summary
+
+The current stack is organized around a single runtime control plane.
+
+### User Entry
+
+- `main_html` is the browser entrypoint.
+- The dashboard is the single front door.
+- KPI and Hyperlink are the primary exposed user tools.
+- RAG is integrated through the dashboard chat instead of being exposed as a separate standalone UI.
+
+### Control Plane
+
+- `hpcc_main.py` owns runtime orchestration.
+- The broker accepts JSON-over-socket requests for `ping`, `submit`, `status`, and `cancel`.
+- Runtime metadata is stored in SQLite through `main_html/runtime_store.py`.
+- The launcher can delegate the broker into WSL while keeping a stable Windows localhost front door.
+
+### Execution Plane
+
+- `main_html.simg` serves the Flask UI.
+- `rag/rag.simg` serves the RAG API.
+- `kpi/can/can_kpi.simg`, `kpi/udp/udp_kpi.simg`, and `kpi/int_plot/intplot_kpi.simg` execute compute-oriented jobs.
+- Hyperlink remains integrated in-process through `main_html` routes.
+
+## Repository Areas
+
+The most important folders for the integrated runtime are:
 
 ```text
-plotly_code/
-    README.md
-    requirements.txt
-    .gitignore
-
-    can_kpi/
-        kpi_main.py
-        kpi.json
-        a_persistence_layer/
-        b_data_storage/
-        c_business_layer/
-        d_presentation_layer/
-
-    main_html/
-        all_services/
-            app.py
-            main_html/
-            tools/
-            scripts/
-            simg/
-        code/
-            main.py
-            html_offline/
-            html_online/
-            singularity/
-
-    rag/
-        main.py
-        run.py
-        app/
-        tests/
-        tools/
-        data/
-        model/
-
-    simg_zmq/
-        app.py
-        main_html/
-        rag/
-        scripts/
-        simg_sh_hpcc/
+simg_zmq/
+|-- hpcc_main.py                     # Broker, launcher, Windows/WSL forwarding
+|-- main_html/                      # Primary web application and runtime map
+|   |-- app.py
+|   |-- runtime_store.py
+|   |-- hpcc_broker_client.py
+|   |-- rag_client.py
+|   `-- templates/
+|-- rag/                            # RAG service and storage
+|-- KPI/                            # CAN KPI, UDP KPI, and Interactive Plot implementations
+|-- Hyperlink_tool/                 # Integrated viewer code
+|-- scripts/                        # Build helpers
+|-- simg_sh_hpcc/                   # Built images and runtime state
+`-- Readme/                         # This documentation set
 ```
 
-## Component Details
+## Quick Start
 
-### 1) `can_kpi`
+### Build Images
 
-Purpose: generate KPI HTML reports from configured HDF input/output pairs.
-
-Key entrypoint:
-
-- `can_kpi/kpi_main.py`
-
-Run example:
+Run inside WSL:
 
 ```bash
-python can_kpi/kpi_main.py can_kpi/kpi.json can_kpi/out_html
+bash scripts/wsl_build_hpcc_bundle.sh
 ```
 
-What it produces:
+Expected outputs in `simg_sh_hpcc/`:
 
-- Per-pair HTML reports
-- `index.html` summary page linking generated reports
+- `main_html.simg`
+- `kpi/can/can_kpi.simg`
+- `kpi/udp/udp_kpi.simg`
+- `kpi/int_plot/intplot_kpi.simg`
+- `rag/rag.simg`
 
-### 2) `main_html`
+### Start The Stack
 
-Purpose: HTML/video log viewing and service orchestration for offline/online/HPC usage.
-
-Key paths:
-
-- `main_html/code/main.py` (viewer tooling entry)
-- `main_html/all_services/app.py` (service launcher)
-- `main_html/code/singularity/` (image and job scripts)
-
-Common operations:
-
-```bash
-pip install -r requirements.txt
-python main_html/all_services/app.py
-```
-
-### 3) `rag`
-
-Purpose: local-model RAG service for ingesting HTML logs and answering questions.
-
-Key entrypoints:
-
-- `rag/main.py`
-- `rag/run.py`
-
-Common operations:
-
-```bash
-pip install -r rag/requirements.txt
-python rag/main.py --scrap "C:\path\to\html_root" --embed --reset-index
-python rag/main.py --talk
-```
-
-Default local endpoint:
-
-- `http://127.0.0.1:5000/`
-
-### 4) `simg_zmq`
-
-Purpose: HPC-oriented wrapper workspace combining web services, RAG, and container scripts.
-
-Key entrypoint:
-
-- `simg_zmq/app.py`
-
-## Setup
-
-## Prerequisites
-
-- Python 3.10+ recommended
-- Git
-- Optional: Singularity/Apptainer and Slurm for HPC deployment
-
-## Local Setup
-
-```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# Linux/macOS
-source .venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-## Data and Git Policy (Important)
-
-This repository is configured to keep heavy artifacts out of Git.
-
-- Keep only lightweight source/config/test data in Git.
-- Do not commit model binaries, vector databases, containers, executables, or build outputs.
-- Target rule: keep committed files under `100 MB`.
-
-Quick check before commit:
-
-```bash
-git ls-files | xargs -I{} sh -c 'test -f "{}" && ls -l "{}"' | sort -k5 -nr | head
-```
-
-On PowerShell:
+Run on Windows from the repository root:
 
 ```powershell
-git ls-files | ForEach-Object {
-    if (Test-Path $_) {
-        $f = Get-Item $_
-        if (-not $f.PSIsContainer) {
-            [PSCustomObject]@{Path=$_; SizeMB=[math]::Round($f.Length/1MB, 2)}
-        }
-    }
-} | Sort-Object SizeMB -Descending | Select-Object -First 20
+python .\hpcc_main.py
 ```
 
-## Development Notes
+### Verify Health
 
-- There are multiple independent `requirements.txt` files under subprojects.
-- Prefer installing per-subproject dependencies when working in a specific module.
-- Large runtime data is intentionally ignored by `.gitignore`.
+```powershell
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5001/login
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5100/health
+```
 
-## License
+## Runtime Ports
 
-No explicit license file is currently present at repository root. Add a `LICENSE` file if distribution terms are required.
+| Port | Owner | Purpose |
+|------|-------|---------|
+| `5001` | `main_html.simg` | Browser UI |
+| `5100` | `rag.simg` | RAG HTTP API |
+| `9100` | `hpcc_main.py` broker | Runtime control socket |
+
+## Runtime State Locations
+
+| Path | Purpose |
+|------|---------|
+| `simg_sh_hpcc/runtime_state/main_html/cache_html/` | `main_html` cache and SQLite database |
+| `simg_sh_hpcc/runtime_state/rag/` | RAG SQLite data and vector store |
+| `simg_sh_hpcc/runs/` | Broker-created per-run logs and outputs |
+
+## Recommended Reading Order
+
+1. Read `README_hpcc_integration.md` to understand the end-to-end stack.
+2. Read `HPCC_RUNTIME_SYSTEM_DESIGN.md` if you need component-level design detail.
+3. Open `hpcc_integration.drawio` in diagrams.net for the architecture and sequence views.
+
+## Scope Note
+
+Some older files in the repository still describe previous layouts such as legacy `all_services`, Docker-first workflows, or older cluster packaging approaches. This documentation set is specifically about the current `main_html` + `hpcc_main.py` + `simg_sh_hpcc` architecture.

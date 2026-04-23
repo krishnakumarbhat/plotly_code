@@ -1,4 +1,0 @@
-6000
-REPEAT1500
-float probs_continuously
-END_REPEAT

@@ -1,62 +1,129 @@
 # This code is structured to generate the binary for the application.
 
-minfy_js = """function showTab(t){
-    console.log("Attempting to show tab:", t);
-    const e = document.getElementsByClassName("tab-content");
-    for (let n = 0; n < e.length; n++) e[n].style.display = "none";
-    const o = document.getElementById(t);
-    if (o) o.style.display = "block";
-    else console.error(`Tab content with ID "${t}" not found.`);
-    
-    const a = document.getElementsByClassName("tab");
-    for (let r = 0; r < a.length; r++) a[r].classList.remove("active-tab");
-    const i = Array.from(a).find(e => e.innerText.toLowerCase().replace(" ", "-") === t.toLowerCase());
-    if (i) i.classList.add("active-tab");
-}
-document.addEventListener('DOMContentLoaded', function() {
-    showTab('Vehical');
+minfy_js = """document.addEventListener('DOMContentLoaded', function() {
+    const body = document.body;
+    const overlay = document.getElementById('plot-overlay');
+    const overlayContent = document.getElementById('plot-overlay-content');
+    let expandedCard = null;
+
+    function resizePlot(card) {
+        if (!card || typeof Plotly === 'undefined') {
+            return;
+        }
+        const graph = card.querySelector('.js-plotly-plot');
+        if (graph) {
+            requestAnimationFrame(function() {
+                Plotly.Plots.resize(graph);
+            });
+            setTimeout(function() {
+                Plotly.Plots.resize(graph);
+            }, 90);
+        }
+    }
+
+    function restoreCard(card) {
+        if (!card || !card._placeholder) {
+            return;
+        }
+        card.classList.remove('expanded');
+        const button = card.querySelector('.plot-expand-btn');
+        if (button) {
+            button.textContent = 'Expand';
+            button.setAttribute('aria-expanded', 'false');
+        }
+        card._placeholder.replaceWith(card);
+        card._placeholder = null;
+        resizePlot(card);
+    }
+
+    function closeExpandedPlot() {
+        if (!expandedCard) {
+            return;
+        }
+        restoreCard(expandedCard);
+        overlay.classList.remove('visible');
+        body.classList.remove('modal-open');
+        overlayContent.innerHTML = '';
+        expandedCard = null;
+    }
+
+    document.querySelectorAll('.plot-shell').forEach(function(card, idx) {
+        card.style.animationDelay = (idx * 24) + 'ms';
+        const button = card.querySelector('.plot-expand-btn');
+        if (!button) {
+            return;
+        }
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (expandedCard === card) {
+                closeExpandedPlot();
+                return;
+            }
+            if (expandedCard) {
+                closeExpandedPlot();
+            }
+            const placeholder = document.createElement('div');
+            placeholder.className = 'plot-placeholder';
+            card._placeholder = placeholder;
+            card.parentNode.insertBefore(placeholder, card);
+            expandedCard = card;
+            card.classList.add('expanded');
+            button.textContent = 'Back';
+            button.setAttribute('aria-expanded', 'true');
+            overlayContent.appendChild(card);
+            overlay.classList.add('visible');
+            body.classList.add('modal-open');
+            resizePlot(card);
+        });
+    });
+
+    if (overlay) {
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                closeExpandedPlot();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeExpandedPlot();
+        }
+    });
 });"""
 
-minfy_css = """body{font-family:Arial,sans-serif;margin:20px}h1{text-align:center}.tabs{display:flex;justify-content:center;margin-bottom:20px}.tab{padding:10px 20px;cursor:pointer;border:1px solid #ccc;margin-right:5px;border-radius:15px}.active-tab{background-color:#8d30f7;color:white}table{width:100%;border-collapse:collapse}td{border:1px solid #ccc;padding:10px}footer{text-align:center;margin-top:20px}@media (max-width:600px){td{display:block;width:100%;margin-bottom:10px}}"""
+minfy_css = """:root{--page-bg:#edf3f8;--panel-bg:#ffffff;--panel-border:#d7e3ee;--text-main:#16324a;--text-muted:#627486;--accent:#145f80;--accent-soft:#e9f4f9;--shadow:0 10px 26px rgba(17,44,68,.08)}*{box-sizing:border-box}html,body{margin:0;padding:0;background:radial-gradient(circle at top,#f9fcff 0%,var(--page-bg) 42%,#e7eef5 100%);color:var(--text-main);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}body{padding:22px}.modal-open{overflow:hidden}.page{max-width:1640px;margin:0 auto}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap}.hero{background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:22px;box-shadow:var(--shadow);padding:22px 24px;flex:1 1 420px}.hero h1{margin:0 0 8px;font-size:2rem;letter-spacing:.01em}.hero p{margin:0;color:var(--text-muted);font-size:1.02rem}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;flex:2 1 760px}.info-card{background:#fff;border:1px solid var(--panel-border);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}.info-card strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px}.plot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.plot-shell{position:relative;background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;min-width:0;opacity:0;transform:translateY(10px);animation:fadeUp .2s ease-out forwards}.plot-shell.expanded{width:min(96vw,1680px);height:calc(100vh - 32px);margin:0;border-color:#bdd6e4;box-shadow:0 20px 48px rgba(18,43,67,.18);opacity:1;transform:none;animation:none}.plot-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #e8eef5;background:linear-gradient(180deg,#fcfeff 0%,#f3f8fb 100%)}.plot-head h4{margin:0;font-size:1.04rem;color:var(--accent);word-break:break-word}.plot-tools{display:flex;align-items:center;gap:8px;flex-shrink:0}.plot-expand-btn{appearance:none;border:1px solid #c8dce8;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:7px 12px;font-size:.86rem;font-weight:700;cursor:pointer;transition:background .12s ease,border-color .12s ease}.plot-expand-btn:hover{background:#dceef7;border-color:#b4d1e0}.plot-body{padding:12px 12px 8px;min-height:420px}.plot-shell.expanded .plot-body{height:calc(100% - 62px);min-height:0}.plot-body>div{width:100%;height:100%}.plot-body .js-plotly-plot{width:100%!important}.js-plotly-plot .plotly .modebar{right:10px!important;top:10px!important}.plot-placeholder{display:none}.plot-overlay{position:fixed;inset:0;background:rgba(16,34,50,.18);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease;z-index:1000}.plot-overlay.visible{opacity:1;visibility:visible;pointer-events:auto}.plot-overlay-content{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px}.page-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:wrap}.page-nav a{color:var(--accent);text-decoration:none;font-weight:600;background:var(--accent-soft);border:1px solid #cfe0e8;border-radius:999px;padding:8px 14px;transition:background .16s ease,color .16s ease}.page-nav a:hover{background:#dcebf2}.page-nav .page-count{color:var(--text-muted);font-size:.95rem}.empty-state{background:var(--panel-bg);border:1px dashed var(--panel-border);border-radius:18px;padding:28px;text-align:center;color:var(--text-muted)}footer{text-align:center;color:#54708a;margin:22px 0 6px;font-size:.95rem}@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@media (max-width:980px){body{padding:14px}.plot-grid{grid-template-columns:1fr}.plot-head{align-items:flex-start;flex-direction:column}.plot-shell.expanded{width:calc(100vw - 16px);height:calc(100vh - 16px)}.plot-overlay-content{padding:8px}}"""
 
-html_template = (
-    f"""<!DOCTYPE html>
+html_template = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <script rel="preload" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+    <script>{minfy_js}</script>
     <style>{minfy_css}</style>
 </head>
- """
-    + """
-    <div class="header">
-        <div style="display: flex; align-items: center;">
-            <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQEAAAAAAAD/4QBCRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAkAAAAMAAAABAJEAAEABAAEAAAABAAAAAAAAAAAAAP/bAEMACwkJBwkJBwkJCQkLCQkJCQkJCwkLCwwLCwsMDRAMEQ4NDgwSGRIlGh0lHRkfHCkpFiU3NTYaKjI+LSkwGTshE//bAEMBBwgICwkLFQsLFSwdGR0sLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLP/AABEIAIsB2gMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APIqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooroPDHhTVPFM93DZSQRLaxrJNJOWCjeSFUBQTk4NAHP0V6DJ8JfGK52S6a/p+/df5pUkPwj8WOR51zpsI9fMkk/RUoA86oq1qNhdaXfXun3Shbi0meCUA5UspxlT6HqKq0AFFFFABRRXb6P8ADbxBrWl2eqW1zYpHdKzRxyu4faGK5JVSO1AHEUV6A/wn8ZqflfTXH/Xw4/mlN/4VR41/6hv/AIEt/wDEUAcDRXeyfCnxqiFl/s+QgZ2pckMfYbkA/Wub1bwx4m0RFk1LTp4YWO0SjDxZ9C6EgfjQBjUUUUAFFFaWiaRda7qdppds8aTXJcK8pIRQqlyTjntQBm0V6HL8JPFyE+VcabKPXzZE/QpUP/CqPG3pp3/gUf8A4igDgqK73/hVHjb007/wKP8A8RR/wqjxt/1Df/Ao/wDxFAHBUV6LF8I/Fb/62602P6SSP/JK4zW9HvNB1K50y7aJpoNhLQtuRlcbgRnmgDNooooAKKK9AtPhX4jvbGwvYrywAu4IrgRu0gZFkUMASFIoA8/orvdT+GHiDS9NvtSmvLF0s4WmkjjaTcUXrgsAK4KgAooooAKK1fD+iXPiHU4NLt5oIZZkldXnJC/u13EDbzmuy/4VF4p3Y+2abtz13y9PXGygDziiuj8U+ENV8KyWa3csM0V2rmKWDdt3JjcjBhnPIrnKACiiu70z4Y+JtTsLLUI57GKK7iSeNJXk3hHGQWCrjP40AcJRXf6j8Ltd03Tr7UZr+wK2kLTPGnmZZVGSAxGK4CgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKK2tG0OfUy0zhktEO1nHUn0Wt+TwjpflkQ3EplIO3djGa5Z4ulTnySep6dDKsVXgqlOGjOGoqxd2lxZTyQTrhkJHsR6iq9dKaaujz5wlTk4TVmgooopkBXufwn0hrPRbnVJCN+qzfuwP4YYC0Yz9Turw+ONpZIok+9I6xr9WO0V9S6HpiaNpGl6YjbvsdskTN03P952/Ek0AaNFecfFHxDqOk22lWlhM0Mt1I0srocN5cfRR9T1rr/DF+up6FpN6G3Ga3UuSckOPlYGgDyf4uafHb61p1/Gm37fZkTEDAaWBtuT74I/KvNq9++Kdgl14XlufKVprC6t5lfHzJG7eU+D6civAaACiiigAr6L+HXzeD9Ez6XQ/KeSvnSvov4cAjwfoue/2oj6ee9AHWjIOOwFG5f7w/MVR1kuuk6wyOUYWN0VcHBUiNiCDXy99v1IZH22765/18vX160AfWHBpk0UE8ckM8aSRSKUeORQ6Mp7Mp4r5q0LxN4i07UbB4b65kQ3ESPFJIzo6swUjDGvpdTuVG/vKD+YzQB89eP/AAr/AMI5qnm2qY0rUC0lpjJELjl4Dn06r7H2rjK93+LNukvhuGcn5ra/gKj18wMhrwigArrPh4obxbohMioEad8swXOIm+UZ7muTpQzKQykgjkEHBH0IoA+t9y/3h+YpQQehB+lfJn2q8/5+J/8Av4/+Ndj8N7u9PivTYzdT+XIlwJEaRysgEZIBBOKAPoKgkDqR+NFfP3xKnu4/FeootzPsEVsyIJHCpmMEgAHFAH0BuX+8PzFfOnxF/wCRu1n5lbJgOVOcful4OK5gXV4OlxP+Er/41EzM5LMxZjySxJJPuTQAlFFFABX1H4bXZ4f8PrnONNs+frEpr5cr6l8Pf8gHQP8AsG2f/opaAKnjMA+FfEuf+gfMfywa+Za+m/GP/IreJv8AsHXH8q+ZKACiiigC/o1++l6rpeoKSDa3UUrY67A2GH5Zr6oikSWOKVDuSREkRh0KsNwNfJFfR/w/1P8AtPwtpLsxaW1VrGXJyd0GFGfwxQBj/Fmx+0eHYLwDLWF7ExwM/JN+6P8ASvCK+ovE1gdT0DXLIDLzWU3lj/pog8xf1Ar5dIIJBGCDgg9jQBJBE089vAgJaaWOJQOpLsFAFfVljbJZ2VjaJwttbwwL9EQLXzt4DsDqHirRI9oZIJjeSgjI2wDfz+OK+kqAOD+Kd+1n4ZMCMQ+oXcNtweTGA0j/AMgPxrwKvSvi5qjXGsWOlqf3dhbCWQes1x836DH515rQAUUUUAFFbWkaBc6nmVnWK2Qjcx5dvZRW9P4R0+SIpZyyi4xwZTlCffFctTFUqb5ZM9OjlWLrQ54Q0OHoqxeWdzY3EltcLtkjODg5BHqDVeulNNXR50ouDcZKzQUUUUyQooooAKKKKACiiigD0vSMpo+nJb4K+SDLj++eSTVlfNDAgc5ritG8RXGmhbaVRJaE4OOHTPcGt2bxZpCRloElkmGdqlSoJ9ya+cr4LESxHOlp6n6Lgc8wNLDxg3ay7eRneMzEbmwIwJTC3mY+oxmuUq1f31xqNzJcz43N0Veir2AqrXvUYOEFF7nw+PrxxGInVhs2FFFFanEdV4A0kav4n0uNxmGzY6hNnusBBUfidtfR9eSfB7SwF1rWHHzEpp8P0GJZCP8Ax2vW/WgD5++JOrNq3iGSKJXNvp0YtYztOGfO52H+e1dr8JdT87S73S33b7OYypnONknUCvQG0vSGZ2axtWZzli0SEknuSRT7ew0+zLta2sEDP98wxqm764oANQsrfUbG+sLhQ0N3bywOCM8OpXP4da+Vbq3ktLq7tZP9ZbTywPn+9GxQ/wAq+svbvXz18StNj07xTetEhWK+ihvV9C7ja+PxBP40AcZRRRQAV9GfDk/8UfofsLr/ANKJK+c6+i/h0P8AijtDHTIuv/SiSgDpr23jvLW7s3bAuYJISR1AdSua8rPwdGTjWeMnAMHQemc16zI0caNLIQqRKzux7KoySawovGfgyYFk1qyABI+eTbyPrQBh+HvhpoejXKXt1I17cxHdD5i7Yo2/vbfWu7B7DoK5yfxz4It8+ZrVoSBnEe+Qn6bAa5fWvi1o1vGY9Et5bycggS3CtDAh9cH5z+QoAofF/V4iulaLFIDIHa9u1U/dXG2NWHvya8hq1qF/eane3d/eSGS5upWllY9Mnso9B0FVaACiiigArr/hx/yN2kfSf/0Wa5Cuv+HH/I3aP9J//RZoA+iq+evib/yN2o/9cbT/ANFivoWvnr4m/wDI3aj/ANcbT/0WKAOLooooAKKKKACvqXw9/wAgHQP+wbZ/+ilr5ar6l8Pf8gHQP+wbZ/8AopaAKvjL/kVvE3/YOuP5V8yV9N+Mv+RW8Tf9g64/lXzJQAUUUUAFet/B7UiH1zSXbgrFfQg+o/dPj/x2vJK6bwNqh0rxPo0xbEU8wsp+w2XHyfocGgD6Tr5f8U2I03xDr1oF2pHfTtGP+mcjeYv6GvqCvCvizYC28QW14owt/ZIzenmQkof0xQBpfB7Tw11rWpsv+qijs4iR0Lne+D+Ar2PgZJ6DmuJ+GWnrZeFrOYj95fyTXTH/AGS2xR+Qrc8U6n/ZHh/Wb8ECSK2dYfeWT92g/M0AfPHibUX1XX9bvmbcJbyVYznI8qM+WmPwArHpSSSSeSSST7mkoAKKKKAPSdG8gaPp7QjcWi/ekdmBwc1bjeXdwcc1w+i+IJ9JWSB4hNaytuZc4dD3KGtq48V6THGGs7ed5vSbCID7kE189iMFiJVG4q69T9Ay7PsJToKFbSXoyt4yS2EmnsmPPKuJfXHBFclVu/v7nUZ3uLgruPAVRhVA7Cqle1h4OnTUZbnxuPrQr4iVSnswooorc4QooooAKKKKACiiigAooooAKKKKACiitXw9p39ra1pNgWRVnuYxIXIC+Wp3t19gaAPf/A2lHSPDOkW7riaaL7ZOD133H7zB+gwKPGuvz+HdCuL628v7W0sUFsJRld7nk49hk10iKqIiLgKqqqgdMAYFeQfGHUN0uhaYjqVRZ7uZVOSHJEabgPxoAxk+LPjJVw8enOf7xgYfor09Piz4s86F5YrAwqw8yOOJlLL3wxY155RQB9Y2V1He2dleRnMd1bw3CH/ZkQOP515x8XtLWbTdL1ZB89ncG1lP/TKcZH5EfrW38N9Xi1Tw1ZQbh9o0z/Qplzltq8xtj0I/lW34o0uPWNB1ewcqGktneFn4CTRjehJPuKAPl+ilZSrMrdVJU/UHFJQAV9GfDk58H6H7C6H/AJMSV8519HfD6MJ4R0Fd6MWilkOwg7d8rttOO/rQBvasobStXXsbC8H/AJCavlOvqrWjt0fWjuC40+85JwB+6bqTXyrQAUUUUAFFFFABRRRQAV1/w4/5G7SPpP8A+izXIV2nwyQP4t08llXy4LpxuIG47MYGe/NAH0LXz18Tf+Ru1H/rhaf+ixX0LXz38ThjxbfnIObe0PBzj5MYNAHFUUUUAFFFFABX1L4d/wCQDoH/AGDbP/0UtfLVfUfhsAeH/D4DKw/s2z+ZSCD+7XuKAK/jH/kVvE3/AGDrj+VfMlfTXjIbvC3iVQQCdPnxk46DOK+ZaACiiigAp0bvE8ciHDxurqfRlOQabRQB9U6Lfrqmk6TqCkH7XaQzNj++VG4fnmsPxd4Ot/Ff2EyXDwNabwrIASQ3VTmsv4U6gbrw41o8gL2F1LEq5G4Rv+8HHXHJrv8AHHHFAFLSdPTS9Ps7CM5jtYliQ+yjFef/ABe1Iw6ZpWloeb25a4kH/TO3AwPzYflXp1fPnxM1Mah4muIUcPDp0SWi4OVD/ffGPc/pQBxNFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSqzKQykqwOQVJBB9QRSUUAWhqGqDpfXg+lxL/8AFVBJJLKxeWR5HPVpGLMfqW5plFABRRRQBLDcXVuWME80RYAMYZHQsB2O0ipDf6kQym9uyGGGBnlII9CM1WooAKKKKACporu9hXZDc3Ea9dsUsiLz7KahooAsm/1JldGvbso42upnlKsPRgTiq1FFABRRRQAUUUUAFFFFABTkkkidZI3dHU5VkYqwPqCOabRQBa/tHVc5+33mfX7RLn891V5JJZXaSWR5JG5Z5GLMfqW5ptFABRRRQAUUUUAFWEvtQjRY47u6RF4VEmkVV+gBxVeigCw97qEqskl3cujcMrzSMpHuCcVXoooAKKKKACiiigCSK4uYCTBNLEWGGMTshI9ypFTjU9XHTUL4fS5m/wDiqqUUAW/7T1fOf7Qvs+v2mb/4qqrMzFmYksxJYsSSSe5JpKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACipbgBZ7kAAATSgADAADEYAFRUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRXQ29vatBbEwQkmGIkmNCSSoOSSKAP/9k=" 
-            alt="APTIV" style="width: 80px; height: auto; margin-right: 20px;">
-            <h1>Interactive Plots</h1>
-        </div>
-        <details>
-            <summary>Additional Information</summary>
-            <div id="lazyload-info" style="background-color: #f0f0f0; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                <h2>Click on "box select"<img src="data:image/png;base64,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" alt="|=|" style="width:79px; height:auto;"> to load the required plot</h2>
-                <h4>NOTE:All blue plots don't have legend because they are completely matching</h4>
-            </div>
-            <h3>Tool run on win32</h3>
-            <h3>Tool Version : 1.0</h3>
-            <h3>HTML Generated Time Info : {{GENERATION_TIME}}</h3>            
-            <h3>Input Filename: <span id="input-filename">{{INPUT_FILENAME}}</span></h3>
-            <h3>Output Filename: <span id="output-filename">{{OUTPUT_FILENAME}}</span></h3>
-            <h3>Sensor Position: <span id="sensor-position">{{SENSOR_POSITION}}</span></h3>
-        </details>
-    </div>
-
-
 <body>
-    <div class="tabs">{{TABS}}</div>
-    {{CONTENT}}
-    <footer>Copyright @ APTIV-2025</footer>
+    <div class="page">
+        <div class="topbar">
+            <section class="hero">
+                <h1>Interactive Plots</h1>
+                <p>{{{{SENSOR_POSITION}}}} · {{{{INPUT_FILENAME}}}}</p>
+            </section>
+            <section class="info-grid">
+                <div class="info-card"><strong>Tool run on</strong><span>win32</span></div>
+                <div class="info-card"><strong>Tool Version</strong><span>1.0</span></div>
+                <div class="info-card"><strong>Generated</strong><span>{{{{GENERATION_TIME}}}}</span></div>
+                <div class="info-card"><strong>Output File</strong><span>{{{{OUTPUT_FILENAME}}}}</span></div>
+            </section>
+        </div>
+        {{{{TABS}}}}
+        {{{{CONTENT}}}}
+        <footer>APTIV Interactive Plot Report</footer>
+    </div>
+    <div id="plot-overlay" class="plot-overlay" aria-hidden="true">
+        <div id="plot-overlay-content" class="plot-overlay-content"></div>
+    </div>
 </body>
 </html>"""
-)

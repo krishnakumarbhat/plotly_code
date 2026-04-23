@@ -33,6 +33,17 @@
    .\tools\llama.cpp-vulkan\llama-server.exe --list-devices
    ```
 
+6. Optional larger-context TurboQuant+ server (external custom llama.cpp fork):
+   ```powershell
+   git clone https://github.com/TheTom/llama-cpp-turboquant.git tools\llama.cpp-turboquant
+   Set-Location tools\llama.cpp-turboquant
+   git checkout feature/turboquant-kv-cache
+   cmake -S . -B build -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release
+   cmake --build build --config Release -j
+   .\build\bin\llama-server.exe -m C:\models\Qwen_Qwen3.5-2B-Q5_K_S.gguf --host 127.0.0.1 --port 8081 -c 32768 -t 20 -b 1024 -ngl 24 -fa on --cache-type-k q8_0 --cache-type-v turbo4
+   ```
+   Use this with `LLAMA_SERVER_AUTOSTART=false` and `LLAMA_SERVER_BASE_URL=http://127.0.0.1:8081` in `.env` so the Flask app talks to the external TurboQuant server instead of spawning the stock runtime.
+
 ## CLI Usage
 You can run the project in two modes: scraping mode and talk (Flask) mode.
 
@@ -89,6 +100,8 @@ python main.py --scrap "C:\\path\\to\\html_root" --embed
 - LLM backend (default): `LLM_BACKEND=llama_server` for Qwen3.5 GGUF compatibility.
 - llama-server binary path: `LLAMA_SERVER_PATH=tools/llama.cpp-vulkan/llama-server.exe` (falls back to CPU if Vulkan path is unavailable).
 - llama-server endpoint: `LLAMA_SERVER_BASE_URL=http://127.0.0.1:8081` (`LLAMA_SERVER_AUTOSTART=true` auto-starts it from app).
+- For larger context with TurboQuant+, run the external forked `llama-server` yourself and set `LLAMA_SERVER_AUTOSTART=false`, `LLAMA_SERVER_BASE_URL=http://127.0.0.1:8081`, `LLM_CONTEXT_WINDOW=32768`, and `LLM_N_BATCH=1024`.
+- Recommended TurboQuant+ KV cache profile for low-bit GGUF models: `--cache-type-k q8_0 --cache-type-v turbo4`.
 - If you see `unknown model architecture: 'qwen35'`, current `llama.cpp` runtime does not support this model format in your Python setup.
 - Optional speed knobs in `.env`:
    - `LLM_MAX_NEW_TOKENS=640` (increase if long answers still truncate)
@@ -99,6 +112,17 @@ python main.py --scrap "C:\\path\\to\\html_root" --embed
    - `LLM_N_GPU_LAYERS=0` for CPU mode; use `-1` only when GPU-offload runtime support is available
    - `CHUNK_SIZE=2000` (higher = fewer chunks, faster embed ingestion)
    - `CHUNK_OVERLAP=80`
+
+Example `.env` overrides for the external TurboQuant+ server:
+```env
+LLM_BACKEND=llama_server
+LLAMA_SERVER_PATH=tools/llama.cpp-turboquant/build/bin/llama-server.exe
+LLAMA_SERVER_BASE_URL=http://127.0.0.1:8081
+LLAMA_SERVER_AUTOSTART=false
+LLM_CONTEXT_WINDOW=32768
+LLM_N_BATCH=1024
+LLM_N_GPU_LAYERS=24
+```
 
 ## Endpoints
 - `GET /health`

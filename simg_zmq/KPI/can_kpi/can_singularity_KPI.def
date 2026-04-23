@@ -1,6 +1,6 @@
 # Singularity/Apptainer definition file for CAN KPI tool
 # Build from workspace root with:
-#   apptainer build --fakeroot can_kpi/can_kpi.simg can_kpi/can_singularity_KPI.def
+#   apptainer build --fakeroot simg_sh_hpcc/can_kpi.simg KPI/can_kpi/can_singularity_KPI.def
 
 Bootstrap: docker
 From: docker.io/python:3.10-slim
@@ -32,12 +32,12 @@ From: docker.io/python:3.10-slim
     chmod -R 755 /app
 
 %files
-    can_kpi/a_persistence_layer /app/can_kpi/a_persistence_layer
-    can_kpi/b_data_storage /app/can_kpi/b_data_storage
-    can_kpi/c_business_layer /app/can_kpi/c_business_layer
-    can_kpi/d_presentation_layer /app/can_kpi/d_presentation_layer
-    can_kpi/kpi_main.py /app/can_kpi/kpi_main.py
-    can_kpi/kpi.json /app/can_kpi/kpi.json
+    KPI/can_kpi/a_persistence_layer /app/can_kpi/a_persistence_layer
+    KPI/can_kpi/b_data_storage /app/can_kpi/b_data_storage
+    KPI/can_kpi/c_business_layer /app/can_kpi/c_business_layer
+    KPI/can_kpi/d_presentation_layer /app/can_kpi/d_presentation_layer
+    KPI/can_kpi/kpi_main.py /app/can_kpi/kpi_main.py
+    KPI/can_kpi/kpi.json /app/can_kpi/kpi.json
 
 %runscript
     . /opt/venv/bin/activate

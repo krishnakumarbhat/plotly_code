@@ -1,8 +1,0 @@
-{
-	"org.label-schema.build-arch": "amd64",
-	"org.label-schema.build-date": "Wednesday_19_October_2022_14:5:46_IST",
-	"org.label-schema.schema-version": "1.0",
-	"org.label-schema.usage.singularity.deffile.bootstrap": "docker-archive",
-	"org.label-schema.usage.singularity.deffile.from": "tools_mudp.tar",
-	"org.label-schema.usage.singularity.version": "3.8.3"
-}

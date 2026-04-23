@@ -311,8 +311,8 @@ def process_pair(pair: sil.FilePair, output_dir: Path, gate: float, metric: str,
     sensor_reports: List[SensorNarrative] = []
     for sensor in sensors:
         try:
-            veh = sil.load_radar_hdf(pair.veh_path, sensor=sensor)
-            resim = sil.load_radar_hdf(pair.resim_path, sensor=sensor)
+            veh = sil.load_radar_hdf(pair.veh_path, sensor=sensor, build_frame=True)
+            resim = sil.load_radar_hdf(pair.resim_path, sensor=sensor, build_frame=True)
             sensor_reports.append(_build_sensor_narrative(sensor, veh, resim, gate=gate, metric=metric))
         except Exception:
             continue

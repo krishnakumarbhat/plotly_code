@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,9 @@ class HtmlIngestor:
         exclude_file_keyword: str,
         allow_all_html_fallback: bool,
         max_files_per_ingest: int,
+        max_file_bytes: int,
+        supported_extensions: list[str],
+        exclude_dirs: set[str],
         parser: HtmlParser,
         rag_engine: RagEngine,
         sqlite_store: SQLiteLogStore,
@@ -26,6 +30,9 @@ class HtmlIngestor:
         self.exclude_file_keyword = exclude_file_keyword
         self.allow_all_html_fallback = allow_all_html_fallback
         self.max_files_per_ingest = max_files_per_ingest
+        self.max_file_bytes = max_file_bytes
+        self.supported_extensions = {extension.lower() for extension in supported_extensions}
+        self.exclude_dirs = {directory.lower() for directory in exclude_dirs}
         self.parser = parser
         self.rag_engine = rag_engine
         self.sqlite_store = sqlite_store
@@ -39,35 +46,33 @@ class HtmlIngestor:
         ]
         html_files: list[Path] = []
         seen_paths: set[str] = set()
-        patterns = ("*.html", "*.htm")
 
-        if keywords:
-            for keyword in keywords:
-                keyword_lower = keyword.lower()
-                for pattern in patterns:
-                    for path in self.html_root.rglob(pattern):
-                        if keyword_lower not in path.name.lower():
-                            continue
-                        path_name_lower = path.name.lower()
-                        if any(exclude_keyword in path_name_lower for exclude_keyword in exclude_keywords):
-                            continue
-                        key = str(path).lower()
-                        if key in seen_paths:
-                            continue
-                        seen_paths.add(key)
-                        html_files.append(path)
+        for root, dirs, files in os.walk(self.html_root):
+            dirs[:] = [directory for directory in dirs if directory.lower() not in self.exclude_dirs]
+            root_path = Path(root)
+            for name in files:
+                path = root_path / name
+                if path.suffix.lower() not in self.supported_extensions:
+                    continue
+                if self.max_file_bytes > 0 and path.stat().st_size > self.max_file_bytes:
+                    continue
+                path_name_lower = path.name.lower()
+                if any(exclude_keyword in path_name_lower for exclude_keyword in exclude_keywords):
+                    continue
+                if keywords and not any(keyword.lower() in path_name_lower for keyword in keywords):
+                    continue
+                key = str(path).lower()
+                if key in seen_paths:
+                    continue
+                seen_paths.add(key)
+                html_files.append(path)
 
-        if not html_files and self.allow_all_html_fallback:
-            for pattern in patterns:
-                for path in self.html_root.rglob(pattern):
-                    path_name_lower = path.name.lower()
-                    if any(exclude_keyword in path_name_lower for exclude_keyword in exclude_keywords):
-                        continue
-                    key = str(path).lower()
-                    if key in seen_paths:
-                        continue
-                    seen_paths.add(key)
-                    html_files.append(path)
+        if not html_files and self.allow_all_html_fallback and keywords:
+            self.file_keyword = ""
+            try:
+                return self._find_html_files()
+            finally:
+                self.file_keyword = ",".join(keywords)
 
         html_files.sort(key=lambda path: str(path).lower())
         if self.max_files_per_ingest > 0:
@@ -78,8 +83,15 @@ class HtmlIngestor:
     def _sample_all_html_files(self, limit: int = 5) -> list[str]:
         found: list[str] = []
         seen_paths: set[str] = set()
-        for pattern in ("*.html", "*.htm"):
-            for path in self.html_root.rglob(pattern):
+        for root, dirs, files in os.walk(self.html_root):
+            dirs[:] = [directory for directory in dirs if directory.lower() not in self.exclude_dirs]
+            root_path = Path(root)
+            for name in files:
+                path = root_path / name
+                if path.suffix.lower() not in self.supported_extensions:
+                    continue
+                if self.max_file_bytes > 0 and path.stat().st_size > self.max_file_bytes:
+                    continue
                 key = str(path).lower()
                 if key in seen_paths:
                     continue
@@ -108,6 +120,7 @@ class HtmlIngestor:
 
         files_processed = 0
         total_chunks = 0
+        skipped_duplicates = 0
 
         for file_path in html_files:
             text = self.parser.parse_file(file_path)
@@ -117,30 +130,23 @@ class HtmlIngestor:
             text_hash = hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest()
             source_path = str(file_path)
             already_exists = self.sqlite_store.ingestion_exists(source_path, text_hash)
-            duplicate_count = 2 if already_exists else 1
+            if already_exists:
+                skipped_duplicates += 1
+                continue
 
-            for duplicate_round in range(1, duplicate_count + 1):
-                if run_vector:
-                    # full ingestion: create embeddings / vector store entries
-                    chunk_count = self.rag_engine.add_text(
-                        text=text,
-                        source_path=source_path,
-                        duplicate_round=duplicate_round,
-                    )
-                else:
-                    # fast ingest: estimate chunk count without loading models
-                    # naive character-based chunking to approximate later chunk counts
-                    chunk_size = 1000
-                    text_len = len(text)
-                    chunk_count = max(1, (text_len + chunk_size - 1) // chunk_size)
+            chunk_count = self.rag_engine.add_text(
+                text=text,
+                source_path=source_path,
+                duplicate_round=1,
+            )
 
-                self.sqlite_store.log_ingestion(
-                    source_path=source_path,
-                    text_hash=text_hash,
-                    chunk_count=chunk_count,
-                    duplicate_round=duplicate_round,
-                )
-                total_chunks += chunk_count
+            self.sqlite_store.log_ingestion(
+                source_path=source_path,
+                text_hash=text_hash,
+                chunk_count=chunk_count,
+                duplicate_round=1,
+            )
+            total_chunks += chunk_count
 
             files_processed += 1
 
@@ -152,4 +158,5 @@ class HtmlIngestor:
             "sample_files": [str(path) for path in html_files[:5]],
             "files_processed": files_processed,
             "chunks_added": total_chunks,
+            "skipped_duplicates": skipped_duplicates,
         }

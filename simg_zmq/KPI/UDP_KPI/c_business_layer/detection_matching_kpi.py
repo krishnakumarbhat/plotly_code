@@ -4,12 +4,48 @@
 import numpy as np
 import logging
 import plotly.graph_objects as go
+from typing import Dict
 from UDP_KPI.d_presentation_layer.detection_report import detection_html
 
 from UDP_KPI.b_data_storage.kpi_data_model_storage import KPI_DataModelStorage
 from UDP_KPI.b_data_storage.kpi_config_storage import KPI_VALIDATION_RULES
 
 logger = logging.getLogger(__name__)
+
+
+def _storage_signal_has_values(storage: KPI_DataModelStorage, signal_name: str) -> bool:
+    if storage is None:
+        return False
+    values, status = KPI_DataModelStorage.get_value(storage, signal_name)
+    if status != "success":
+        return False
+    return np.asarray(values).size > 0
+
+
+def _can_use_rdd_matching(data: Dict[str, KPI_DataModelStorage]) -> tuple[bool, str]:
+    if not isinstance(data, dict):
+        return False, "invalid KPI payload"
+
+    detection_stream = data.get("DETECTION_STREAM")
+    if not isinstance(detection_stream, dict):
+        return False, "DETECTION_STREAM missing"
+
+    rdd_stream = data.get("RDD_STREAM")
+    if not isinstance(rdd_stream, dict):
+        return False, "RDD_STREAM missing"
+
+    input_storage = rdd_stream.get("input")
+    output_storage = rdd_stream.get("output")
+    if input_storage is None or output_storage is None:
+        return False, "RDD input/output storage missing"
+
+    for signal_name in ("rdd1_rindx", "rdd1_dindx"):
+        if not _storage_signal_has_values(input_storage, signal_name):
+            return False, f"input missing {signal_name}"
+        if not _storage_signal_has_values(output_storage, signal_name):
+            return False, f"output missing {signal_name}"
+
+    return True, "RDD index signals available"
 
 class DetectionMappingKPIHDF:
     """Detection KPI analysis using HDF data from self.input_data and self.output_data"""
@@ -49,6 +85,8 @@ class DetectionMappingKPIHDF:
 
     def process_rdd_matching(self):
         """Process RDD stream matching and pass it Det to calcuate accuracy."""
+        self.kpi_results['matching_mode'] = 'RDD-assisted'
+        self.kpi_results['denominator_label'] = 'Detections Used'
         rdd_params = ['rdd1_rindx', 'rdd1_dindx', 'rdd2_range', 'rdd2_range_rate', 'rdd1_num_detect']
         src = self.data['RDD_STREAM']
 
@@ -418,6 +456,8 @@ class DetectionMappingKPIHDF:
             scans_with_matches = self.kpi_results.get('scans_with_matches', 0)
             veh_si_count = self.kpi_results.get('veh_si_count', 0)
             sim_si_count = self.kpi_results.get('sim_si_count', 0)
+            matching_mode = self.kpi_results.get('matching_mode', 'RDD-assisted')
+            denominator_label = self.kpi_results.get('denominator_label', 'Detections Used')
 
             # Prepare per-scan table rows (scan index, matches, denominator, accuracy)
             scan_idxs = self.kpi_results.get('per_scan_scanindex', [])
@@ -450,6 +490,8 @@ class DetectionMappingKPIHDF:
                 scans_with_matches=scans_with_matches,
                 veh_si_count=veh_si_count,
                 sim_si_count=sim_si_count,
+                matching_mode=matching_mode,
+                denominator_label=denominator_label,
                 per_scan_rows=per_scan_rows,
                 accuracy_plot=accuracy_plot.to_json(),
                 af_det_plot=af_det_plot.to_json()
@@ -562,11 +604,24 @@ def process_detection_kpi(data: KPI_DataModelStorage,
         dict: KPI results and HTML content
     """
     try:
-        processor = DetectionMappingKPIHDF(data, sensor_id)
-        
+        use_rdd_matching, reason = _can_use_rdd_matching(data)
+        logger.info(
+            "Detection KPI mode for %s: %s (%s)",
+            sensor_id,
+            "rdd" if use_rdd_matching else "signal_fallback",
+            reason,
+        )
 
+        if use_rdd_matching:
+            processor = DetectionMappingKPIHDF(data, sensor_id)
+            success = processor.process_rdd_matching()
+        else:
+            from UDP_KPI.c_business_layer.detection_signal_fallback_kpi import (
+                DetectionSignalFallbackKPIHDF,
+            )
 
-        success = processor.process_rdd_matching()
+            processor = DetectionSignalFallbackKPIHDF(data, sensor_id)
+            success = processor.process_signal_matching()
 
         if success:
             results = processor.get_results()

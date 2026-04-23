@@ -1,3 +1,0 @@
-protobuf>=4.25.0
-pyzmq>=26.0.0
-grpcio-tools>=1.65.0

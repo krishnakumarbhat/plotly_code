@@ -300,37 +300,55 @@ class KpiHtmlGen:
 
     def _css(self) -> str:
         return """
+:root {
+    --page-bg: #f2f7fb;
+    --panel-bg: rgba(255,255,255,0.94);
+    --panel-border: #d9e5ee;
+    --text-main: #17324a;
+    --text-muted: #627789;
+    --accent: #0d6a8b;
+    --accent-soft: #dceef5;
+    --shadow: 0 10px 22px rgba(18, 47, 72, 0.08);
+}
 html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
-body { font-family: Segoe UI, Arial, sans-serif; margin: 0; padding: 16px; background: #f5f6fa; }
-h1 { margin: 0 0 12px 0; color: #2c3e50; }
-h2 { color: #34495e; margin: 18px 0 8px 0; }
-h3 { color: #2c3e50; margin: 12px 0 6px 0; }
+* { box-sizing: border-box; }
+body {
+    font-family: Segoe UI, Arial, sans-serif;
+    margin: 0;
+    padding: 18px;
+    background: linear-gradient(180deg, #f8fbfd 0%, var(--page-bg) 100%);
+    color: var(--text-main);
+}
+h1 { margin: 0 0 12px 0; color: var(--text-main); }
+h2 { color: var(--text-main); margin: 18px 0 8px 0; }
+h3 { color: var(--text-main); margin: 12px 0 6px 0; }
 
 .tab-bar {
-    display: flex; flex-wrap: wrap; gap: 0; border-bottom: 2px solid #3498db;
-    margin-bottom: 16px; background: #fff; border-radius: 8px 8px 0 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex; flex-wrap: wrap; gap: 0; border-bottom: 2px solid #b9d7e6;
+    margin-bottom: 16px; background: rgba(255,255,255,0.92); border-radius: 14px 14px 0 0;
+    box-shadow: var(--shadow);
 }
 .tab-btn {
-    padding: 10px 22px; border: none; background: #ecf0f1; cursor: pointer;
-    font-size: 14px; font-weight: 600; color: #7f8c8d; transition: all 0.2s;
-    border-radius: 8px 8px 0 0; margin-right: 2px;
+    padding: 10px 22px; border: none; background: #edf5f9; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--text-muted); transition: background 0.16s ease, color 0.16s ease;
+    border-radius: 14px 14px 0 0; margin-right: 2px;
 }
-.tab-btn:hover { background: #d5dbdb; color: #2c3e50; }
-.tab-btn.active { background: #3498db; color: #fff; }
+.tab-btn:hover { background: #dcecf4; color: var(--text-main); }
+.tab-btn.active { background: var(--accent); color: #fff; }
 
 .tab-content { display: none; }
 
 .plot-card {
-    background: #fff; border-radius: 8px; padding: 12px; margin: 10px 0;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #e8ecef;
+    background: var(--panel-bg); border-radius: 16px; padding: 12px; margin: 10px 0;
+    box-shadow: var(--shadow); border: 1px solid var(--panel-border);
+    content-visibility: auto; contain-intrinsic-size: 420px;
 }
 .plots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 1200px) { .plots-grid { grid-template-columns: 1fr; } }
 
 .summary-section {
-    background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #e8ecef;
+    background: var(--panel-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px;
+    box-shadow: var(--shadow); border: 1px solid var(--panel-border);
 }
 .tables-container { display: flex; flex-wrap: wrap; gap: 12px; }
 .table-wrapper { flex: 1 1 300px; max-width: 48%; }
@@ -339,11 +357,11 @@ h3 { color: #2c3e50; margin: 12px 0 6px 0; }
     .table-wrapper { max-width: 100%; flex-basis: 100%; }
 }
 .scroll { max-height: 300px; overflow: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 12px; }
-th, td { border: 1px solid #bdc3c7; padding: 5px 8px; text-align: right; }
-th { background: #3498db; position: sticky; top: 0; color: #fff; font-weight: 600; }
-tr:nth-child(even) { background: #f8f9fa; }
-tr:hover { background: #eaf2f8; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; background: #fff; }
+th, td { border: 1px solid #d7e1e9; padding: 6px 8px; text-align: right; }
+th { background: #edf5fa; position: sticky; top: 0; color: var(--text-main); font-weight: 700; }
+tr:nth-child(even) { background: #f8fbfd; }
+tr:hover { background: #eef6fa; }
 """
 
     def _tab_js(self) -> str:
@@ -360,5 +378,5 @@ function switchTab(tabId, btn) {
 
     def _div(self, fig) -> str:
         fig.update_layout(template=self._template)
-        config = {"responsive": True, "displayModeBar": True, "scrollZoom": True}
+        config = {"responsive": True, "displayModeBar": False, "scrollZoom": False}
         return plot(fig, include_plotlyjs=False, output_type="div", config=config)

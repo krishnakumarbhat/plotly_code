@@ -1,2 +1,0 @@
-Copyright (c) 1997-2022 University of Cambridge
-Copyright (c) 2010-2020 Zoltan Herczeg

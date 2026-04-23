@@ -20,11 +20,11 @@ class Application:
 
         self.sqlite_store = SQLiteLogStore(self.config.sqlite_path)
         self.rag_engine = RagEngine(
-            chroma_path=str(self.config.chroma_dir),
+            chroma_path="",
             collection_name=self.config.collection_name,
             vector_backend=self.config.vector_backend,
             vector_store_json_path=str(self.config.vector_store_json_path),
-            embedding_model_path=str(self.config.embedding_model_path),
+            embedding_model_path="",
             qwen_gguf_path=str(self.config.qwen_gguf_path),
             qwen_fallback_gguf_path=str(self.config.qwen_fallback_gguf_path),
             qwen_model_id=self.config.qwen_model_id,
@@ -50,6 +50,9 @@ class Application:
             exclude_file_keyword=self.config.exclude_file_keyword,
             allow_all_html_fallback=self.config.allow_all_html_fallback,
             max_files_per_ingest=self.config.max_files_per_ingest,
+            max_file_bytes=self.config.max_file_bytes,
+            supported_extensions=self.config.supported_extensions,
+            exclude_dirs=self.config.exclude_dirs,
             parser=self.parser,
             rag_engine=self.rag_engine,
             sqlite_store=self.sqlite_store,
@@ -63,6 +66,16 @@ class Application:
             query_graph=self.query_graph,
             sqlite_store=self.sqlite_store,
         )
+        self._bootstrap_index()
+
+    def _bootstrap_index(self) -> None:
+        if not self.config.auto_ingest_on_start:
+            return
+        if self.rag_engine.document_count > 0:
+            return
+        if not self.config.html_root_path.exists():
+            return
+        self.ingestor.ingest(run_vector=False)
 
     def run(self) -> None:
         self.api.app.run(host=self.config.host, port=self.config.port)

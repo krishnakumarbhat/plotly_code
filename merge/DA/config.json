@@ -1,6 +1,0 @@
-{
-  "hdf_source_selection": "AUTO",
-  "xml_config": "ConfigInteractivePlots.xml",
-  "inputs_json": "inputs.json",
-  "run_int": false
-}

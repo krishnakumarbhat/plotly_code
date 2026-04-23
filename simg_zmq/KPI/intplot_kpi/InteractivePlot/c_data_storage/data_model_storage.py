@@ -121,7 +121,8 @@ class DataModelStorage:
             # Process and store data for child
             for idx, (row, scanidx) in enumerate(zip(dataset, self._data_container)):
                 if isinstance(row, np.ndarray):
-                    rounded_row = np.round(row.astype(float), decimals=2)
+                    with np.errstate(invalid="ignore"):
+                        rounded_row = np.round(np.asarray(row, dtype=np.float64), decimals=2)
                     self._data_container[scanidx][-1].append(rounded_row)
                 else:
                     self._data_container[scanidx][-1].append(row)
@@ -159,7 +160,8 @@ class DataModelStorage:
         # Process all rows in the dataset and store them
         for idx, (row, scanidx) in enumerate(zip(dataset, self._data_container)):
             if isinstance(row, np.ndarray):
-                rounded_row = np.round(row.astype(float), decimals=2)
+                with np.errstate(invalid="ignore"):
+                    rounded_row = np.round(np.asarray(row, dtype=np.float64), decimals=2)
                 self._data_container[scanidx].append([rounded_row])
             else:
                 self._data_container[scanidx].append([row])
@@ -234,6 +236,15 @@ class DataModelStorage:
             "MO": [[], []],  # for missing in output
             "match": 0,
             "mismatch": 0,
+            "scan_input_values": {},
+            "scan_output_values": {},
+            "scan_input_counts": {},
+            "scan_output_counts": {},
+            "common_scan_indices": [],
+            "input_only_scan_indices": [],
+            "output_only_scan_indices": [],
+            "input_point_total": 0,
+            "output_point_total": 0,
         }
 
         def _normalize_signal_name(name):
@@ -295,12 +306,10 @@ class DataModelStorage:
         grp_idx_in, plt_idx_in = _parse_index_pair(unique_in)
         grp_idx_out, plt_idx_out = _parse_index_pair(unique_out)
 
-        # Pre-filter valid scan indices to avoid if it thier in innput not ouput data viceversa
-        # scan_indices = list(input_data._data_container.keys())
-        scan_indices = []
-        for key in output_data._data_container.keys():
-            if key in input_data._data_container:
-                scan_indices.append(key)
+        scan_indices = sorted(
+            set(getattr(input_data, "_data_container", {}).keys())
+            | set(getattr(output_data, "_data_container", {}).keys())
+        )
 
         # Process all scan indices at once
         for scan_idx in scan_indices:
@@ -356,6 +365,21 @@ class DataModelStorage:
                 data_out = np.array([]) if data_out is None else data_out
 
                 len_in, len_out = data_in.size, data_out.size
+                scan_idx_int = int(scan_idx)
+
+                data_dict["scan_input_values"][scan_idx_int] = data_in.tolist()
+                data_dict["scan_output_values"][scan_idx_int] = data_out.tolist()
+                data_dict["scan_input_counts"][scan_idx_int] = int(len_in)
+                data_dict["scan_output_counts"][scan_idx_int] = int(len_out)
+                data_dict["input_point_total"] += int(len_in)
+                data_dict["output_point_total"] += int(len_out)
+
+                if len_in > 0 and len_out > 0:
+                    data_dict["common_scan_indices"].append(scan_idx_int)
+                elif len_in > 0:
+                    data_dict["input_only_scan_indices"].append(scan_idx_int)
+                elif len_out > 0:
+                    data_dict["output_only_scan_indices"].append(scan_idx_int)
 
                 # Equal length case - both arrays have matching data
                 if len_in == len_out and len_in > 0:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from uuid import uuid4
 
 from flask import Flask, jsonify, render_template, request
@@ -34,8 +35,15 @@ class RagApi:
 
         @self.app.post("/ingest")
         def ingest() -> tuple:
-            # When called via HTTP we perform full ingestion (embeddings + vectors)
-            result = self.ingestor.ingest(run_vector=True)
+            payload = request.get_json(silent=True) or {}
+            html_root = (payload.get("html_root", "") or "").strip()
+            if html_root:
+                self.ingestor.html_root = Path(html_root)
+            if payload.get("reset_index"):
+                self.query_graph.rag_engine.reset_vector_store()
+                self.sqlite_store.clear_ingestions()
+                self.sqlite_store.clear_queries()
+            result = self.ingestor.ingest(run_vector=False)
             return jsonify(result), 200
 
         @self.app.post("/ask")

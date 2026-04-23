@@ -1,8 +1,0 @@
-{
-  "INPUT_HDF": [
-    "c:\\Users\\ouymc2\\Desktop\\simg_zmq\\tmp\\udp_no_rdd_smoke\\input_no_rdd.h5"
-  ],
-  "OUTPUT_HDF": [
-    "c:\\Users\\ouymc2\\Desktop\\simg_zmq\\tmp\\udp_no_rdd_smoke\\output_no_rdd.h5"
-  ]
-}

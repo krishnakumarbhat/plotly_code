@@ -200,6 +200,14 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.text-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .text-actions button {
@@ -225,6 +233,16 @@ body {
   background: linear-gradient(135deg, #32cd32, #00fa9a);
 }
 
+#generateVlmBtn {
+  background: linear-gradient(135deg, #5a67d8, #7f9cf5);
+}
+
+#generateVlmBtn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+  transform: none;
+}
+
 .text-path {
   font-size: 10px;
   color: #718096;
@@ -235,6 +253,25 @@ body {
   padding: 4px 6px;
   background: rgba(0, 0, 0, 0.03);
   border-radius: 4px;
+}
+
+.vlm-status {
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #4a5568;
+}
+
+.vlm-status.success {
+  color: #2f855a;
+}
+
+.vlm-status.error {
+  color: #c53030;
+}
+
+.vlm-status.busy {
+  color: #975a16;
 }
 
 /* Right Column - Images */

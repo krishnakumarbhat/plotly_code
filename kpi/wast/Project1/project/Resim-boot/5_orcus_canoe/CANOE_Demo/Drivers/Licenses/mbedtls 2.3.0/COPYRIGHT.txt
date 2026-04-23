@@ -1,1 +1,0 @@
-Copyright © 2016 The Mbed TLS Contributors

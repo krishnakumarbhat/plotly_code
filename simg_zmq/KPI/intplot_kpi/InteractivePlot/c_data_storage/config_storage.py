@@ -31,6 +31,16 @@ Gen7V1_V2 = {
             "unit": "meters",
             "range_to_be_accepted": [0, 500],
         },
+        "vel": {
+            "aliases": ["vel", "velocity", "detectionvelocity"],
+            "call": ["Rangerate"],
+            "plot_types": [
+                "histogram_with_count",
+                "scatter_plot",
+                "scatter_with_mismatch",
+                "bar_mismatch_plots_all",
+            ],
+        },
         "theta": {
             "aliases": ["theta", "azimuth"],
             "call": ["Azimuth"],

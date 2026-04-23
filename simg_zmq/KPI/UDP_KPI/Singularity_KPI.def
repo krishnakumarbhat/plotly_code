@@ -1,6 +1,6 @@
 # Singularity/Apptainer definition file for UDP_KPI Tool
 # Build from workspace root with:
-#   apptainer build --fakeroot UDP_KPI/kpi.simg UDP_KPI/Singularity_KPI.def
+#   apptainer build --fakeroot simg_sh_hpcc/udp_kpi.simg KPI/UDP_KPI/Singularity_KPI.def
 #
 # Resource Requirements:
 #   - Memory: 32 GB
@@ -34,6 +34,7 @@ From: docker.io/python:3.10-slim
     export PATH=/opt/venv/bin:$PATH
     export PYTHONPATH=/app/tools:$PYTHONPATH
     export KPI_EXECUTOR_MODE=${KPI_EXECUTOR_MODE:-thread}
+    export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 %post
     # Install system dependencies
@@ -59,17 +60,16 @@ From: docker.io/python:3.10-slim
 
 %files
     # Copy UDP_KPI package from workspace root
-    UDP_KPI/a_persistence_layer /app/tools/UDP_KPI/a_persistence_layer
-    UDP_KPI/b_data_storage /app/tools/UDP_KPI/b_data_storage
-    UDP_KPI/c_business_layer /app/tools/UDP_KPI/c_business_layer
-    UDP_KPI/d_presentation_layer /app/tools/UDP_KPI/d_presentation_layer
-    UDP_KPI/kpi_server.py /app/tools/UDP_KPI/kpi_server.py
-    UDP_KPI/runtime_utils.py /app/tools/UDP_KPI/runtime_utils.py
-    UDP_KPI/__init__.py /app/tools/UDP_KPI/__init__.py
-    # Copy InteractivePlot dependencies needed by UDP_KPI
-    intplot_kpi/InteractivePlot/b_persistence_layer /app/tools/InteractivePlot/b_persistence_layer
-    intplot_kpi/InteractivePlot/d_business_layer /app/tools/InteractivePlot/d_business_layer
-    intplot_kpi/InteractivePlot/kpi_client /app/tools/InteractivePlot/kpi_client
+    KPI/UDP_KPI/a_persistence_layer /app/tools/UDP_KPI/a_persistence_layer
+    KPI/UDP_KPI/b_data_storage /app/tools/UDP_KPI/b_data_storage
+    KPI/UDP_KPI/c_business_layer /app/tools/UDP_KPI/c_business_layer
+    KPI/UDP_KPI/d_presentation_layer /app/tools/UDP_KPI/d_presentation_layer
+    KPI/UDP_KPI/kpi_server.py /app/tools/UDP_KPI/kpi_server.py
+    KPI/UDP_KPI/runtime_utils.py /app/tools/UDP_KPI/runtime_utils.py
+    KPI/UDP_KPI/__init__.py /app/tools/UDP_KPI/__init__.py
+    # Copy the full InteractivePlot package because the UDP KPI runtime imports
+    # beyond the parser/client layers during paired-HDF and ZMQ flows.
+    KPI/intplot_kpi/InteractivePlot /app/tools/InteractivePlot
 
 %runscript
     # Activate virtual environment

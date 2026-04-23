@@ -355,8 +355,8 @@ class AllsensorHdfParser(PersensorHdfParser):
                     resim_sensors = sil_kpi.sensors_in_file(Path(output_file))
                     sensors = sorted(set(veh_sensors) & set(resim_sensors))[:4]
                     for sensor in sensors:
-                        veh = sil_kpi.load_radar_hdf(Path(input_file), sensor=sensor)
-                        resim = sil_kpi.load_radar_hdf(Path(output_file), sensor=sensor)
+                        veh = sil_kpi.load_radar_hdf(Path(input_file), sensor=sensor, build_frame=True)
+                        resim = sil_kpi.load_radar_hdf(Path(output_file), sensor=sensor, build_frame=True)
                         narrative = sil_rag._build_sensor_narrative(sensor, veh, resim, gate=1.0, metric="euclidean")
                         narrative_text = sil_rag._build_narrative_text(base_name, [narrative])
                         per_sensor_rag = self._sensor_kpi_dir(base_folder, sensor) / f"{base_name}_{sensor}_sil_narrative.html"

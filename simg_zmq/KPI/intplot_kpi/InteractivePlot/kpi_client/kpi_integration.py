@@ -27,6 +27,10 @@ except Exception:
 # Get KPI server connection settings from environment variables (for Docker/Singularity)
 KPI_SERVER_HOST = os.environ.get('KPI_SERVER_HOST', '127.0.0.1')
 KPI_SERVER_PORT = int(os.environ.get('KPI_SERVER_PORT', '5555'))
+KPI_SERVER_RESPONSE_TIMEOUT_MS = max(
+    1000,
+    int(os.environ.get('KPI_SERVER_RESPONSE_TIMEOUT_MS', '180000')),
+)
 
 # -------------------------------
 # Dataclasses for messaging (kept for backward compatibility)
@@ -204,7 +208,13 @@ class kpiIntegration:
 
             logger.info(f"Sending KPI request for sensor {request.sensor_id}")
             sock.send(protobuf_message.SerializeToString())
-            if sock.poll(30000) == 0:
+            if sock.poll(KPI_SERVER_RESPONSE_TIMEOUT_MS) == 0:
+                logger.warning(
+                    "Timed out waiting %s ms for KPI response sensor=%s base=%s",
+                    KPI_SERVER_RESPONSE_TIMEOUT_MS,
+                    request.sensor_id,
+                    request.base_name,
+                )
                 return ReplyMessage(status="error", message="Timeout: No response from KPI server")
 
             response_bytes = sock.recv()
