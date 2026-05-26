@@ -2,6 +2,8 @@
 
 A comprehensive Flask-based web application for managing HPC (High-Performance Computing) tools including DC HTML Report, Interactive Plot, KPI Analysis, and Hyperlink Tool with integrated AI chat assistance.
 
+For the current developer runbook covering build, cluster upload, runtime flow, and the meaning of the large generated artifacts, see `Readme/README_dev.md`.
+
 ## 🏗️ Architecture
 
 This platform follows a **Manager-Worker** model designed for HPC clusters:

@@ -1,3 +1,0 @@
-cca30283 Final working commit
-STATUS_BEGIN
-STATUS_END
