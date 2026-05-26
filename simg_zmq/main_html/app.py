@@ -4,6 +4,7 @@ Provides web interface for KPI, DC HTML, Interactive Plot, and Hyperlink tools
 with LLM chat integration and Slurm job management
 """
 import os
+import copy
 import uuid
 import logging
 import sys
@@ -18,8 +19,9 @@ import importlib.util
 import time
 from pathlib import Path
 from datetime import datetime, timezone
+from typing import Optional
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, send_from_directory, send_file
+from flask import Flask, Response, render_template, request, redirect, url_for, flash, jsonify, session, send_from_directory, send_file, abort
 from flask_compress import Compress
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_migrate import Migrate
@@ -27,7 +29,7 @@ from sqlalchemy.exc import OperationalError
 
 from config import config
 from hpcc_broker_client import HpccBrokerClient
-from models import db, User, JobHistory, ChatSession, ChatMessage, init_db
+from models import db, User, JobHistory, ChatSession, ChatMessage, HyperlinkSavedPair, init_db
 from rag_client import RagClient
 from runtime_store import RuntimeStore
 from utils import (
@@ -39,7 +41,7 @@ from utils import (
     cluster_from_path,
     validate_cluster_credentials,
 )
-from env_utils import get_env, get_cache_dir, get_cluster_paths
+from env_utils import get_env, get_cache_dir, get_cluster_paths, get_cluster_slurm_defaults
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -48,7 +50,8 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(config[os.environ.get('FLASK_ENV', 'development')])
-Compress(app)
+if (os.environ.get('HPCC_ENABLE_COMPRESS') or '').strip().lower() in {'1', 'true', 'yes'}:
+    Compress(app)
 
 # Initialize extensions
 db.init_app(app)
@@ -124,13 +127,15 @@ runtime_store.ensure_defaults()
 broker_client = HpccBrokerClient()
 rag_client = RagClient(runtime_store)
 
+_SLURM_DEFAULTS = get_cluster_slurm_defaults()
+
 _HPCC_RESOURCE_BASE = {
     'scheduler': 'slurm',
-    'account': (os.environ.get('SLURM_ACCOUNT') or 'RNA-SDV-SRR7').strip(),
-    'qos': (os.environ.get('SLURM_QOS') or '').strip(),
+    'account': _SLURM_DEFAULTS['account'],
+    'qos': _SLURM_DEFAULTS['qos'],
     'nodes': 1,
     'ntasks': 1,
-    'partition': (os.environ.get('SLURM_PARTITION') or 'plcyf-com').strip(),
+    'partition': _SLURM_DEFAULTS['partition'],
     'immediate': (os.environ.get('HPCC_SLURM_IMMEDIATE_SECONDS') or '').strip(),
 }
 
@@ -201,6 +206,44 @@ def _auth_template_context(cluster_target: str = 'any') -> dict:
     }
 
 
+def _persist_cluster_password(user: Optional[User], password: str) -> None:
+    if user is None or not password:
+        return
+    try:
+        user.set_cluster_password(password)
+    except Exception:
+        logger.exception('Failed to persist cluster password for %s', getattr(user, 'net_id', 'unknown'))
+
+
+def _hyperlink_credential_user(net_id: str = '') -> Optional[User]:
+    requested_net_id = (net_id or '').strip()
+    if current_user.is_authenticated:
+        current_net_id = (current_user.net_id or '').strip()
+        if requested_net_id and requested_net_id != current_net_id:
+            return None
+        return current_user
+
+    session_net_id = (session.get('hyperlink_net_id') or '').strip()
+    if requested_net_id and session_net_id and requested_net_id != session_net_id:
+        return None
+
+    resolved_net_id = requested_net_id or session_net_id
+    if not resolved_net_id:
+        return None
+    return User.query.filter_by(net_id=resolved_net_id).first()
+
+
+def _stored_cluster_password_for_current_user(net_id: str = '') -> str:
+    user = _hyperlink_credential_user(net_id)
+    if user is None:
+        return ''
+    return user.get_cluster_password()
+
+
+def _user_is_disabled(user) -> bool:
+    return getattr(user, 'is_active', True) is False
+
+
 @app.before_request
 def _enforce_session_policy():
     _hyperlink_reap_stale_sessions()
@@ -208,7 +251,7 @@ def _enforce_session_policy():
     if not current_user.is_authenticated:
         return None
 
-    if not getattr(current_user, 'is_active', True):
+    if _user_is_disabled(current_user):
         logout_user()
         flash('Your account has been deactivated. Please log in again.', 'error')
         return redirect(url_for('login'))
@@ -275,21 +318,21 @@ def login():
 
             if ok:
                 if not user:
-                    user = User(name=net_id, net_id=net_id)
-                    user.set_password(password)
+                    user = User(name=net_id, net_id=net_id, is_active=True)
                     db.session.add(user)
-                    db.session.commit()
                     flash('Cluster authentication succeeded. Your HPC Tools profile was created automatically.', 'success')
 
-                if not user.is_active:
+                if _user_is_disabled(user):
                     flash('Your account has been deactivated. Please contact administrator.', 'error')
                     return render_template('login.html', **_auth_template_context(cluster_target))
 
                 # keep local password hash in sync with the current cluster password
                 user.set_password(password)
+                _persist_cluster_password(user, password)
                 db.session.commit()
 
                 login_user(user, remember=remember)
+                session['hyperlink_net_id'] = user.net_id
                 user.update_last_login()
 
                 next_page = request.args.get('next')
@@ -307,11 +350,12 @@ def login():
 
         # local auth fallback (useful for Windows debugging)
         if user and user.check_password(password):
-            if not user.is_active:
+            if _user_is_disabled(user):
                 flash('Your account has been deactivated. Please contact administrator.', 'error')
                 return render_template('login.html', **_auth_template_context(cluster_target))
             
             login_user(user, remember=remember)
+            session['hyperlink_net_id'] = user.net_id
             user.update_last_login()
             
             next_page = request.args.get('next')
@@ -476,7 +520,7 @@ def tool_kpi():
     if request.method == 'POST':
         return submit_runtime_kpi_job()
     
-    recent_jobs = get_user_tool_jobs('kpi')
+    recent_jobs = get_user_tool_jobs('kpi', include_all=True)
     return render_template('tools/kpi.html',
                          tool_name='KPI Analysis',
                          recent_jobs=recent_jobs,
@@ -561,8 +605,14 @@ HYPERLINK_MAPPING_CACHE_TTL_SECONDS = int((os.environ.get('HPCC_HYPERLINK_MAPPIN
 
 
 def _hyperlink_get_user_key():
-    """Get the user key from session (net_id stored during connect)."""
-    return session.get('hyperlink_net_id', '')
+    """Get the current hyperlink user key.
+
+    Prefer the authenticated platform login so saved pairs and cache paths remain
+    stable even before a cluster session is opened.
+    """
+    if current_user.is_authenticated:
+        return (current_user.net_id or '').strip()
+    return (session.get('hyperlink_net_id', '') or '').strip()
 
 
 def _hyperlink_ai_enabled() -> bool:
@@ -636,6 +686,125 @@ def _hyperlink_key_from_name(name: str):
     return None
 
 
+def _hyperlink_overlay_tools():
+    module = _load_hyperlink_module('hyperlink_html_online_main', 'main.py')
+    return (
+        getattr(module, 'find_overlay_video_name'),
+        getattr(module, 'is_supported_video_file'),
+        getattr(module, 'is_overlay_video_name'),
+    )
+
+
+def _hyperlink_saved_owner():
+    owner_net_id = _hyperlink_get_user_key()
+    if not owner_net_id:
+        return '', None
+    user_id = current_user.id if current_user.is_authenticated else None
+    return owner_net_id, user_id
+
+
+def _hyperlink_saved_pairs():
+    owner_net_id, _ = _hyperlink_saved_owner()
+    if not owner_net_id:
+        return []
+    return HyperlinkSavedPair.query.filter_by(owner_net_id=owner_net_id).order_by(
+        HyperlinkSavedPair.last_used_at.desc(),
+        HyperlinkSavedPair.id.desc(),
+    ).all()
+
+
+def _hyperlink_saved_pair_or_404(saved_id: int) -> HyperlinkSavedPair:
+    owner_net_id, _ = _hyperlink_saved_owner()
+    query = HyperlinkSavedPair.query.filter_by(id=saved_id)
+    if owner_net_id:
+        query = query.filter_by(owner_net_id=owner_net_id)
+    return query.first_or_404()
+
+
+def _hyperlink_saved_pair_cached(saved_pair: HyperlinkSavedPair) -> bool:
+    _, html_dir, video_dir = _hyperlink_get_user_dirs()
+    html_path = os.path.join(html_dir, saved_pair.html_folder)
+    video_path = os.path.join(video_dir, saved_pair.video_name)
+    return os.path.isdir(html_path) and os.path.isfile(video_path)
+
+
+def _hyperlink_saved_overlay_cached(saved_pair: HyperlinkSavedPair) -> bool:
+    _, _, video_dir = _hyperlink_get_user_dirs()
+    overlay_name = (saved_pair.overlay_name or os.path.basename(saved_pair.remote_overlay_path or '')).strip()
+    if not overlay_name:
+        return False
+    overlay_path = os.path.join(video_dir, overlay_name)
+    return os.path.isfile(overlay_path)
+
+
+def _hyperlink_remove_saved_pair_cache(saved_pair: HyperlinkSavedPair) -> None:
+    _, html_dir, video_dir = _hyperlink_get_user_dirs()
+    html_path = os.path.join(html_dir, saved_pair.html_folder)
+    video_path = os.path.join(video_dir, saved_pair.video_name)
+    overlay_name = (saved_pair.overlay_name or os.path.basename(saved_pair.remote_overlay_path or '')).strip()
+    if os.path.isdir(html_path):
+        shutil.rmtree(html_path, ignore_errors=True)
+    if os.path.isfile(video_path):
+        try:
+            os.remove(video_path)
+        except OSError:
+            logger.warning('Could not remove cached hyperlink video %s', video_path)
+    if overlay_name:
+        overlay_path = os.path.join(video_dir, overlay_name)
+        if os.path.isfile(overlay_path):
+            try:
+                os.remove(overlay_path)
+            except OSError:
+                logger.warning('Could not remove cached hyperlink overlay %s', overlay_path)
+
+
+def _hyperlink_upsert_saved_pair(*, key: str, html_path: str, video_path: str, overlay_path: str = '', output_root: str) -> HyperlinkSavedPair:
+    owner_net_id, user_id = _hyperlink_saved_owner()
+    if not owner_net_id:
+        raise ValueError('Unable to determine the current user for this hyperlink stream')
+
+    folder_name = os.path.basename((html_path or '').rstrip('/'))
+    video_name = os.path.basename(video_path or '')
+    overlay_name = os.path.basename(overlay_path or '')
+    now = datetime.utcnow()
+
+    saved_pair = HyperlinkSavedPair.query.filter_by(
+        owner_net_id=owner_net_id,
+        remote_html_path=html_path,
+        remote_video_path=video_path,
+    ).first()
+
+    if saved_pair is None:
+        saved_pair = HyperlinkSavedPair(
+            user_id=user_id,
+            owner_net_id=owner_net_id,
+            label=folder_name or key,
+            pair_key=key,
+            html_folder=folder_name or key,
+            video_name=video_name,
+            overlay_name=overlay_name or None,
+            remote_html_path=html_path,
+            remote_video_path=video_path,
+            remote_overlay_path=overlay_path or None,
+            output_root=output_root,
+            last_used_at=now,
+        )
+    else:
+        saved_pair.user_id = user_id
+        saved_pair.label = folder_name or saved_pair.label or key
+        saved_pair.pair_key = key or saved_pair.pair_key
+        saved_pair.html_folder = folder_name or saved_pair.html_folder
+        saved_pair.video_name = video_name or saved_pair.video_name
+        saved_pair.overlay_name = overlay_name or saved_pair.overlay_name
+        saved_pair.remote_overlay_path = overlay_path or saved_pair.remote_overlay_path
+        saved_pair.output_root = output_root or saved_pair.output_root
+        saved_pair.last_used_at = now
+
+    db.session.add(saved_pair)
+    db.session.commit()
+    return saved_pair
+
+
 def _hyperlink_cluster_host(cluster_name: str):
     name = (cluster_name or '').strip().lower()
     if name == 'krakow':
@@ -690,6 +859,56 @@ def _hyperlink_get_live_session(user_key: str):
         if sess:
             sess['last_used_at'] = time.time()
         return sess
+
+
+def _hyperlink_open_cluster_session(user_key: str, *, cluster_name: str, password: str):
+    host = _hyperlink_cluster_host(cluster_name)
+    if not user_key or not host or not password:
+        return None
+
+    import paramiko
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(
+        hostname=host,
+        username=user_key,
+        password=password,
+        timeout=20,
+        auth_timeout=20,
+        banner_timeout=20,
+        allow_agent=False,
+        look_for_keys=False,
+    )
+    sftp = client.open_sftp()
+
+    with _HYPERLINK_SSH_LOCK:
+        _hyperlink_close_session(user_key)
+        _HYPERLINK_SSH_SESSIONS[user_key] = {
+            'server': cluster_name,
+            'host': host,
+            'username': user_key,
+            'last_used_at': time.time(),
+            'ssh': client,
+            'sftp': sftp,
+        }
+        return _HYPERLINK_SSH_SESSIONS[user_key]
+
+
+def _hyperlink_restore_session(user_key: str, *, cluster_name: str):
+    sess = _hyperlink_get_live_session(user_key)
+    if sess and sess.get('sftp') is not None:
+        return sess
+
+    password = _stored_cluster_password_for_current_user(user_key).strip()
+    if not password:
+        return None
+
+    try:
+        return _hyperlink_open_cluster_session(user_key, cluster_name=cluster_name, password=password)
+    except Exception:
+        logger.exception('Failed to restore hyperlink cluster session for %s on %s', user_key, cluster_name)
+        return None
 
 
 def _hyperlink_cache_user_key() -> str:
@@ -798,106 +1017,227 @@ def hyperlink_html_data(filename):
 
 
 def _stream_video_file(file_path: str):
-    """Stream video file with proper range request support for large files.
-    
-    This avoids worker timeouts by:
-    1. Using generators for chunked streaming
-    2. Proper handling of HTTP Range requests for video seeking
-    3. Not loading entire file into memory
-    4. Graceful error handling to prevent worker crashes
-    """
+    """Serve video files with explicit range handling and stable partial reads."""
     import mimetypes
-    from flask import Response
-    
-    file_size = os.path.getsize(file_path)
+
+    route_started = time.perf_counter()
+
     mime_type = mimetypes.guess_type(file_path)[0] or 'video/mp4'
-    
-    # Parse Range header
-    range_header = request.headers.get('Range')
-    
-    if range_header:
-        # Handle Range request (e.g., "bytes=0-1023")
+    file_size = os.path.getsize(file_path)
+    range_header = (request.headers.get('Range') or '').strip()
+    start = 0
+    end = max(file_size - 1, 0)
+    status_code = 200
+
+    if range_header.startswith('bytes='):
+        range_value = range_header.split('=', 1)[1].split(',', 1)[0].strip()
+        start_str, _, end_str = range_value.partition('-')
         try:
-            ranges = range_header.replace('bytes=', '').split('-')
-            start = int(ranges[0]) if ranges[0] else 0
-            end = int(ranges[1]) if ranges[1] else file_size - 1
-        except (ValueError, IndexError):
-            start, end = 0, file_size - 1
-        
-        # Clamp values
-        start = max(0, min(start, file_size - 1))
-        end = max(start, min(end, file_size - 1))
-        length = end - start + 1
-        
-        def generate():
-            chunk_size = 256 * 1024
-            try:
-                with open(file_path, 'rb') as f:
-                    f.seek(start)
-                    remaining = length
-                    while remaining > 0:
-                        chunk = f.read(min(chunk_size, remaining))
-                        if not chunk:
-                            break
-                        remaining -= len(chunk)
-                        yield chunk
-            except (IOError, OSError, GeneratorExit) as e:
-                # Client disconnected or file error - log and exit gracefully
-                logger.debug(f"Video stream ended: {e}")
-                return
-        
-        response = Response(
-            generate(),
-            status=206,
-            mimetype=mime_type,
-            direct_passthrough=True
+            if start_str:
+                start = int(start_str)
+                end = int(end_str) if end_str else end
+            elif end_str:
+                suffix_length = int(end_str)
+                start = max(file_size - suffix_length, 0)
+            else:
+                raise ValueError('Invalid range')
+        except ValueError:
+            response = Response(status=416)
+            response.headers['Content-Range'] = f'bytes */{file_size}'
+            return response
+
+        end = min(end, file_size - 1)
+        if start < 0 or start >= file_size or start > end:
+            response = Response(status=416)
+            response.headers['Content-Range'] = f'bytes */{file_size}'
+            return response
+        status_code = 206
+
+    content_length = max(end - start + 1, 0)
+
+    if request.method == 'HEAD':
+        response = Response(status=status_code, mimetype=mime_type)
+    elif status_code == 206:
+        read_started = time.perf_counter()
+        with open(file_path, 'rb') as handle:
+            handle.seek(start)
+            data = handle.read(content_length)
+        logger.info(
+            'Hyperlink video range read %s bytes=%s-%s size=%s read_ms=%.1f',
+            os.path.basename(file_path),
+            start,
+            end,
+            len(data),
+            (time.perf_counter() - read_started) * 1000,
         )
-        response.headers['Content-Range'] = f'bytes {start}-{end}/{file_size}'
-        response.headers['Content-Length'] = length
-        response.headers['Accept-Ranges'] = 'bytes'
-        response.headers['Cache-Control'] = 'public, max-age=86400'
-        return response
+        response = Response(data, status=206, mimetype=mime_type)
+        content_length = len(data)
     else:
-        # Full file request - still stream to avoid memory issues
-        def generate():
-            chunk_size = 256 * 1024
-            try:
-                with open(file_path, 'rb') as f:
-                    while True:
-                        chunk = f.read(chunk_size)
-                        if not chunk:
-                            break
-                        yield chunk
-            except (IOError, OSError, GeneratorExit) as e:
-                # Client disconnected or file error - log and exit gracefully
-                logger.debug(f"Video stream ended: {e}")
-                return
-        
-        response = Response(
-            generate(),
-            status=200,
-            mimetype=mime_type,
-            direct_passthrough=True
+        response = send_file(file_path, mimetype=mime_type, conditional=True, max_age=86400)
+
+    response.headers['Accept-Ranges'] = 'bytes'
+    response.headers['Content-Length'] = str(content_length)
+    if status_code == 206:
+        response.headers['Content-Range'] = f'bytes {start}-{end}/{file_size}'
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    logger.info(
+        'Hyperlink video response ready %s method=%s status=%s range=%s bytes=%s elapsed_ms=%.1f',
+        os.path.basename(file_path),
+        request.method,
+        status_code,
+        request.headers.get('Range', ''),
+        content_length,
+        (time.perf_counter() - route_started) * 1000,
+    )
+    return response
+
+
+def _hyperlink_browser_video_cache_path(file_path: str) -> str:
+    cache_dir = os.path.join(os.path.dirname(file_path), '.browser_cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    stem, _ = os.path.splitext(os.path.basename(file_path))
+    return os.path.join(cache_dir, stem + '.browser.mp4')
+
+
+def _hyperlink_video_marker_sample(file_path: str) -> bytes:
+    sample_size = 2 * 1024 * 1024
+    file_size = os.path.getsize(file_path)
+    with open(file_path, 'rb') as handle:
+        head = handle.read(min(sample_size, file_size))
+        if file_size <= sample_size:
+            return head
+        handle.seek(max(file_size - sample_size, 0))
+        tail = handle.read(sample_size)
+    return head + tail
+
+
+def _hyperlink_needs_browser_transcode(file_path: str) -> bool:
+    sample = _hyperlink_video_marker_sample(file_path)
+    if b'mp4v' not in sample:
+        return False
+    return b'avc1' not in sample and b'avc3' not in sample
+
+
+def _hyperlink_prepare_browser_video(file_path: str) -> str:
+    if not _hyperlink_needs_browser_transcode(file_path):
+        return file_path
+
+    browser_path = _hyperlink_browser_video_cache_path(file_path)
+    source_mtime = os.path.getmtime(file_path)
+    if os.path.exists(browser_path) and os.path.getmtime(browser_path) >= source_mtime:
+        return browser_path
+
+    ffmpeg_bin = shutil.which('ffmpeg') or '/usr/bin/ffmpeg'
+    temp_path = browser_path + '.tmp.mp4'
+    command = [
+        ffmpeg_bin,
+        '-y',
+        '-loglevel',
+        'error',
+        '-i',
+        file_path,
+        '-map',
+        '0:v:0',
+        '-map',
+        '0:a?',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'veryfast',
+        '-pix_fmt',
+        'yuv420p',
+        '-c:a',
+        'aac',
+        '-movflags',
+        '+faststart',
+        temp_path,
+    ]
+
+    logger.info('Transcoding browser-safe video for %s', os.path.basename(file_path))
+    try:
+        completed = subprocess.run(
+            command,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=1800,
         )
-        response.headers['Content-Length'] = file_size
-        response.headers['Accept-Ranges'] = 'bytes'
-        response.headers['Cache-Control'] = 'public, max-age=86400'
-        return response
+    except Exception:
+        logger.exception('Failed to launch ffmpeg for %s', file_path)
+        return file_path
+
+    if completed.returncode != 0 or not os.path.exists(temp_path):
+        logger.error(
+            'ffmpeg transcode failed for %s: %s',
+            file_path,
+            (completed.stderr or completed.stdout or '').strip(),
+        )
+        return file_path
+
+    os.replace(temp_path, browser_path)
+    return browser_path
 
 
-@app.route('/hyperlink/data/video/<path:filename>')
+@app.route('/hyperlink/data/video/<path:filename>', methods=['GET', 'HEAD'])
 def hyperlink_video_data(filename):
     """Serve video data files for viewer with streaming support"""
     try:
+        request_started = time.perf_counter()
         _, _, video_dir = _hyperlink_get_user_dirs()
         file_path = os.path.join(video_dir, filename)
         if not os.path.exists(file_path):
             logger.error(f"Video file not found: {file_path}")
             return "File not found", 404
+        file_path = _hyperlink_prepare_browser_video(file_path)
+        logger.info(
+            'Hyperlink video request resolved %s user=%s method=%s range=%s resolve_ms=%.1f',
+            filename,
+            _hyperlink_get_user_key(),
+            request.method,
+            request.headers.get('Range', ''),
+            (time.perf_counter() - request_started) * 1000,
+        )
         return _stream_video_file(file_path)
     except Exception as e:
         logger.error(f"Error serving video {filename}: {e}")
         return "Internal server error", 500
+
+
+@app.route('/hyperlink/api/video-chunk/<path:filename>', methods=['GET'])
+def hyperlink_video_chunk(filename):
+    """Serve authenticated video chunks over a simple 200 response."""
+    try:
+        _, _, video_dir = _hyperlink_get_user_dirs()
+        file_path = os.path.join(video_dir, filename)
+        if not os.path.exists(file_path):
+            logger.error(f"Video chunk file not found: {file_path}")
+            return jsonify({'error': 'File not found'}), 404
+
+        file_path = _hyperlink_prepare_browser_video(file_path)
+
+        file_size = os.path.getsize(file_path)
+        start = max(int(request.args.get('start', '0') or 0), 0)
+        chunk_size = max(int(request.args.get('size', str(16 * 1024)) or (16 * 1024)), 1)
+        end = min(start + chunk_size, file_size)
+
+        if start >= file_size:
+            return jsonify({'error': 'Range out of bounds'}), 416
+
+        with open(file_path, 'rb') as handle:
+            handle.seek(start)
+            data = handle.read(end - start)
+
+        response = Response(data, status=200, mimetype='application/octet-stream')
+        response.headers['Content-Length'] = str(len(data))
+        response.headers['Cache-Control'] = 'no-store'
+        response.headers['X-File-Size'] = str(file_size)
+        response.headers['X-Chunk-Start'] = str(start)
+        response.headers['X-Chunk-End'] = str(end)
+        return response
+    except Exception as e:
+        logger.error(f"Error serving video chunk {filename}: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/hyperlink/api/mappings')
@@ -920,6 +1260,7 @@ def hyperlink_mappings():
                 if not isinstance(entry, dict):
                     continue
                 entry['video'] = _hyperlink_rewrite_data_url(entry.get('video', ''))
+                entry['overlay_video'] = _hyperlink_rewrite_data_url(entry.get('overlay_video', ''))
                 entry['comment_path'] = _hyperlink_rewrite_data_url(entry.get('comment_path', ''))
                 entry['html_files'] = [_hyperlink_rewrite_data_url(x) for x in (entry.get('html_files') or [])]
                 images = entry.get('images') or {}
@@ -929,12 +1270,64 @@ def hyperlink_mappings():
                             continue
                         for pos, img_path in list(positions.items()):
                             positions[pos] = _hyperlink_rewrite_data_url(img_path)
+            saved_pairs_by_key = {saved_pair.pair_key: saved_pair for saved_pair in _hyperlink_saved_pairs()}
+            response_mapping = {}
+            for raw_key, base_entry in (mapping or {}).items():
+                if not isinstance(base_entry, dict):
+                    continue
+                entry = copy.deepcopy(base_entry)
+                saved_pair = saved_pairs_by_key.get(raw_key)
+                response_key = raw_key
+                entry['saved_id'] = None
+                entry['saved_key'] = raw_key
+                entry['saved_label'] = entry.get('html_folder') or raw_key
+                entry['cached'] = True
+                entry['remote_overlay_path'] = entry.get('remote_overlay_path') or ''
+                entry['overlay_cached'] = bool(entry.get('overlay_video'))
+                entry['has_overlay'] = bool(entry.get('overlay_video'))
+                if saved_pair is not None:
+                    response_key = str(saved_pair.id)
+                    _, _, video_dir = _hyperlink_get_user_dirs()
+                    saved_overlay_name = (saved_pair.overlay_name or os.path.basename(saved_pair.remote_overlay_path or '')).strip()
+                    saved_overlay_url = ''
+                    if saved_overlay_name:
+                        saved_overlay_path = os.path.join(video_dir, saved_overlay_name)
+                        if os.path.isfile(saved_overlay_path):
+                            saved_overlay_url = _hyperlink_rewrite_data_url('/data/video/' + saved_overlay_name.replace('\\', '/'))
+                    entry['saved_id'] = saved_pair.id
+                    entry['saved_key'] = saved_pair.pair_key
+                    entry['saved_label'] = saved_pair.label or entry.get('html_folder') or saved_pair.html_folder
+                    entry['html_folder'] = saved_pair.label or entry.get('html_folder') or saved_pair.html_folder
+                    entry['cached'] = _hyperlink_saved_pair_cached(saved_pair)
+                    entry['remote_html_path'] = saved_pair.remote_html_path
+                    entry['remote_video_path'] = saved_pair.remote_video_path
+                    entry['remote_overlay_path'] = saved_pair.remote_overlay_path or ''
+                    if saved_overlay_name:
+                        entry['overlay_video_name'] = saved_overlay_name
+                    if saved_overlay_url:
+                        entry['overlay_video'] = saved_overlay_url
+                    entry['overlay_cached'] = _hyperlink_saved_overlay_cached(saved_pair)
+                    entry['has_overlay'] = bool(entry.get('overlay_video') or saved_pair.remote_overlay_path)
+                    entry['saved_at'] = saved_pair.created_at.isoformat() if saved_pair.created_at else None
+                    entry['last_used_at'] = saved_pair.last_used_at.isoformat() if saved_pair.last_used_at else None
+                response_mapping[str(response_key)] = entry
+            mapping = response_mapping
             _hyperlink_store_mapping(cache_key, html_dir, video_dir, mapping)
             return jsonify({'success': True, 'mappings': mapping})
     except ImportError as e:
         logger.warning(f"Could not import LogViewerApp: {e}")
     
     return jsonify({'success': True, 'mappings': {}})
+
+
+@app.route('/hyperlink/api/saved-logs/<int:saved_id>', methods=['DELETE'])
+def hyperlink_delete_saved_log(saved_id: int):
+    saved_pair = _hyperlink_saved_pair_or_404(saved_id)
+    _hyperlink_remove_saved_pair_cache(saved_pair)
+    db.session.delete(saved_pair)
+    db.session.commit()
+    _HYPERLINK_MAPPING_CACHE.pop(_hyperlink_cache_user_key(), None)
+    return jsonify({'success': True})
 
 
 @app.route('/hyperlink/api/save-comment', methods=['POST'])
@@ -1055,12 +1448,17 @@ def hyperlink_cluster_status():
     sess = _hyperlink_get_live_session(user_key)
     connected = bool(sess and sess.get('ssh'))
     server = sess.get('server') if sess else None
+    net_id = (current_user.net_id or '').strip() if current_user.is_authenticated else (user_key or '')
+    credential_user = _hyperlink_credential_user(net_id)
     return jsonify({
         'connected': connected,
         'server': server,
-        'net_id': current_user.net_id if current_user.is_authenticated else (user_key or ''),
+        'net_id': net_id,
+        'has_saved_password': bool(credential_user and credential_user.has_cluster_password()),
+        'authenticated': bool(current_user.is_authenticated),
         'html_path': session.get('hyperlink_remote_html_path'),
         'video_path': session.get('hyperlink_remote_video_path'),
+        'overlay_path': session.get('hyperlink_remote_overlay_path'),
         'output_root': session.get('hyperlink_output_root') or VIEWER_CACHE_DIR,
         'vlm_enabled': _hyperlink_ai_enabled(),
     })
@@ -1090,21 +1488,33 @@ def hyperlink_cluster_connect():
     data = request.get_json() or {}
     html_path = (data.get('html_path') or '').strip()
     video_path = (data.get('video_path') or '').strip()
+    overlay_path = (data.get('overlay_path') or '').strip()
     output_path = (data.get('output_path') or '').strip()
     net_id = (data.get('net_id') or '').strip()
     password = (data.get('password') or '').strip()
+
+    current_net_id = (current_user.net_id or '').strip() if current_user.is_authenticated else ''
+    if current_net_id:
+        if net_id and net_id != current_net_id:
+            return jsonify({'success': False, 'error': 'Stream session Net ID must match the logged-in user'}), 403
+        net_id = current_net_id
+    if not net_id:
+        net_id = (session.get('hyperlink_net_id') or '').strip()
+    if not password:
+        password = _stored_cluster_password_for_current_user(net_id).strip()
 
     if not html_path or not video_path:
         return jsonify({'success': False, 'error': 'Both remote HTML and Video paths are required'}), 400
     if not net_id:
         return jsonify({'success': False, 'error': 'Net ID is required'}), 400
     if not password:
-        return jsonify({'success': False, 'error': 'Password required'}), 400
+        return jsonify({'success': False, 'error': 'Password required. Sign in through the dashboard again or enter it once for this stream session.'}), 400
 
     c1 = cluster_from_path(html_path)
     c2 = cluster_from_path(video_path)
+    c3 = cluster_from_path(overlay_path) if overlay_path else None
     cluster_name = c1 or c2
-    if not cluster_name or (c1 and c2 and c1 != c2):
+    if not cluster_name or (c1 and c2 and c1 != c2) or (c3 and c3 != cluster_name):
         return jsonify({'success': False, 'error': 'Paths must both start with /net (Krakow) or /mnt (Southfield)'}), 400
 
     host = _hyperlink_cluster_host(cluster_name)
@@ -1133,6 +1543,21 @@ def hyperlink_cluster_connect():
         # Store net_id in session for user identification
         session['hyperlink_net_id'] = net_id
         user_key = net_id
+
+        credential_user = _hyperlink_credential_user(net_id)
+        if credential_user is None and net_id:
+            credential_user = User.query.filter_by(net_id=net_id).first()
+            if credential_user is None:
+                credential_user = User(name=net_id, net_id=net_id)
+                db.session.add(credential_user)
+        if credential_user is not None:
+            try:
+                credential_user.set_password(password)
+                _persist_cluster_password(credential_user, password)
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                logger.exception('Failed to persist hyperlink cluster credentials for %s', net_id)
         
         with _HYPERLINK_SSH_LOCK:
             _hyperlink_close_session(user_key)
@@ -1148,6 +1573,10 @@ def hyperlink_cluster_connect():
         # Persist last-used values in the browser session
         session['hyperlink_remote_html_path'] = html_path
         session['hyperlink_remote_video_path'] = video_path
+        if overlay_path:
+            session['hyperlink_remote_overlay_path'] = overlay_path
+        else:
+            session.pop('hyperlink_remote_overlay_path', None)
         if output_path:
             session['hyperlink_output_root'] = _hyperlink_resolve_output_root(output_path)
 
@@ -1162,7 +1591,6 @@ def hyperlink_cluster_disconnect():
     if user_key:
         with _HYPERLINK_SSH_LOCK:
             _hyperlink_close_session(user_key)
-    session.pop('hyperlink_net_id', None)
     return jsonify({'success': True})
 
 
@@ -1177,6 +1605,38 @@ def _hyperlink_sftp_list_dir(sftp, path: str):
             'size': int(getattr(attr, 'st_size', 0) or 0),
         })
     return items
+
+
+def _hyperlink_resolve_overlay_remote_path(sftp, overlay_path: str, *, log_name: str, primary_video_name: str):
+    import stat
+
+    resolved_path = (overlay_path or '').strip()
+    if not resolved_path:
+        raise ValueError('Overlay path is required')
+
+    try:
+        attr = sftp.stat(resolved_path)
+    except Exception as exc:
+        raise ValueError(f'Overlay path not found: {resolved_path}') from exc
+
+    if not stat.S_ISDIR(attr.st_mode):
+        return resolved_path, os.path.basename(resolved_path.rstrip('/'))
+
+    find_overlay_video_name, is_supported_video_file, is_overlay_video_name = _hyperlink_overlay_tools()
+    overlay_names = []
+    for item in _hyperlink_sftp_list_dir(sftp, resolved_path):
+        name = item.get('name') or ''
+        if item.get('is_dir') or not is_supported_video_file(name) or not is_overlay_video_name(name):
+            continue
+        overlay_names.append(name)
+
+    overlay_name = find_overlay_video_name(log_name, primary_video_name, overlay_names)
+    if not overlay_name and len(overlay_names) == 1:
+        overlay_name = overlay_names[0]
+    if not overlay_name:
+        raise ValueError(f'No matching overlay video found in directory: {resolved_path}')
+
+    return f"{resolved_path.rstrip('/')}/{overlay_name}", overlay_name
 
 
 def _hyperlink_sftp_download_dir(sftp, remote_dir: str, local_dir: str) -> None:
@@ -1198,6 +1658,7 @@ def hyperlink_cluster_scan_logs():
     data = request.get_json() or {}
     html_path = (data.get('html_path') or '').strip()
     video_path = (data.get('video_path') or '').strip()
+    overlay_path = (data.get('overlay_path') or '').strip()
     output_path = (data.get('output_path') or '').strip()
 
     if not html_path or not video_path:
@@ -1207,28 +1668,51 @@ def hyperlink_cluster_scan_logs():
         session['hyperlink_output_root'] = _hyperlink_resolve_output_root(output_path)
     session['hyperlink_remote_html_path'] = html_path
     session['hyperlink_remote_video_path'] = video_path
+    if overlay_path:
+        session['hyperlink_remote_overlay_path'] = overlay_path
+    else:
+        session.pop('hyperlink_remote_overlay_path', None)
 
     user_key = _hyperlink_get_user_key()
     sess = _hyperlink_get_live_session(user_key)
     sftp = sess.get('sftp') if sess else None
 
     if sftp is None:
+        cluster_name = cluster_from_path(html_path) or cluster_from_path(video_path)
+        sess = _hyperlink_restore_session(user_key, cluster_name=cluster_name)
+        sftp = sess.get('sftp') if sess else None
+
+    if sftp is None:
         return jsonify({'success': False, 'error': 'Not connected'}), 400
 
     try:
+        find_overlay_video_name, is_supported_video_file, is_overlay_video_name = _hyperlink_overlay_tools()
         html_items = _hyperlink_sftp_list_dir(sftp, html_path)
         video_items = _hyperlink_sftp_list_dir(sftp, video_path)
+        overlay_items = _hyperlink_sftp_list_dir(sftp, overlay_path) if overlay_path else []
 
         html_folders = {item['name']: item for item in html_items if item.get('is_dir')}
         video_files = {}
         for item in video_items:
-            if item.get('is_dir'):
+            name = item.get('name') or ''
+            if item.get('is_dir') or not is_supported_video_file(name) or is_overlay_video_name(name):
                 continue
-            key = _hyperlink_key_from_name(item.get('name'))
+            key = _hyperlink_key_from_name(name)
             if key:
-                video_files[key] = item.get('name')
+                video_files[key] = name
+
+        overlay_names = []
+        for item in overlay_items:
+            name = item.get('name') or ''
+            if item.get('is_dir') or not is_supported_video_file(name) or not is_overlay_video_name(name):
+                continue
+            overlay_names.append(name)
 
         output_root, html_dir, video_dir = _hyperlink_get_user_dirs()
+        saved_pairs = {
+            (item.remote_html_path, item.remote_video_path): item
+            for item in _hyperlink_saved_pairs()
+        }
         logs = {}
         for folder_name in html_folders:
             key = _hyperlink_key_from_name(folder_name)
@@ -1237,16 +1721,39 @@ def hyperlink_cluster_scan_logs():
             if key not in video_files:
                 continue
 
+            remote_html_path = f"{html_path.rstrip('/')}/{folder_name}"
+            remote_video_path = f"{video_path.rstrip('/')}/{video_files[key]}"
+            saved_pair = saved_pairs.get((remote_html_path, remote_video_path))
+            saved_overlay_name = ''
+            saved_overlay_path = ''
+            if saved_pair is not None:
+                saved_overlay_name = (saved_pair.overlay_name or os.path.basename(saved_pair.remote_overlay_path or '')).strip()
+                saved_overlay_path = (saved_pair.remote_overlay_path or '').strip()
+
+            overlay_name = find_overlay_video_name(folder_name, video_files[key], overlay_names)
+            remote_overlay_path = f"{overlay_path.rstrip('/')}/{overlay_name}" if overlay_path and overlay_name else ''
+            if not overlay_name and saved_overlay_name:
+                overlay_name = saved_overlay_name
+            if not remote_overlay_path and saved_overlay_path:
+                remote_overlay_path = saved_overlay_path
+
             cached_html = os.path.join(html_dir, folder_name)
             cached_video = os.path.join(video_dir, video_files[key])
             is_cached = os.path.isdir(cached_html) and os.path.isfile(cached_video)
+            overlay_cached = bool(overlay_name) and os.path.isfile(os.path.join(video_dir, overlay_name))
 
             logs[key] = {
                 'name': folder_name,
-                'html_path': f"{html_path.rstrip('/')}/{folder_name}",
-                'video_path': f"{video_path.rstrip('/')}/{video_files[key]}",
+                'html_path': remote_html_path,
+                'video_path': remote_video_path,
                 'video_name': video_files[key],
+                'overlay_path': remote_overlay_path,
+                'overlay_name': overlay_name,
+                'overlay_cached': overlay_cached,
+                'has_overlay': bool(overlay_name or remote_overlay_path),
                 'cached': is_cached,
+                'saved': saved_pair is not None,
+                'saved_id': saved_pair.id if saved_pair is not None else None,
                 'output_root': output_root,
             }
 
@@ -1261,6 +1768,7 @@ def hyperlink_cluster_download_log():
     key = (data.get('key') or '').strip()
     html_path = (data.get('html_path') or '').strip()
     video_path = (data.get('video_path') or '').strip()
+    overlay_path = (data.get('overlay_path') or '').strip()
     output_path = (data.get('output_path') or '').strip()
 
     if not key or not html_path or not video_path:
@@ -1272,6 +1780,11 @@ def hyperlink_cluster_download_log():
     user_key = _hyperlink_get_user_key()
     sess = _hyperlink_get_live_session(user_key)
     sftp = sess.get('sftp') if sess else None
+
+    if sftp is None:
+        cluster_name = cluster_from_path(html_path) or cluster_from_path(video_path)
+        sess = _hyperlink_restore_session(user_key, cluster_name=cluster_name)
+        sftp = sess.get('sftp') if sess else None
 
     if sftp is None:
         return jsonify({'success': False, 'error': 'Not connected'}), 400
@@ -1288,14 +1801,93 @@ def hyperlink_cluster_download_log():
 
         _hyperlink_sftp_download_dir(sftp, html_path, local_html_folder)
         sftp.get(video_path, local_video_file)
+        overlay_name = os.path.basename(overlay_path) if overlay_path else ''
+        if overlay_path:
+            local_overlay_file = os.path.join(video_dir, overlay_name)
+            os.makedirs(os.path.dirname(local_overlay_file), exist_ok=True)
+            sftp.get(overlay_path, local_overlay_file)
 
         _HYPERLINK_PROGRESS[user_key] = {'active': False, 'phase': 'complete', 'message': 'Done'}
+        saved_pair = _hyperlink_upsert_saved_pair(
+            key=key,
+            html_path=html_path,
+            video_path=video_path,
+            overlay_path=overlay_path,
+            output_root=output_root,
+        )
         _HYPERLINK_MAPPING_CACHE.pop(_hyperlink_cache_user_key(), None)
 
-        return jsonify({'success': True, 'message': 'Downloaded', 'key': key, 'output_root': output_root})
+        return jsonify({
+            'success': True,
+            'message': 'Added to stream',
+            'key': str(saved_pair.id),
+            'saved_id': saved_pair.id,
+            'overlay_name': overlay_name,
+            'overlay_path': overlay_path,
+            'output_root': output_root,
+        })
     except Exception as e:
         if user_key:
             _HYPERLINK_PROGRESS[user_key] = {'active': False, 'phase': 'error', 'message': str(e)}
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/hyperlink/api/saved-logs/<int:saved_id>/overlay', methods=['POST'])
+def hyperlink_attach_saved_overlay(saved_id: int):
+    saved_pair = _hyperlink_saved_pair_or_404(saved_id)
+    data = request.get_json() or {}
+    overlay_path = (data.get('overlay_path') or '').strip()
+    if not overlay_path:
+        return jsonify({'success': False, 'error': 'Overlay path is required'}), 400
+
+    cluster_name = cluster_from_path(saved_pair.remote_html_path) or cluster_from_path(saved_pair.remote_video_path)
+    overlay_cluster = cluster_from_path(overlay_path)
+    if overlay_cluster and cluster_name and overlay_cluster != cluster_name:
+        return jsonify({'success': False, 'error': 'Overlay path must be on the same cluster as the saved log'}), 400
+    cluster_name = cluster_name or overlay_cluster
+    if not cluster_name:
+        return jsonify({'success': False, 'error': 'Could not determine which cluster to use for this overlay'}), 400
+
+    user_key = _hyperlink_get_user_key()
+    sess = _hyperlink_get_live_session(user_key)
+    sftp = sess.get('sftp') if sess and sess.get('server') == cluster_name else None
+
+    if sftp is None:
+        sess = _hyperlink_restore_session(user_key, cluster_name=cluster_name)
+        sftp = sess.get('sftp') if sess else None
+
+    if sftp is None:
+        return jsonify({'success': False, 'error': 'Not connected'}), 400
+
+    try:
+        _, _, video_dir = _hyperlink_get_user_dirs()
+        log_name = saved_pair.html_folder or os.path.basename((saved_pair.remote_html_path or '').rstrip('/'))
+        primary_video_name = saved_pair.video_name or os.path.basename(saved_pair.remote_video_path or '')
+        overlay_path, overlay_name = _hyperlink_resolve_overlay_remote_path(
+            sftp,
+            overlay_path,
+            log_name=log_name,
+            primary_video_name=primary_video_name,
+        )
+        local_overlay_file = os.path.join(video_dir, overlay_name)
+        os.makedirs(os.path.dirname(local_overlay_file), exist_ok=True)
+        sftp.get(overlay_path, local_overlay_file)
+
+        saved_pair.overlay_name = overlay_name
+        saved_pair.remote_overlay_path = overlay_path
+        saved_pair.last_used_at = datetime.utcnow()
+        db.session.add(saved_pair)
+        db.session.commit()
+        _HYPERLINK_MAPPING_CACHE.pop(_hyperlink_cache_user_key(), None)
+
+        return jsonify({
+            'success': True,
+            'saved_id': saved_pair.id,
+            'overlay_name': overlay_name,
+            'overlay_path': overlay_path,
+        })
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -1405,15 +1997,220 @@ def get_cluster_info():
     return jsonify(cluster_info)
 
 
-def get_user_tool_jobs(tool_name: str, limit: int = 20):
-    """Get recent jobs for a specific tool"""
-    jobs = JobHistory.query.filter_by(
-        user_id=current_user.id,
-        tool_name=tool_name
-    ).order_by(JobHistory.created_at.desc()).limit(limit).all()
+def get_user_tool_jobs(tool_name: str, limit: int = 20, include_all: bool = False):
+    """Get recent jobs for a specific tool."""
+    query = JobHistory.query.filter_by(tool_name=tool_name)
+    if not include_all:
+        query = query.filter_by(user_id=current_user.id)
+    jobs = query.order_by(JobHistory.created_at.desc()).limit(limit).all()
     for job in jobs:
         _sync_runtime_job(job)
     return jobs
+
+
+def _job_owner(job: JobHistory) -> str:
+    if getattr(job, 'user', None) is not None and job.user is not None:
+        return job.user.net_id
+    parameters = job.parameters if isinstance(job.parameters, dict) else {}
+    return str(parameters.get('requested_by') or parameters.get('owner_net_id') or 'unknown')
+
+
+def _can_manage_job(job: JobHistory) -> bool:
+    return bool(job.user_id == current_user.id or getattr(current_user, 'role', 'user') == 'admin')
+
+
+def _get_viewable_job(job_id: int) -> JobHistory:
+    return JobHistory.query.get_or_404(job_id)
+
+
+def _get_manageable_job(job_id: int) -> JobHistory:
+    job = _get_viewable_job(job_id)
+    if not _can_manage_job(job):
+        abort(403)
+    return job
+
+
+def _build_runtime_submit_payload(tool_key: str, mode: str, paths: dict, resources: dict) -> dict:
+    user_password = _stored_cluster_password_for_current_user(current_user.net_id) if _cluster_auth_enabled() else ''
+    return {
+        'tool_key': tool_key,
+        'variant': tool_key,
+        'mode': mode,
+        'paths': paths,
+        'resources': resources,
+        'session_id': session.get('_id', ''),
+        'user': current_user.net_id,
+        'user_password': user_password,
+    }
+
+
+def _build_runtime_kpi_submission(form_source) -> dict:
+    primary_target = (form_source.get('execution_target') or 'udp_kpi').strip()
+    if primary_target not in {'can_kpi', 'udp_kpi'}:
+        primary_target = 'udp_kpi'
+
+    interactive_plot_mode = (form_source.get('interactive_plot_mode') or 'disabled').strip().lower()
+    if interactive_plot_mode not in {'disabled', 'enabled', 'only'}:
+        interactive_plot_mode = 'disabled'
+    interactive_plot_enabled = interactive_plot_mode == 'enabled'
+    interactive_plot_only = interactive_plot_mode == 'only'
+    execution_target = 'interactive_plot' if interactive_plot_only else primary_target
+
+    input_mode = (form_source.get('input_mode') or 'json').strip().lower()
+    resource_target = 'interactive_plot' if interactive_plot_mode != 'disabled' else execution_target
+    default_resources = _default_runtime_resources(resource_target)
+    requested_scheduler = (form_source.get('scheduler') or default_resources.get('scheduler') or 'slurm').strip().lower()
+    if requested_scheduler not in {'slurm', 'local'}:
+        requested_scheduler = 'slurm'
+    if requested_scheduler == 'local' and not _allow_local_kpi_scheduler():
+        raise ValueError('Local KPI execution is disabled on the login node. Use Slurm or the HPCC bundle launchers.')
+
+    resources = {
+        'scheduler': requested_scheduler,
+        'memory': (form_source.get('memory') or default_resources.get('memory', '32G')).strip(),
+        'cpus': int(form_source.get('cpus') or default_resources.get('cpus', 8)),
+        'time_limit': (form_source.get('time_limit') or default_resources.get('time_limit', '02:00:00')).strip(),
+        'partition': (form_source.get('partition') or default_resources.get('partition', 'plcyf-com')).strip(),
+        'account': (form_source.get('account') or default_resources.get('account', app.config.get('SLURM_ACCOUNT', 'RNA-SDV-SRR7'))).strip(),
+        'qos': (form_source.get('qos') or default_resources.get('qos', app.config.get('SLURM_QOS', ''))).strip(),
+        'nodes': int(form_source.get('nodes') or default_resources.get('nodes', 1)),
+        'ntasks': int(form_source.get('ntasks') or default_resources.get('ntasks', 1)),
+        'immediate': str(form_source.get('immediate') or default_resources.get('immediate', '')).strip(),
+    }
+    if resources['scheduler'] != 'slurm':
+        resources['immediate'] = ''
+
+    output_dir = (form_source.get('output_dir') or '').strip()
+    paths = {
+        'input_mode': input_mode,
+        'output_dir': output_dir,
+        'interactive_plot_mode': interactive_plot_mode,
+        'interactive_source_target': primary_target,
+    }
+    config_xml = (form_source.get('config_xml') or '').strip()
+    json_path = (form_source.get('kpi_json') or '').strip()
+    input_hdf = (form_source.get('input_hdf') or '').strip()
+    output_hdf = (form_source.get('output_hdf') or '').strip()
+
+    if input_mode == 'json' and not json_path:
+        raise ValueError('JSON path is required for the selected KPI submission mode.')
+    if input_mode == 'hdf' and (not input_hdf or not output_hdf):
+        raise ValueError('Input and output HDF paths are required for HDF mode.')
+
+    paths.update(
+        {
+            'config_xml': config_xml,
+            'json_path': json_path,
+            'input_hdf': input_hdf,
+            'output_hdf': output_hdf,
+        }
+    )
+    optional_config = (form_source.get('optional_config') or '').strip()
+    if optional_config:
+        paths['optional_config'] = optional_config
+
+    if interactive_plot_only:
+        execution_label = 'Interactive Plot only'
+    elif interactive_plot_enabled and primary_target == 'can_kpi':
+        execution_label = 'CAN KPI + Interactive Plot'
+    elif interactive_plot_enabled:
+        execution_label = 'UDP KPI + Interactive Plot'
+    elif primary_target == 'can_kpi':
+        execution_label = 'CAN KPI'
+    else:
+        execution_label = 'UDP KPI'
+
+    primary_input = json_path or input_hdf
+    return {
+        'execution_target': execution_target,
+        'input_mode': input_mode,
+        'paths': paths,
+        'resources': resources,
+        'primary_input': primary_input,
+        'execution_label': execution_label,
+        'primary_target': primary_target,
+        'interactive_plot_mode': interactive_plot_mode,
+    }
+
+
+def _find_user_runtime_history(runtime_job_id: int) -> Optional[JobHistory]:
+    candidates = JobHistory.query.filter_by(user_id=current_user.id).order_by(JobHistory.id.desc()).limit(200).all()
+    for candidate in candidates:
+        parameters = candidate.parameters if isinstance(candidate.parameters, dict) else {}
+        if int(parameters.get('runtime_job_id') or 0) == runtime_job_id:
+            _sync_runtime_job(candidate)
+            return candidate
+    return None
+
+
+def _create_reused_history_job(runtime_job: dict, submission: dict) -> JobHistory:
+    runtime_job_id = int(runtime_job['id'])
+    existing = _find_user_runtime_history(runtime_job_id)
+    if existing is not None:
+        return existing
+
+    request_payload = runtime_job.get('request') if isinstance(runtime_job.get('request'), dict) else {}
+    runtime_console = request_payload.get('_console') if isinstance(request_payload.get('_console'), dict) else {}
+    mirror_log_path = str(runtime_job.get('mirror_log_path') or runtime_job.get('log_path') or '').strip()
+    if runtime_job.get('mirror_log_path'):
+        runtime_console.setdefault('mirror_log_path', runtime_job['mirror_log_path'])
+    if runtime_job.get('log_path'):
+        runtime_console.setdefault('source_log_path', runtime_job['log_path'])
+
+    parameters = {
+        'runtime_job_id': runtime_job_id,
+        'execution_target': submission['execution_target'],
+        'execution_label': submission['execution_label'],
+        'mode': submission['input_mode'],
+        'paths': submission['paths'],
+        'resources': submission['resources'],
+        'runtime_console': runtime_console,
+        'runtime_status_detail': runtime_job.get('status_detail', ''),
+        'requested_by': runtime_job.get('requested_by') or 'unknown',
+        'request_fingerprint': runtime_job.get('request_fingerprint') or '',
+        'execution_path': runtime_job.get('execution_path') or '',
+        'tool_version': runtime_job.get('tool_version') or '',
+        'db_version': runtime_job.get('db_version') or '',
+        'mirror_log_path': mirror_log_path,
+        'runtime_artifacts': runtime_job.get('artifacts', []),
+        'shared_result': True,
+        'reused_from_runtime_job_id': runtime_job_id,
+    }
+
+    job = JobHistory(
+        user_id=current_user.id,
+        tool_name='kpi',
+        input_path=submission['primary_input'],
+        input_filename=extract_hdf_filename(submission['primary_input']),
+        output_path=runtime_job.get('output_path', ''),
+        output_log_path=mirror_log_path,
+        status=runtime_job.get('status', 'COMPLETED'),
+        error_message=runtime_job.get('error_message') or None,
+        parameters=parameters,
+        started_at=_parse_runtime_datetime(runtime_job.get('started_at') or ''),
+        completed_at=_parse_runtime_datetime(runtime_job.get('completed_at') or ''),
+    )
+    db.session.add(job)
+    db.session.commit()
+    return job
+
+
+def _serialize_runtime_match(runtime_job: dict, execution_label: str) -> dict:
+    artifacts = runtime_job.get('artifacts') if isinstance(runtime_job.get('artifacts'), list) else []
+    artifact_paths = [artifact.get('artifact_path', '') for artifact in artifacts if artifact.get('exists')]
+    return {
+        'runtime_job_id': runtime_job.get('id'),
+        'status': runtime_job.get('status', ''),
+        'requested_by': runtime_job.get('requested_by', 'unknown'),
+        'execution_label': execution_label,
+        'output_path': runtime_job.get('output_path', ''),
+        'log_path': runtime_job.get('mirror_log_path') or runtime_job.get('log_path') or '',
+        'execution_path': runtime_job.get('execution_path', ''),
+        'tool_version': runtime_job.get('tool_version', ''),
+        'db_version': runtime_job.get('db_version', ''),
+        'artifact_count': len(artifact_paths),
+        'artifact_paths': artifact_paths[:5],
+    }
 
 
 def _default_runtime_resources(tool_key: str) -> dict:
@@ -1445,7 +2242,14 @@ def _resolve_job_log_path(job: JobHistory, runtime_job=None):
     if runtime_console:
         console.update(runtime_console)
 
-    log_path = (console.get('log_path') or job.output_log_path or '').strip()
+    mirror_log_path = (console.get('mirror_log_path') or (runtime_job or {}).get('mirror_log_path') or '').strip()
+    source_log_path = (console.get('log_path') or (runtime_job or {}).get('log_path') or job.output_log_path or '').strip()
+    if mirror_log_path:
+        console['mirror_log_path'] = mirror_log_path
+    if source_log_path:
+        console['source_log_path'] = source_log_path
+
+    log_path = mirror_log_path or source_log_path
     if not log_path and job.output_path:
         log_path = os.path.join(job.output_path, f'local_{job.tool_name}_{job.id}.log')
     if not log_path and job.slurm_job_id:
@@ -1479,13 +2283,24 @@ def _sync_runtime_job(job: JobHistory):
         return None
 
     runtime_console = _runtime_console_from_runtime_job(runtime_job)
+    if runtime_job.get('mirror_log_path'):
+        runtime_console.setdefault('mirror_log_path', runtime_job['mirror_log_path'])
+    if runtime_job.get('log_path'):
+        runtime_console.setdefault('source_log_path', runtime_job['log_path'])
     job.status = runtime_job.get('status', job.status)
-    job.output_log_path = runtime_console.get('log_path') or runtime_job.get('log_path') or job.output_log_path
+    job.output_log_path = runtime_job.get('mirror_log_path') or runtime_console.get('mirror_log_path') or runtime_console.get('log_path') or runtime_job.get('log_path') or job.output_log_path
     job.output_path = runtime_job.get('output_path') or job.output_path
     job.error_message = runtime_job.get('error_message') or job.error_message
     if runtime_console or runtime_job.get('status_detail'):
         parameters = dict(job.parameters or {})
         parameters['runtime_console'] = runtime_console
+        parameters['requested_by'] = runtime_job.get('requested_by') or parameters.get('requested_by') or _job_owner(job)
+        parameters['request_fingerprint'] = runtime_job.get('request_fingerprint') or parameters.get('request_fingerprint', '')
+        parameters['execution_path'] = runtime_job.get('execution_path') or parameters.get('execution_path', '')
+        parameters['tool_version'] = runtime_job.get('tool_version') or parameters.get('tool_version', '')
+        parameters['db_version'] = runtime_job.get('db_version') or parameters.get('db_version', '')
+        parameters['mirror_log_path'] = runtime_job.get('mirror_log_path') or parameters.get('mirror_log_path', '')
+        parameters['runtime_artifacts'] = runtime_job.get('artifacts') or parameters.get('runtime_artifacts', [])
         if runtime_job.get('status_detail'):
             parameters['runtime_status_detail'] = runtime_job['status_detail']
         else:
@@ -1576,17 +2391,19 @@ def _coerce_runtime_resources(resources: dict, fallback_tool_key: str) -> dict:
 
 
 def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, job_tool_name: str, input_path: str, execution_label: str = ''):
-    payload = {
-        'tool_key': tool_key,
-        'variant': tool_key,
-        'mode': mode,
-        'paths': paths,
-        'resources': resources,
-        'session_id': session.get('_id', ''),
-        'user': current_user.net_id,
-    }
+    payload = _build_runtime_submit_payload(tool_key, mode, paths, resources)
     result = broker_client.submit_job(payload)
     resolved_execution_label = execution_label or tool_key
+    runtime_job = None
+    try:
+        runtime_job = broker_client.get_status(int(result['job_id'])).get('job')
+    except Exception:
+        runtime_job = runtime_store.get_job(int(result['job_id']))
+    runtime_console = dict(result.get('console', {}))
+    if isinstance(runtime_job, dict) and runtime_job.get('mirror_log_path'):
+        runtime_console.setdefault('mirror_log_path', runtime_job['mirror_log_path'])
+    if isinstance(runtime_job, dict) and runtime_job.get('log_path'):
+        runtime_console.setdefault('source_log_path', runtime_job['log_path'])
 
     job = JobHistory(
         user_id=current_user.id,
@@ -1594,7 +2411,7 @@ def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, j
         input_path=input_path,
         input_filename=extract_hdf_filename(input_path),
         output_path=result.get('output_path', ''),
-        output_log_path=result.get('log_path', ''),
+        output_log_path=(runtime_job or {}).get('mirror_log_path') or result.get('log_path', ''),
         parameters={
             'runtime_job_id': result['job_id'],
             'execution_target': tool_key,
@@ -1602,7 +2419,14 @@ def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, j
             'mode': mode,
             'paths': paths,
             'resources': resources,
-            'runtime_console': result.get('console', {}),
+            'runtime_console': runtime_console,
+            'requested_by': (runtime_job or {}).get('requested_by', current_user.net_id),
+            'request_fingerprint': (runtime_job or {}).get('request_fingerprint', ''),
+            'execution_path': (runtime_job or {}).get('execution_path', ''),
+            'tool_version': (runtime_job or {}).get('tool_version', ''),
+            'db_version': (runtime_job or {}).get('db_version', ''),
+            'runtime_artifacts': (runtime_job or {}).get('artifacts', []),
+            'runtime_status_detail': result.get('status_detail', ''),
         },
         status='QUEUED',
     )
@@ -1621,6 +2445,8 @@ def _submit_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, 
         input_path,
         execution_label,
     )
+    if result.get('status_detail'):
+        flash(result['status_detail'], 'warning')
     flash(f'{resolved_execution_label} request queued through HPCC broker. Runtime job: {result["job_id"]}', 'success')
     return redirect(url_for('dashboard'))
 
@@ -1728,86 +2554,87 @@ def _rerun_history_job(job: JobHistory):
 
 
 def submit_runtime_kpi_job():
-    primary_target = (request.form.get('execution_target') or 'udp_kpi').strip()
-    if primary_target not in {'can_kpi', 'udp_kpi'}:
-        primary_target = 'udp_kpi'
-    interactive_plot_mode = (request.form.get('interactive_plot_mode') or 'disabled').strip().lower()
-    if interactive_plot_mode not in {'disabled', 'enabled', 'only'}:
-        interactive_plot_mode = 'disabled'
-    interactive_plot_enabled = interactive_plot_mode == 'enabled'
-    interactive_plot_only = interactive_plot_mode == 'only'
-    execution_target = 'interactive_plot' if interactive_plot_only else primary_target
-    input_mode = (request.form.get('input_mode') or 'json').strip().lower()
-    resource_target = 'interactive_plot' if interactive_plot_mode != 'disabled' else execution_target
-    default_resources = _default_runtime_resources(resource_target)
-    requested_scheduler = (request.form.get('scheduler') or default_resources.get('scheduler') or 'slurm').strip().lower()
-    if requested_scheduler not in {'slurm', 'local'}:
-        requested_scheduler = 'slurm'
-    if requested_scheduler == 'local' and not _allow_local_kpi_scheduler():
-        flash('Local KPI execution is disabled on the login node. Use Slurm or the direct tmux launchers from the HPCC bundle.', 'error')
-        return redirect(request.referrer or url_for('tool_kpi'))
-    resources = {
-        'scheduler': requested_scheduler,
-        'memory': (request.form.get('memory') or default_resources.get('memory', '32G')).strip(),
-        'cpus': int(request.form.get('cpus') or default_resources.get('cpus', 8)),
-        'time_limit': (request.form.get('time_limit') or default_resources.get('time_limit', '02:00:00')).strip(),
-        'partition': (request.form.get('partition') or default_resources.get('partition', 'plcyf-com')).strip(),
-        'account': (request.form.get('account') or default_resources.get('account', app.config.get('SLURM_ACCOUNT', 'RNA-SDV-SRR7'))).strip(),
-        'qos': (request.form.get('qos') or default_resources.get('qos', app.config.get('SLURM_QOS', ''))).strip(),
-        'nodes': int(request.form.get('nodes') or default_resources.get('nodes', 1)),
-        'ntasks': int(request.form.get('ntasks') or default_resources.get('ntasks', 1)),
-        'immediate': str(request.form.get('immediate') or default_resources.get('immediate', '')).strip(),
-    }
-    if resources['scheduler'] != 'slurm':
-        resources['immediate'] = ''
-    output_dir = (request.form.get('output_dir') or '').strip()
-    paths = {
-        'input_mode': input_mode,
-        'output_dir': output_dir,
-        'interactive_plot_mode': interactive_plot_mode,
-        'interactive_source_target': primary_target,
-    }
-    config_xml = (request.form.get('config_xml') or '').strip()
-    json_path = (request.form.get('kpi_json') or '').strip()
-    input_hdf = (request.form.get('input_hdf') or '').strip()
-    output_hdf = (request.form.get('output_hdf') or '').strip()
-
-    if input_mode == 'json' and not json_path:
-        flash('JSON path is required for the selected KPI submission mode.', 'error')
-        return redirect(request.referrer or url_for('tool_kpi'))
-    if input_mode == 'hdf' and (not input_hdf or not output_hdf):
-        flash('Input and output HDF paths are required for HDF mode.', 'error')
+    try:
+        submission = _build_runtime_kpi_submission(request.form)
+    except ValueError as exc:
+        flash(str(exc), 'error')
         return redirect(request.referrer or url_for('tool_kpi'))
 
-    paths.update({
-        'config_xml': config_xml,
-        'json_path': json_path,
-        'input_hdf': input_hdf,
-        'output_hdf': output_hdf,
-    })
-    primary_input = json_path or input_hdf
-
-    optional_config = (request.form.get('optional_config') or '').strip()
-    if optional_config:
-        paths['optional_config'] = optional_config
-
-    if interactive_plot_only:
-        execution_label = 'Interactive Plot only'
-    elif interactive_plot_enabled and primary_target == 'can_kpi':
-        execution_label = 'CAN KPI + Interactive Plot'
-    elif interactive_plot_enabled:
-        execution_label = 'UDP KPI + Interactive Plot'
-    elif primary_target == 'can_kpi':
-        execution_label = 'CAN KPI'
-    else:
-        execution_label = 'UDP KPI'
+    reuse_decision = (request.form.get('reuse_decision') or '').strip().lower()
+    submit_payload = _build_runtime_submit_payload(
+        submission['execution_target'],
+        submission['input_mode'],
+        submission['paths'],
+        submission['resources'],
+    )
+    if reuse_decision != 'rerun':
+        existing_runtime_job = runtime_store.find_reusable_job(
+            submission['execution_target'],
+            submission['input_mode'],
+            submit_payload,
+        )
+        if existing_runtime_job is not None:
+            shared_job = _create_reused_history_job(existing_runtime_job, submission)
+            flash(
+                f"Existing {submission['execution_label']} result from {existing_runtime_job.get('requested_by', 'unknown')} is already available. Opening the stored runtime console instead of starting a duplicate run.",
+                'info',
+            )
+            return redirect(url_for('view_job_log', job_id=shared_job.id))
 
     try:
-        return _submit_runtime_job(execution_target, input_mode, paths, resources, 'kpi', primary_input, execution_label)
+        return _submit_runtime_job(
+            submission['execution_target'],
+            submission['input_mode'],
+            submission['paths'],
+            submission['resources'],
+            'kpi',
+            submission['primary_input'],
+            submission['execution_label'],
+        )
     except Exception as exc:
         logger.exception('Failed to submit runtime KPI job')
         flash(f'HPCC broker submission failed: {exc}', 'error')
         return redirect(request.referrer or url_for('tool_kpi'))
+
+
+@app.route('/api/runtime/kpi/reuse-check', methods=['POST'])
+@login_required
+def api_runtime_kpi_reuse_check():
+    payload = request.get_json(silent=True) or {}
+    try:
+        submission = _build_runtime_kpi_submission(payload)
+    except ValueError as exc:
+        return jsonify({'success': False, 'error': str(exc)}), 400
+    except Exception as exc:
+        logger.warning('reuse-check build submission failed: %s', exc)
+        return jsonify({'success': False, 'error': str(exc)}), 400
+
+    try:
+        existing_runtime_job = runtime_store.find_reusable_job(
+            submission['execution_target'],
+            submission['input_mode'],
+            _build_runtime_submit_payload(
+                submission['execution_target'],
+                submission['input_mode'],
+                submission['paths'],
+                submission['resources'],
+            ),
+        )
+    except Exception as exc:
+        logger.warning('reuse-check store query failed: %s', exc)
+        # Safe fallback: treat as no duplicate so submission can proceed
+        existing_runtime_job = None
+
+    if existing_runtime_job is None:
+        return jsonify({'success': True, 'duplicate': False})
+
+    return jsonify(
+        {
+            'success': True,
+            'duplicate': True,
+            'existing': _serialize_runtime_match(existing_runtime_job, submission['execution_label']),
+        }
+    )
 
 
 def _container_path_to_host_path(container_path: str) -> str:
@@ -2427,6 +3254,13 @@ def chat_api():
             session_id=session_id,
             user_id=current_user.id
         ).first()
+        if chat_session is None:
+            chat_session = ChatSession(
+                user_id=current_user.id,
+                session_id=session_id
+            )
+            db.session.add(chat_session)
+            db.session.commit()
     else:
         chat_session = ChatSession(
             user_id=current_user.id,
@@ -2481,10 +3315,7 @@ def chat_api():
 @login_required
 def get_job_status(job_id):
     """Get status of a specific job"""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
     
     runtime_job = _sync_runtime_job(job)
 
@@ -2499,17 +3330,16 @@ def get_job_status(job_id):
                 job.completed_at = datetime.utcnow()
             db.session.commit()
     
-    return jsonify(job.to_dict())
+    payload = job.to_dict()
+    payload['requested_by'] = _job_owner(job)
+    return jsonify(payload)
 
 
 @app.route('/api/job/<int:job_id>/cancel', methods=['POST'])
 @login_required
 def cancel_job(job_id):
     """Cancel a running job"""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_manageable_job(job_id)
     
     runtime_job_id = ((job.parameters or {}).get('runtime_job_id') if job.parameters else None)
     if runtime_job_id and job.status in ACTIVE_RUNTIME_STATUSES:
@@ -2537,10 +3367,7 @@ def cancel_job(job_id):
 @login_required
 def get_job_progress(job_id):
     """Get progress information for a running job"""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
     _sync_runtime_job(job)
     
     # Default progress response
@@ -2603,10 +3430,7 @@ def get_job_progress(job_id):
 @app.route('/api/job/<int:job_id>/rerun', methods=['POST'])
 @login_required
 def rerun_job(job_id):
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
 
     try:
         rerun_result = _rerun_history_job(job)
@@ -2627,10 +3451,7 @@ def rerun_job(job_id):
 @app.route('/api/job/<int:job_id>/console-tail')
 @login_required
 def get_job_console_tail(job_id):
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
 
     runtime_job = _sync_runtime_job(job)
     log_path, console = _resolve_job_log_path(job, runtime_job)
@@ -2643,10 +3464,11 @@ def get_job_console_tail(job_id):
         'offset': offset,
         'next_offset': offset,
         'log_exists': bool(log_path and os.path.exists(log_path)),
-        'supports_input': bool(console.get('supports_input')) and job.status in ACTIVE_RUNTIME_STATUSES,
+        'supports_input': bool(console.get('supports_input')) and job.status in ACTIVE_RUNTIME_STATUSES and _can_manage_job(job),
         'pane_names': console.get('pane_names') if isinstance(console.get('pane_names'), list) else ['main'],
         'tmux_session_name': console.get('tmux_session_name', ''),
         'console_name': console.get('display_name', 'Runtime console'),
+        'requested_by': _job_owner(job),
         'display_log_path': host_path_filter(log_path) if log_path else '',
     }
     if not payload['log_exists']:
@@ -2671,10 +3493,7 @@ def get_job_console_tail(job_id):
 @app.route('/api/job/<int:job_id>/console-input', methods=['POST'])
 @login_required
 def send_job_console_input(job_id):
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_manageable_job(job_id)
 
     runtime_job = _sync_runtime_job(job)
     _, console = _resolve_job_log_path(job, runtime_job)
@@ -2713,10 +3532,7 @@ def send_job_console_input(job_id):
 @login_required
 def view_job_output(job_id):
     """View output files for a completed job"""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
     
     if not job.output_path:
         flash('No output path available for this job', 'error')
@@ -2757,10 +3573,7 @@ def view_job_output(job_id):
 @login_required
 def view_job_log(job_id):
     """View the tail of a job's log file (local or Slurm)."""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
 
     runtime_job = _sync_runtime_job(job)
     log_path, console = _resolve_job_log_path(job, runtime_job)
@@ -2773,6 +3586,7 @@ def view_job_log(job_id):
     initial_offset = os.path.getsize(log_path) if log_exists else 0
 
     display_log_path = host_path_filter(log_path) if log_path else ''
+    display_source_log_path = host_path_filter(console.get('source_log_path')) if console.get('source_log_path') else ''
     tail_cmd = f"tail -f {display_log_path}" if display_log_path else ''
     tmux_cmd = ''
     if console.get('tmux_session_name'):
@@ -2783,6 +3597,7 @@ def view_job_log(job_id):
         job=job,
         log_path=log_path,
         display_log_path=display_log_path,
+        display_source_log_path=display_source_log_path,
         log_exists=log_exists,
         tail_cmd=tail_cmd,
         tmux_cmd=tmux_cmd,
@@ -2790,6 +3605,10 @@ def view_job_log(job_id):
         n_lines=n_lines,
         initial_offset=initial_offset,
         console=console,
+        runtime_job=runtime_job,
+        job_owner=_job_owner(job),
+        can_send_input=_can_manage_job(job),
+        job_artifacts=(runtime_job or {}).get('artifacts') or ((job.parameters or {}).get('runtime_artifacts') if isinstance(job.parameters, dict) else []) or [],
     )
 
 
@@ -2797,10 +3616,7 @@ def view_job_log(job_id):
 @login_required  
 def serve_job_file(job_id, rel_path):
     """Serve a file from job output directory"""
-    job = JobHistory.query.filter_by(
-        id=job_id,
-        user_id=current_user.id
-    ).first_or_404()
+    job = _get_viewable_job(job_id)
     
     if not job.output_path:
         return "No output path", 404
@@ -2985,13 +3801,16 @@ def job_history():
     page = request.args.get('page', 1, type=int)
     tool_filter = request.args.get('tool', '')
     status_filter = request.args.get('status', '')
+    owner_filter = (request.args.get('owner') or '').strip()
     
-    query = JobHistory.query.filter_by(user_id=current_user.id)
+    query = JobHistory.query
     
     if tool_filter:
         query = query.filter_by(tool_name=tool_filter)
     if status_filter:
         query = query.filter_by(status=status_filter)
+    if owner_filter:
+        query = query.join(User).filter(User.net_id.ilike(f'%{owner_filter}%'))
     
     jobs = query.order_by(JobHistory.created_at.desc())\
         .paginate(page=page, per_page=20)
@@ -3001,7 +3820,8 @@ def job_history():
     return render_template('history.html', 
                          jobs=jobs,
                          tool_filter=tool_filter,
-                         status_filter=status_filter)
+                         status_filter=status_filter,
+                         owner_filter=owner_filter)
 
 
 # ============================================================================
@@ -3067,6 +3887,6 @@ if __name__ == '__main__':
     
     app.run(
         host='0.0.0.0',
-        port=5001,
+        port=5002,
         debug=app.config.get('DEBUG', False)
     )

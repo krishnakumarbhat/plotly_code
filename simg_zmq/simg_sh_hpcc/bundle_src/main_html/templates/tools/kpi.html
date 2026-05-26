@@ -16,6 +16,7 @@
 
                     <form method="POST" id="kpiRuntimeForm">
                         <input type="hidden" name="interactive_plot_mode" id="interactive_plot_mode" value="disabled">
+                        <input type="hidden" name="reuse_decision" id="reuse_decision" value="">
                         <div class="mb-4">
                             <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
                                 <div>
@@ -196,6 +197,7 @@
                                 <div>
                                     <strong class="d-block">{{ execution_target|replace('_', ' ')|title }}</strong>
                                     <small class="text-muted d-block">{{ job.input_filename or job.input_path }}</small>
+                                    <small class="text-muted d-block">Requested by {{ job.user.net_id if job.user else (job.parameters.get('requested_by') if job.parameters else 'unknown') }}</small>
                                     <small class="text-muted">{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                 </div>
                                 <span class="status-badge status-{{ job.status }}">{{ job.status }}</span>
@@ -246,6 +248,8 @@ const jsonInputLabel = document.getElementById('jsonInputLabel');
 const jsonInputField = document.getElementById('kpi_json');
 const configXmlField = document.getElementById('config_xml');
 const runtimeModeCopy = document.getElementById('runtimeModeCopy');
+const kpiRuntimeForm = document.getElementById('kpiRuntimeForm');
+const reuseDecisionInput = document.getElementById('reuse_decision');
 
 function selectedExecutionTarget() {
     const selected = document.querySelector('.execution-target:checked');
@@ -376,5 +380,57 @@ document.getElementById('selectFileBtn').addEventListener('click', () => {
         bootstrap.Modal.getInstance(document.getElementById('fileBrowserModal')).hide();
     }
 });
+
+if (kpiRuntimeForm && reuseDecisionInput) {
+    kpiRuntimeForm.addEventListener('submit', async (event) => {
+        if (reuseDecisionInput.value) {
+            return;
+        }
+
+        event.preventDefault();
+        const formData = new FormData(kpiRuntimeForm);
+        const payload = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/api/runtime/kpi/reuse-check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                alert(data.error || 'Unable to validate whether this run already exists.');
+                return;
+            }
+
+            if (!data.duplicate) {
+                reuseDecisionInput.value = 'rerun';
+                kpiRuntimeForm.submit();
+                return;
+            }
+
+            const existing = data.existing || {};
+            const artifactSummary = Array.isArray(existing.artifact_paths) && existing.artifact_paths.length
+                ? `Artifacts:\n- ${existing.artifact_paths.join('\n- ')}`
+                : 'Artifacts: none indexed yet';
+            const message = [
+                `${existing.execution_label || 'This scenario'} is already present.`,
+                `Owner: ${existing.requested_by || 'unknown'}`,
+                `Status: ${existing.status || 'unknown'}`,
+                `Output: ${existing.output_path || '-'}`,
+                `Stored log: ${existing.log_path || '-'}`,
+                artifactSummary,
+                '',
+                'Press OK to generate again.',
+                'Press Cancel to open the stored runtime console instead.',
+            ].join('\n');
+
+            reuseDecisionInput.value = window.confirm(message) ? 'rerun' : 'reuse';
+            kpiRuntimeForm.submit();
+        } catch (error) {
+            alert('Unable to validate whether this run already exists.');
+        }
+    });
+}
 </script>
 {% endblock %}

@@ -123,7 +123,8 @@ class HtmlIngestor:
         skipped_duplicates = 0
 
         for file_path in html_files:
-            text = self.parser.parse_file(file_path)
+            parsed = self.parser.parse_file_sections(file_path)
+            text = parsed['text']
             if not text:
                 continue
 
@@ -134,17 +135,22 @@ class HtmlIngestor:
                 skipped_duplicates += 1
                 continue
 
-            chunk_count = self.rag_engine.add_text(
-                text=text,
+            stored_chunks = self.rag_engine.add_sections(
+                sections=parsed.get('sections') or [],
                 source_path=source_path,
                 duplicate_round=1,
             )
+            chunk_count = len(stored_chunks)
 
             self.sqlite_store.log_ingestion(
                 source_path=source_path,
                 text_hash=text_hash,
                 chunk_count=chunk_count,
                 duplicate_round=1,
+                source_name=str((parsed.get('metadata') or {}).get('source_name') or file_path.name),
+                report_kind=str((parsed.get('metadata') or {}).get('report_kind') or 'report'),
+                metadata=parsed.get('metadata') or {},
+                chunks=stored_chunks,
             )
             total_chunks += chunk_count
 

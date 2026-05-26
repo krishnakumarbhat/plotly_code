@@ -356,21 +356,14 @@ def generate_slurm_script(tool_name: str, input_path: str, output_path: str,
         },
         'kpi': {
             'memory': '32G',
-            'cpus': 8,
+            'cpus': 4,
             'time_limit': '02:00:00',
             'partition': 'plcyf-com',
             'module': 'singularity/3.11.4'
         },
-        'dc_html': {
-            'memory': '16G',
-            'cpus': 4,
-            'time_limit': '01:00:00',
-            'partition': 'plcyf-com',
-            'module': 'singularity/3.11.4'
-        },
         'hyperlink_tool': {
-            'memory': '8G',
-            'cpus': 2,
+            'memory': '9G',
+            'cpus': 4,
             'time_limit': '00:30:00',
             'partition': 'plcyf-com',
             'module': 'singularity/3.11.4'

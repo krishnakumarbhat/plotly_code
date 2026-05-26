@@ -1,6 +1,5 @@
-// Log Viewer - Online Mode JavaScript
+// Hyperlink Stream JavaScript
 
-// Global state
 let mappings = {};
 let currentKey = null;
 let currentImages = [];
@@ -9,12 +8,27 @@ let remoteLogs = {};
 let vlmInFlight = false;
 let vlmEnabled = true;
 let vlmModelDir = '';
-const serveMode = true;
 let connectMode = 'cluster';
+let pendingClusterAction = null;
+let savedRailOpen = true;
+let toastTimer = null;
+let clusterStatusState = null;
+let clusterStatusRequest = null;
+const videoLoadState = {
+  primary: { token: 0, blobUrl: null },
+  overlay: { token: 0, blobUrl: null },
+};
+const SAVED_RAIL_WIDTH_KEY = 'hyperlink.savedRailWidth';
+const SAVED_RAIL_DEFAULT_WIDTH = 320;
+const SAVED_RAIL_MIN_WIDTH = 320;
+const SAVED_RAIL_MAX_WIDTH = 780;
+let savedRailResizeState = null;
 
 function appBasePath() {
   const pathname = window.location.pathname || '/';
-  if (pathname.endsWith('/')) return pathname;
+  if (pathname.endsWith('/')) {
+    return pathname;
+  }
   const lastSlash = pathname.lastIndexOf('/');
   return pathname.slice(0, lastSlash + 1);
 }
@@ -24,26 +38,58 @@ function apiPath(path) {
   return appBasePath() + clean;
 }
 
-// Initialize on DOM load
-document.addEventListener('DOMContentLoaded', async function() {
-  await loadVlmStatus();
-  await loadMappings();
+function getVisibleLabel(entry, key) {
+  if (!entry) {
+    return key || 'Untitled log';
+  }
+  return entry.saved_label || entry.html_folder || entry.video_name || key || 'Untitled log';
+}
+
+function getMappingEntries() {
+  return Object.entries(mappings).sort(function (left, right) {
+    const leftEntry = left[1] || {};
+    const rightEntry = right[1] || {};
+    const leftStamp = Date.parse(leftEntry.last_used_at || leftEntry.saved_at || '') || 0;
+    const rightStamp = Date.parse(rightEntry.last_used_at || rightEntry.saved_at || '') || 0;
+    if (leftStamp !== rightStamp) {
+      return rightStamp - leftStamp;
+    }
+    return getVisibleLabel(leftEntry, left[0]).localeCompare(getVisibleLabel(rightEntry, right[0]));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
   initializeUI();
   setupEventListeners();
+  await loadVlmStatus();
+  await loadMappings();
+  await checkClusterStatus();
 });
 
-// Load mappings from server
 async function loadMappings() {
   try {
     const resp = await fetch(apiPath('api/mappings'));
     const data = await resp.json();
     if (data.success) {
       mappings = data.mappings || {};
-      populateLogDropdown();
+    } else {
+      mappings = {};
     }
-  } catch (e) {
-    console.error('Failed to load mappings:', e);
+  } catch (error) {
+    console.error('Failed to load mappings:', error);
+    mappings = {};
   }
+
+  const keys = Object.keys(mappings);
+  if (keys.length === 0) {
+    await updateScenario(null);
+    return;
+  }
+
+  if (!currentKey || !mappings[currentKey]) {
+    currentKey = keys[0];
+  }
+  await updateScenario(currentKey);
 }
 
 async function loadVlmStatus() {
@@ -52,211 +98,651 @@ async function loadVlmStatus() {
     const data = await resp.json();
     vlmEnabled = Boolean(data.enabled);
     vlmModelDir = data.model_dir || '';
-
-    const netIdInput = document.getElementById('netIdInput');
-    if (netIdInput && !netIdInput.value && data.net_id) {
-      netIdInput.value = data.net_id;
-    }
-
     setVlmBusy(false);
+
     if (!vlmEnabled) {
       setVlmStatus('AI video description is disabled for this session.', 'error');
       return;
     }
     if (vlmModelDir) {
-      setVlmStatus(`Offline model ready: ${vlmModelDir}`, 'success');
+      setVlmStatus('Offline model ready: ' + vlmModelDir, 'success');
     } else {
       setVlmStatus('AI video description is enabled, but no local model path is configured yet.', 'error');
     }
   } catch (error) {
     vlmEnabled = false;
     setVlmBusy(false);
-    setVlmStatus(`Unable to load AI status: ${error.message}`, 'error');
+    setVlmStatus('Unable to load AI status: ' + error.message, 'error');
   }
 }
 
-// Populate log dropdown
-function populateLogDropdown() {
-  const select = document.getElementById('logSelect');
-  select.innerHTML = '';
-  
-  const keys = Object.keys(mappings).sort();
-  if (keys.length === 0) {
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = 'No data available';
-    select.appendChild(opt);
-    return;
-  }
-  
-  keys.forEach(key => {
-    const opt = document.createElement('option');
-    opt.value = key;
-    opt.textContent = mappings[key].html_folder || key;
-    select.appendChild(opt);
-  });
-  
-  // Select first and update
-  if (keys.length > 0) {
-    updateScenario(keys[0]);
-  }
-}
-
-// Initialize UI elements
 function initializeUI() {
+  savedRailOpen = window.innerWidth > 1180;
+  initializeSavedRailWidth();
+  setSavedRailOpen(savedRailOpen);
   setupExpandButtons();
   setupImageModal();
 }
 
-// Setup event listeners
 function setupEventListeners() {
-  // Log selection
-  document.getElementById('logSelect').addEventListener('change', function() {
-    updateScenario(this.value);
+  document.getElementById('savedRailToggle').addEventListener('click', function () {
+    setSavedRailOpen(!savedRailOpen);
   });
-  
-  // Sensor filter
-  document.getElementById('sensorFilter').addEventListener('change', function() {
+  document.getElementById('savedRailClose').addEventListener('click', function () {
+    setSavedRailOpen(false);
+  });
+  document.getElementById('savedSearchInput').addEventListener('input', renderSavedList);
+  setupSavedRailResizer();
+  window.addEventListener('resize', handleViewportResize);
+
+  document.getElementById('sensorFilter').addEventListener('change', function () {
     const entry = mappings[currentKey];
     if (entry) {
       buildSensorGrid(entry, this.value);
     }
   });
-  
-  // Edit comment button
-  document.getElementById('editCommentBtn').addEventListener('click', function() {
+
+  document.getElementById('editCommentBtn').addEventListener('click', function () {
     const box = document.getElementById('commentBox');
     box.readOnly = false;
     box.focus();
   });
-  
-  // Save comment button
   document.getElementById('saveCommentBtn').addEventListener('click', saveComment);
-
-  // Generate AI text button
-  document.getElementById('generateVlmBtn').addEventListener('click', () => generateVlmDescription(false));
-  
-  // Open HTML button
+  document.getElementById('generateVlmBtn').addEventListener('click', function () {
+    generateVlmDescription(false);
+  });
   document.getElementById('openHtmlBtn').addEventListener('click', openHtmlPreview);
-  
-  // Go Online button
   document.getElementById('goOnlineBtn').addEventListener('click', openClusterModal);
+
+  document.getElementById('clusterModalClose').addEventListener('click', closeClusterModal);
+  document.getElementById('modeStreamBtn').addEventListener('click', function () {
+    setConnectMode('cluster');
+  });
+  document.getElementById('modeLocalBtn').addEventListener('click', function () {
+    setConnectMode('local');
+  });
+  document.getElementById('clusterScanBtn').addEventListener('click', function () {
+    scanRemoteLogs(false);
+  });
+  document.getElementById('clusterResetBtn').addEventListener('click', clusterDisconnect);
+  document.getElementById('togglePasswordBtn').addEventListener('click', togglePassword);
+  document.getElementById('clusterAuthBtn').addEventListener('click', clusterConnect);
+  document.getElementById('clusterAuthCancelBtn').addEventListener('click', function () {
+    hideClusterAuth(true);
+  });
+  document.getElementById('localUploadBtn').addEventListener('click', localUpload);
+
+  document.getElementById('clusterModal').addEventListener('click', function (event) {
+    if (event.target === this) {
+      closeClusterModal();
+    }
+  });
 }
 
-// Update scenario when log selected
+function setSavedRailOpen(isOpen) {
+  savedRailOpen = Boolean(isOpen);
+  const rail = document.getElementById('savedRail');
+  const toggle = document.getElementById('savedRailToggle');
+  rail.classList.toggle('collapsed', !savedRailOpen);
+  toggle.setAttribute('aria-expanded', savedRailOpen ? 'true' : 'false');
+  if (savedRailOpen && window.innerWidth > 900) {
+    initializeSavedRailWidth();
+  }
+}
+
+function clampSavedRailWidth(width) {
+  const viewportLimit = Math.max(SAVED_RAIL_MIN_WIDTH, window.innerWidth - 180);
+  return Math.max(SAVED_RAIL_MIN_WIDTH, Math.min(SAVED_RAIL_MAX_WIDTH, Math.min(viewportLimit, Math.round(width))));
+}
+
+function savedRailWidthRoot() {
+  return document.querySelector('.page') || document.documentElement;
+}
+
+function applySavedRailWidth(width, persist) {
+  const root = savedRailWidthRoot();
+  if (window.innerWidth <= 900) {
+    root.style.removeProperty('--saved-rail-width');
+    return;
+  }
+  const bounded = clampSavedRailWidth(width);
+  root.style.setProperty('--saved-rail-width', bounded + 'px');
+  if (persist) {
+    window.localStorage.setItem(SAVED_RAIL_WIDTH_KEY, String(bounded));
+  }
+}
+
+function initializeSavedRailWidth() {
+  const root = savedRailWidthRoot();
+  if (window.innerWidth <= 900) {
+    root.style.removeProperty('--saved-rail-width');
+    return;
+  }
+  const storedWidth = Number(window.localStorage.getItem(SAVED_RAIL_WIDTH_KEY) || SAVED_RAIL_DEFAULT_WIDTH);
+  applySavedRailWidth(Number.isFinite(storedWidth) ? storedWidth : SAVED_RAIL_DEFAULT_WIDTH, false);
+}
+
+function endSavedRailResize() {
+  if (!savedRailResizeState) {
+    return;
+  }
+  const rail = document.getElementById('savedRail');
+  if (rail && !rail.classList.contains('collapsed') && window.innerWidth > 900) {
+    applySavedRailWidth(rail.getBoundingClientRect().width, true);
+  }
+  savedRailResizeState = null;
+  document.body.classList.remove('saved-rail-resizing');
+}
+
+function handleViewportResize() {
+  const root = savedRailWidthRoot();
+  if (window.innerWidth <= 900) {
+    endSavedRailResize();
+    root.style.removeProperty('--saved-rail-width');
+    return;
+  }
+  initializeSavedRailWidth();
+}
+
+function setupSavedRailResizer() {
+  const handle = document.getElementById('savedRailResizeHandle');
+  if (!handle) {
+    return;
+  }
+
+  handle.addEventListener('pointerdown', function (event) {
+    const rail = document.getElementById('savedRail');
+    if (!rail || rail.classList.contains('collapsed') || window.innerWidth <= 900) {
+      return;
+    }
+    savedRailResizeState = {
+      startX: event.clientX,
+      startWidth: rail.getBoundingClientRect().width,
+    };
+    document.body.classList.add('saved-rail-resizing');
+    event.preventDefault();
+  });
+
+  window.addEventListener('pointermove', function (event) {
+    if (!savedRailResizeState) {
+      return;
+    }
+    applySavedRailWidth(savedRailResizeState.startWidth + (event.clientX - savedRailResizeState.startX), false);
+  });
+
+  window.addEventListener('pointerup', endSavedRailResize);
+  window.addEventListener('pointercancel', endSavedRailResize);
+
+  handle.addEventListener('keydown', function (event) {
+    const rail = document.getElementById('savedRail');
+    if (!rail || rail.classList.contains('collapsed') || window.innerWidth <= 900) {
+      return;
+    }
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+      return;
+    }
+    const delta = event.key === 'ArrowLeft' ? -24 : 24;
+    applySavedRailWidth(rail.getBoundingClientRect().width + delta, true);
+    event.preventDefault();
+  });
+}
+
+function renderSavedList() {
+  const list = document.getElementById('savedList');
+  const query = (document.getElementById('savedSearchInput').value || '').trim().toLowerCase();
+  list.innerHTML = '';
+
+  const entries = getMappingEntries().filter(function (item) {
+    const key = item[0];
+    const entry = item[1] || {};
+    const haystack = [
+      getVisibleLabel(entry, key),
+      entry.video_name || '',
+      entry.overlay_video_name || '',
+      entry.remote_html_path || '',
+      entry.remote_video_path || '',
+      entry.remote_overlay_path || '',
+    ].join(' ').toLowerCase();
+    return !query || haystack.indexOf(query) !== -1;
+  });
+
+  if (entries.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'saved-empty';
+    empty.textContent = query ? 'No logs match this search.' : 'No saved logs yet.';
+    list.appendChild(empty);
+    return;
+  }
+
+  entries.forEach(function (item) {
+    const key = item[0];
+    const entry = item[1] || {};
+    const row = document.createElement('div');
+    row.className = 'saved-item' + (key === currentKey ? ' active' : '');
+
+    const main = document.createElement('button');
+    main.type = 'button';
+    main.className = 'saved-item-main';
+    main.addEventListener('click', async function () {
+      await updateScenario(key);
+      if (window.innerWidth < 1180) {
+        setSavedRailOpen(false);
+      }
+    });
+
+    const title = document.createElement('div');
+    title.className = 'saved-item-title';
+    title.textContent = getVisibleLabel(entry, key);
+    title.title = title.textContent;
+
+    const meta = document.createElement('div');
+    meta.className = 'saved-item-meta';
+    const metaParts = [entry.video_name || entry.remote_video_path || 'Cached locally'];
+    if (entry.has_overlay || entry.overlay_video_name || entry.remote_overlay_path) {
+      metaParts.push('Overlay: ' + (entry.overlay_video_name || entry.remote_overlay_path || 'attached'));
+    }
+    meta.textContent = metaParts.join(' • ');
+    meta.title = meta.textContent;
+
+    const badge = document.createElement('span');
+    badge.className = 'saved-item-badge' + (entry.saved_id ? ' saved' : ' local');
+    badge.textContent = entry.saved_id ? 'Saved' : 'Local';
+
+    main.appendChild(title);
+    main.appendChild(meta);
+    row.appendChild(main);
+    row.appendChild(badge);
+
+    if (entry.saved_id) {
+      const actions = document.createElement('div');
+      actions.className = 'saved-item-actions';
+
+      const overlayBtn = document.createElement('button');
+      overlayBtn.type = 'button';
+      overlayBtn.className = 'saved-item-overlay';
+      overlayBtn.textContent = entry.has_overlay ? 'Replace Overlay' : 'Attach Overlay';
+      overlayBtn.addEventListener('click', async function (event) {
+        event.stopPropagation();
+        await attachOverlay(entry.saved_id, entry);
+      });
+      actions.appendChild(overlayBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'saved-item-delete';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', async function (event) {
+        event.stopPropagation();
+        await deleteSavedLog(entry.saved_id);
+      });
+      actions.appendChild(deleteBtn);
+      row.appendChild(actions);
+    }
+
+    list.appendChild(row);
+  });
+}
+
+function getVideoState(slot) {
+  return slot === 'overlay' ? videoLoadState.overlay : videoLoadState.primary;
+}
+
+function clearVideoBlobUrl(slot) {
+  const state = getVideoState(slot);
+  if (state.blobUrl) {
+    URL.revokeObjectURL(state.blobUrl);
+    state.blobUrl = null;
+  }
+}
+
+function resetVideoPlayer(video, infoId, message, slot) {
+  const state = getVideoState(slot);
+  state.token += 1;
+  clearVideoBlobUrl(slot);
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  const info = document.getElementById(infoId);
+  if (info) {
+    info.textContent = message;
+  }
+}
+
+function setOverlayPanelVisible(isVisible) {
+  const stage = document.getElementById('videoStage');
+  const panel = document.getElementById('overlayVideoPanel');
+  if (!stage || !panel) {
+    return;
+  }
+  stage.classList.toggle('has-overlay', Boolean(isVisible));
+  panel.classList.toggle('hidden', !isVisible);
+}
+
+function buildVideoChunkUrl(url, start, size) {
+  const chunkBase = url
+    .replace('/hyperlink/data/video/', '/hyperlink/api/video-chunk/')
+    .replace('/data/video/', '/hyperlink/api/video-chunk/');
+  const separator = chunkBase.includes('?') ? '&' : '?';
+  return chunkBase + separator + 'start=' + start + '&size=' + size;
+}
+
+async function fetchVideoBlob(url, onProgress, slot, loadToken) {
+  const state = getVideoState(slot);
+  const chunks = [];
+  const chunkSize = 16 * 1024;
+  let downloaded = 0;
+  let expectedSize = null;
+  let contentType = 'video/mp4';
+
+  while (expectedSize === null || downloaded < expectedSize) {
+    const response = await fetch(buildVideoChunkUrl(url, downloaded, chunkSize), {
+      credentials: 'same-origin',
+    });
+
+    if (!response.ok) {
+      throw new Error('Video download failed with status ' + response.status);
+    }
+
+    expectedSize = Number(response.headers.get('x-file-size')) || expectedSize;
+
+    const buffer = await response.arrayBuffer();
+    if (loadToken !== state.token) {
+      return null;
+    }
+
+    const byteLength = buffer.byteLength;
+    if (!byteLength) {
+      break;
+    }
+
+    chunks.push(buffer);
+    downloaded += byteLength;
+
+    if (typeof onProgress === 'function') {
+      onProgress(downloaded, expectedSize);
+    }
+
+    if (byteLength < chunkSize) {
+      expectedSize = expectedSize || downloaded;
+      break;
+    }
+  }
+
+  return new Blob(chunks, { type: contentType });
+}
+
+async function loadVideoIntoPlayer(video, entry, label, options) {
+  const slot = (options && options.slot) || 'primary';
+  const infoId = (options && options.infoId) || 'videoInfo';
+  const urlKey = (options && options.urlKey) || 'video';
+  const nameKey = (options && options.nameKey) || 'video_name';
+  const state = getVideoState(slot);
+  const loadToken = ++state.token;
+  clearVideoBlobUrl(slot);
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+
+  const videoInfo = document.getElementById(infoId);
+  videoInfo.textContent = 'Loading video...';
+
+  try {
+    const blob = await fetchVideoBlob(entry[urlKey], function (downloaded, expectedSize) {
+      if (loadToken !== state.token) {
+        return;
+      }
+      if (expectedSize) {
+        const percent = Math.max(1, Math.min(100, Math.round((downloaded / expectedSize) * 100)));
+        videoInfo.textContent = 'Loading video... ' + percent + '%';
+      }
+    }, slot, loadToken);
+
+    if (loadToken !== state.token || !blob) {
+      return;
+    }
+
+    state.blobUrl = URL.createObjectURL(blob);
+    video.src = state.blobUrl;
+    video.preload = 'auto';
+    video.load();
+    videoInfo.textContent = entry[nameKey] || label;
+  } catch (error) {
+    if (loadToken !== state.token) {
+      return;
+    }
+    console.error('Video blob preload failed:', error);
+    video.src = entry[urlKey];
+    video.preload = 'metadata';
+    video.load();
+    videoInfo.textContent = 'Loading video...';
+  }
+}
+
+async function deleteSavedLog(savedId) {
+  try {
+    const resp = await fetch(apiPath('api/saved-logs/' + savedId), { method: 'DELETE' });
+    const data = await resp.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Delete failed');
+    }
+    if (String(savedId) === String(currentKey)) {
+      currentKey = null;
+    }
+    await loadMappings();
+    showNotification('Removed from saved logs.', 'success');
+  } catch (error) {
+    showNotification('Delete failed: ' + error.message, 'error');
+  }
+}
+
+function suggestOverlayPath(entry) {
+  if (entry && entry.remote_overlay_path) {
+    return entry.remote_overlay_path;
+  }
+  const overlayInput = document.getElementById('remoteOverlayPathInput');
+  const overlayRoot = overlayInput ? overlayInput.value.trim().replace(/\/+$/, '') : '';
+  const overlayName = entry && entry.overlay_video_name ? entry.overlay_video_name : '';
+  if (overlayRoot && overlayName) {
+    return overlayRoot + '/' + overlayName;
+  }
+  return overlayRoot;
+}
+
+async function attachOverlay(savedId, entry) {
+  const overlayPath = window.prompt(
+    entry && entry.has_overlay
+      ? 'Enter the replacement overlay file or directory path for this saved log.'
+      : 'Enter the overlay file or directory path for this saved log.',
+    suggestOverlayPath(entry) || ''
+  );
+  if (overlayPath === null) {
+    return;
+  }
+
+  const trimmedPath = overlayPath.trim();
+  if (!trimmedPath) {
+    showNotification('Overlay path is required.', 'error');
+    return;
+  }
+
+  try {
+    const resp = await fetch(apiPath('api/saved-logs/' + savedId + '/overlay'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ overlay_path: trimmedPath })
+    });
+    const data = await resp.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Overlay attach failed');
+    }
+    await loadMappings();
+    if (mappings[String(savedId)]) {
+      await updateScenario(String(savedId));
+    }
+    showNotification('Overlay attached.', 'success');
+  } catch (error) {
+    showNotification('Overlay attach failed: ' + error.message, 'error');
+  }
+}
+
 async function updateScenario(key) {
-  currentKey = key;
-  const entry = mappings[key];
-  
-  if (!entry) {
-    document.getElementById('logNameDisplay').textContent = '';
-    document.getElementById('videoPlayer').src = '';
-    document.getElementById('videoInfo').textContent = 'No video';
-    document.getElementById('commentBox').value = '';
-    document.getElementById('sensorGrid').innerHTML = '<div class="no-data">No data</div>';
-    setVlmStatus('');
+  currentKey = key && mappings[key] ? key : null;
+  renderSavedList();
+
+  const logNameDisplay = document.getElementById('logNameDisplay');
+  const toolbarMeta = document.getElementById('toolbarMeta');
+  const video = document.getElementById('videoPlayer');
+  const overlayVideo = document.getElementById('overlayVideoPlayer');
+  const videoInfo = document.getElementById('videoInfo');
+  const overlayVideoInfo = document.getElementById('overlayVideoInfo');
+  const commentBox = document.getElementById('commentBox');
+  const sensorGrid = document.getElementById('sensorGrid');
+
+  if (!currentKey) {
+    resetVideoPlayer(video, 'videoInfo', 'No video', 'primary');
+    resetVideoPlayer(overlayVideo, 'overlayVideoInfo', 'No overlay', 'overlay');
+    setOverlayPanelVisible(false);
+    logNameDisplay.textContent = 'No stream selected';
+    toolbarMeta.textContent = 'Scan matching HTML and video paths, then add the logs you want to keep.';
+    commentBox.value = '';
+    document.getElementById('commentPath').textContent = '';
+    sensorGrid.innerHTML = '<div class="no-data">No images available</div>';
+    updateSensorFilter(null);
+    setVlmStatus(vlmEnabled ? '' : 'AI video description is disabled for this session.', vlmEnabled ? '' : 'error');
     setVlmBusy(false);
     return;
   }
-  
-  // Update log name display
-  document.getElementById('logNameDisplay').textContent = entry.html_folder || key;
-  
-  // Update video
-  const video = document.getElementById('videoPlayer');
-  video.src = entry.video;
-  document.getElementById('videoInfo').textContent = entry.video_name;
-  
-  // Update sensor filter
+
+  const entry = mappings[currentKey];
+  const label = getVisibleLabel(entry, currentKey);
+  logNameDisplay.textContent = label;
+  const toolbarParts = [entry.remote_html_path || entry.video_name || 'Cached stream'];
+  if (entry.has_overlay) {
+    toolbarParts.push(entry.remote_overlay_path ? 'Overlay attached' : 'Overlay ready');
+  }
+  toolbarMeta.textContent = toolbarParts.join(' • ');
+
+  video.onloadedmetadata = function () {
+    videoInfo.textContent = entry.video_name || label;
+  };
+  video.onerror = function () {
+    videoInfo.textContent = 'Video could not be loaded';
+  };
+  if (!entry.video) {
+    resetVideoPlayer(video, 'videoInfo', 'No video', 'primary');
+  } else {
+    video.currentTime = 0;
+    await loadVideoIntoPlayer(video, entry, label, {
+      slot: 'primary',
+      urlKey: 'video',
+      nameKey: 'video_name',
+      infoId: 'videoInfo'
+    });
+  }
+
+  const hasOverlay = Boolean(entry.overlay_video || entry.overlay_video_name || entry.remote_overlay_path);
+  setOverlayPanelVisible(hasOverlay);
+  overlayVideo.onloadedmetadata = function () {
+    overlayVideoInfo.textContent = entry.overlay_video_name || 'Overlay video';
+  };
+  overlayVideo.onerror = function () {
+    overlayVideoInfo.textContent = hasOverlay ? 'Overlay could not be loaded' : 'No overlay';
+  };
+  if (!hasOverlay) {
+    resetVideoPlayer(overlayVideo, 'overlayVideoInfo', 'No overlay', 'overlay');
+  } else if (!entry.overlay_video) {
+    resetVideoPlayer(overlayVideo, 'overlayVideoInfo', 'Overlay attached but not cached locally yet.', 'overlay');
+  } else {
+    overlayVideo.currentTime = 0;
+    await loadVideoIntoPlayer(overlayVideo, entry, entry.overlay_video_name || (label + ' overlay'), {
+      slot: 'overlay',
+      urlKey: 'overlay_video',
+      nameKey: 'overlay_video_name',
+      infoId: 'overlayVideoInfo'
+    });
+  }
+
   updateSensorFilter(entry);
-  
-  // Build sensor grid
   buildSensorGrid(entry, 'all');
-  
-  // Load existing comment
   await loadExistingComment(entry);
   setVlmStatus(vlmEnabled ? '' : 'AI video description is disabled for this session.', vlmEnabled ? '' : 'error');
 }
 
-// Update sensor filter dropdown
 function updateSensorFilter(entry) {
   const select = document.getElementById('sensorFilter');
   select.innerHTML = '<option value="all">All</option>';
-  
-  if (entry && entry.images) {
-    Object.keys(entry.images).sort().forEach(sensor => {
-      const opt = document.createElement('option');
-      opt.value = sensor;
-      opt.textContent = sensor.charAt(0).toUpperCase() + sensor.slice(1);
-      select.appendChild(opt);
-    });
+  if (!entry || !entry.images) {
+    return;
   }
+  Object.keys(entry.images).sort().forEach(function (sensor) {
+    const option = document.createElement('option');
+    option.value = sensor;
+    option.textContent = sensor.charAt(0).toUpperCase() + sensor.slice(1);
+    select.appendChild(option);
+  });
 }
 
-// Build sensor grid
 function buildSensorGrid(entry, filter) {
   const grid = document.getElementById('sensorGrid');
   grid.innerHTML = '';
   currentImages = [];
-  
   if (!entry || !entry.images) {
     grid.innerHTML = '<div class="no-data">No images available</div>';
+    grid.removeAttribute('data-count');
     return;
   }
-  
-  const images = entry.images;
+
+  const images = entry.images || {};
   const sensors = filter === 'all' ? Object.keys(images) : [filter];
-  
-  sensors.forEach(sensor => {
-    if (!images[sensor]) return;
-    
-    Object.entries(images[sensor]).forEach(([position, imgPath]) => {
-      currentImages.push({
-        path: imgPath,
-        sensor: sensor,
-        position: position
-      });
-      
+  sensors.forEach(function (sensor) {
+    if (!images[sensor]) {
+      return;
+    }
+    Object.entries(images[sensor]).forEach(function (imageEntry) {
+      const position = imageEntry[0];
+      const imgPath = imageEntry[1];
+      currentImages.push({ path: imgPath, sensor: sensor, position: position });
+      const imageIndex = currentImages.length - 1;
+
       const card = document.createElement('div');
       card.className = 'sensor-card';
-      card.onclick = () => openImageModal(currentImages.length - 1);
-      
+      card.addEventListener('click', function () {
+        openImageModal(imageIndex);
+      });
+
       const img = document.createElement('img');
       img.src = imgPath;
-      img.alt = `${sensor} - ${position}`;
+      img.alt = sensor + ' - ' + position;
       img.loading = 'lazy';
-      
+
       const label = document.createElement('div');
       label.className = 'sensor-card-label';
-      label.textContent = `${sensor.toUpperCase()} - ${position}`;
-      
+      label.textContent = sensor.toUpperCase() + ' - ' + position;
+
       card.appendChild(img);
       card.appendChild(label);
       grid.appendChild(card);
     });
   });
-  
+
   if (currentImages.length === 0) {
     grid.innerHTML = '<div class="no-data">No images for this filter</div>';
+    grid.removeAttribute('data-count');
   } else {
-    // Set data-count attribute for adaptive grid layout
-    grid.setAttribute('data-count', currentImages.length.toString());
+    grid.setAttribute('data-count', String(currentImages.length));
   }
 }
 
-// Load existing comment
 async function loadExistingComment(entry) {
   const commentBox = document.getElementById('commentBox');
   const commentPath = document.getElementById('commentPath');
-  
   if (!entry) {
     commentBox.value = '';
     commentPath.textContent = '';
     return;
   }
-  
+
   commentPath.textContent = entry.comment_path || '';
-  
   try {
     const resp = await fetch(apiPath('api/get-comment'), {
       method: 'POST',
@@ -265,54 +751,51 @@ async function loadExistingComment(entry) {
     });
     const data = await resp.json();
     commentBox.value = data.success ? (data.content || '') : (entry.comment_content || '');
-  } catch (e) {
+  } catch (error) {
     commentBox.value = entry.comment_content || '';
   }
-  
   commentBox.readOnly = true;
 }
 
-// Save comment
 async function saveComment() {
   const entry = mappings[currentKey];
-  if (!entry) return;
-  
+  if (!entry) {
+    return;
+  }
+
   const commentBox = document.getElementById('commentBox');
-  const content = commentBox.value;
-  
   try {
     const resp = await fetch(apiPath('api/save-comment'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         path: entry.comment_path,
-        content: content
+        content: commentBox.value
       })
     });
     const data = await resp.json();
-    
-    if (data.success) {
-      commentBox.readOnly = true;
-      showNotification('Comment saved!', 'success');
-    } else {
-      showNotification('Failed to save: ' + data.error, 'error');
+    if (!data.success) {
+      throw new Error(data.error || 'Save failed');
     }
-  } catch (e) {
-    showNotification('Error saving comment', 'error');
+    commentBox.readOnly = true;
+    showNotification('Comment saved.', 'success');
+  } catch (error) {
+    showNotification('Error saving comment: ' + error.message, 'error');
   }
 }
 
-function setVlmStatus(message, tone = '') {
+function setVlmStatus(message, tone) {
   const status = document.getElementById('vlmStatus');
-  if (!status) return;
   status.textContent = message || '';
-  status.className = 'vlm-status' + (tone ? ` ${tone}` : '');
+  status.className = 'vlm-status' + (tone ? ' ' + tone : '');
 }
 
 function setVlmBusy(isBusy) {
   vlmInFlight = isBusy;
   const button = document.getElementById('generateVlmBtn');
-  if (!button) return;
+  if (!button) {
+    return;
+  }
   button.disabled = isBusy || !vlmEnabled;
   if (!vlmEnabled) {
     button.textContent = 'AI Summary Disabled';
@@ -321,7 +804,7 @@ function setVlmBusy(isBusy) {
   button.textContent = isBusy ? 'Generating...' : 'Generate Summary';
 }
 
-async function generateVlmDescription(force = false) {
+async function generateVlmDescription(force) {
   if (!vlmEnabled) {
     setVlmStatus('AI video description is disabled for this session.', 'error');
     return;
@@ -332,103 +815,108 @@ async function generateVlmDescription(force = false) {
     setVlmStatus('No video is available for the current log.', 'error');
     return;
   }
-
   if (vlmInFlight) {
     return;
   }
 
   setVlmBusy(true);
   setVlmStatus('Generating a summary from the current video...', 'busy');
-
   try {
     const resp = await fetch(apiPath('api/vlm/process'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         video_path: entry.video,
-        force: force
+        force: Boolean(force)
       })
     });
     const data = await resp.json();
-
     if (!data.success) {
       throw new Error(data.error || 'Failed to generate description');
     }
-
     if (typeof data.description === 'string') {
       entry.comment_content = data.description;
     }
-
     await loadExistingComment(entry);
-
-    if (data.status === 'skipped') {
-      setVlmStatus('A summary already existed for this video. The existing text was kept.', 'success');
-    } else {
-      setVlmStatus('Summary generated and saved to the log comment file.', 'success');
-    }
+    setVlmStatus(
+      data.status === 'skipped'
+        ? 'A summary already existed for this video. The existing text was kept.'
+        : 'Summary generated and saved to the log comment file.',
+      'success'
+    );
   } catch (error) {
-    setVlmStatus(`Error generating summary: ${error.message}`, 'error');
+    setVlmStatus('Error generating summary: ' + error.message, 'error');
   } finally {
     setVlmBusy(false);
   }
 }
 
-// Open HTML preview
 function openHtmlPreview() {
   const entry = mappings[currentKey];
   if (!entry || !entry.html_files || entry.html_files.length === 0) {
-    showNotification('No HTML files available', 'error');
+    showNotification('No HTML files available.', 'error');
     return;
   }
-  
-  // Open first HTML file in new tab
-  const htmlFile = entry.html_files[0];
-  window.open(htmlFile, '_blank');
+  window.open(entry.html_files[0], '_blank');
 }
 
-// Setup expand buttons
 function setupExpandButtons() {
-  document.querySelectorAll('.expand-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const box = this.closest('.box');
+  document.querySelectorAll('.expand-btn').forEach(function (button) {
+    button.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const box = button.closest('.box');
       box.classList.toggle('expanded');
-      this.textContent = box.classList.contains('expanded') ? '✕' : '⛶';
+      button.textContent = box.classList.contains('expanded') ? '✕' : '⛶';
     });
   });
 }
 
-// Image Modal functions
 function setupImageModal() {
   const modal = document.getElementById('imageModal');
-  
   modal.querySelector('.image-modal-close').addEventListener('click', closeImageModal);
-  modal.querySelector('.image-modal-nav.prev').addEventListener('click', () => navigateModal(-1));
-  modal.querySelector('.image-modal-nav.next').addEventListener('click', () => navigateModal(1));
-  
-  modal.addEventListener('click', function(e) {
-    if (e.target === this) closeImageModal();
+  modal.querySelector('.image-modal-nav.prev').addEventListener('click', function () {
+    navigateModal(-1);
   });
-  
-  document.addEventListener('keydown', function(e) {
-    if (!modal.classList.contains('active')) return;
-    
-    if (e.key === 'Escape') closeImageModal();
-    else if (e.key === 'ArrowLeft') navigateModal(-1);
-    else if (e.key === 'ArrowRight') navigateModal(1);
+  modal.querySelector('.image-modal-nav.next').addEventListener('click', function () {
+    navigateModal(1);
+  });
+  modal.addEventListener('click', function (event) {
+    if (event.target === modal) {
+      closeImageModal();
+    }
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      if (modal.classList.contains('active')) {
+        closeImageModal();
+      }
+      if (document.getElementById('clusterModal').classList.contains('active')) {
+        closeClusterModal();
+      }
+      return;
+    }
+    if (!modal.classList.contains('active')) {
+      return;
+    }
+    if (event.key === 'ArrowLeft') {
+      navigateModal(-1);
+    } else if (event.key === 'ArrowRight') {
+      navigateModal(1);
+    }
   });
 }
 
 function openImageModal(index) {
+  if (!currentImages[index]) {
+    return;
+  }
   currentImageIndex = index;
   const modal = document.getElementById('imageModal');
   const img = modal.querySelector('img');
   const info = modal.querySelector('.image-modal-info');
-  
   const imageData = currentImages[index];
   img.src = imageData.path;
-  info.textContent = `${imageData.sensor.toUpperCase()} - ${imageData.position} (${index + 1}/${currentImages.length})`;
-  
+  info.textContent = imageData.sensor.toUpperCase() + ' - ' + imageData.position + ' (' + (index + 1) + '/' + currentImages.length + ')';
   modal.classList.add('active');
 }
 
@@ -437,50 +925,104 @@ function closeImageModal() {
 }
 
 function navigateModal(direction) {
+  if (!currentImages.length) {
+    return;
+  }
   currentImageIndex = (currentImageIndex + direction + currentImages.length) % currentImages.length;
-  const modal = document.getElementById('imageModal');
-  const img = modal.querySelector('img');
-  const info = modal.querySelector('.image-modal-info');
-  
-  const imageData = currentImages[currentImageIndex];
-  img.src = imageData.path;
-  info.textContent = `${imageData.sensor.toUpperCase()} - ${imageData.position} (${currentImageIndex + 1}/${currentImages.length})`;
+  openImageModal(currentImageIndex);
 }
 
-// ============================================
-// Cluster Connection Functions
-// ============================================
-
-function openClusterModal() {
+async function openClusterModal() {
   document.getElementById('clusterModal').classList.add('active');
+  const modalContent = document.querySelector('#clusterModal .modal-content');
+  if (modalContent) {
+    modalContent.scrollTop = 0;
+  }
   setConnectMode(connectMode);
-  checkClusterStatus();
+  await checkClusterStatus(true);
 }
 
 function closeClusterModal() {
+  hideClusterAuth(true);
   document.getElementById('clusterModal').classList.remove('active');
 }
 
-async function checkClusterStatus() {
-  try {
-    const resp = await fetch(apiPath('api/cluster/status'));
-    const data = await resp.json();
-    updateClusterUI(Boolean(data.connected), data.server || null);
-
-    // Optionally prefill last-used values
-    if (data && typeof data === 'object') {
-      const htmlEl = document.getElementById('remoteHtmlPathInput');
-      const videoEl = document.getElementById('remoteVideoPathInput');
-      const outEl = document.getElementById('outputPathInput');
-      const netIdEl = document.getElementById('netIdInput');
-      if (htmlEl && !htmlEl.value && data.html_path) htmlEl.value = data.html_path;
-      if (videoEl && !videoEl.value && data.video_path) videoEl.value = data.video_path;
-      if (outEl && !outEl.value && data.output_root) outEl.value = data.output_root;
-      if (netIdEl && !netIdEl.value && data.net_id) netIdEl.value = data.net_id;
-    }
-  } catch (e) {
-    console.error('Failed to check cluster status:', e);
+function applyClusterStatus(data) {
+  if (!data || typeof data !== 'object') {
+    return;
   }
+
+  clusterStatusState = data;
+  const htmlEl = document.getElementById('remoteHtmlPathInput');
+  const videoEl = document.getElementById('remoteVideoPathInput');
+  const overlayEl = document.getElementById('remoteOverlayPathInput');
+  const outputEl = document.getElementById('outputPathInput');
+  const netIdEl = document.getElementById('netIdInput');
+  const authNetIdDisplay = document.getElementById('authNetIdDisplay');
+  if (htmlEl && !htmlEl.value && data.html_path) {
+    htmlEl.value = data.html_path;
+  }
+  if (videoEl && !videoEl.value && data.video_path) {
+    videoEl.value = data.video_path;
+  }
+  if (overlayEl && !overlayEl.value && data.overlay_path) {
+    overlayEl.value = data.overlay_path;
+  }
+  if (outputEl) {
+    outputEl.value = data.output_root || '';
+  }
+  if (netIdEl && data.net_id) {
+    netIdEl.value = data.net_id;
+  }
+  if (authNetIdDisplay) {
+    let label = data.net_id ? 'Net ID: ' + data.net_id : '';
+    if (label && data.has_saved_password) {
+      label += ' - saved access ready';
+    }
+    authNetIdDisplay.textContent = label;
+  }
+  updateClusterUI(Boolean(data.connected), data.server || null);
+}
+
+async function checkClusterStatus(forceRefresh) {
+  if (clusterStatusRequest) {
+    return clusterStatusRequest;
+  }
+  if (!forceRefresh && clusterStatusState) {
+    applyClusterStatus(clusterStatusState);
+    return clusterStatusState;
+  }
+
+  clusterStatusRequest = (async function () {
+    try {
+      const resp = await fetch(apiPath('api/cluster/status'), { credentials: 'same-origin' });
+      const data = await resp.json();
+      applyClusterStatus(data);
+      return data;
+    } catch (error) {
+      console.error('Failed to check cluster status:', error);
+      return clusterStatusState || {};
+    } finally {
+      clusterStatusRequest = null;
+    }
+  })();
+  return clusterStatusRequest;
+}
+
+async function resolveClusterAuthContext(forceRefresh) {
+  const status = await checkClusterStatus(forceRefresh);
+  const netIdEl = document.getElementById('netIdInput');
+  const passwordEl = document.getElementById('passwordInput');
+  const netId = ((netIdEl && netIdEl.value) || (status && status.net_id) || '').trim();
+  if (netIdEl && netId && !netIdEl.value) {
+    netIdEl.value = netId;
+  }
+  return {
+    status: status || {},
+    netId: netId,
+    password: passwordEl ? passwordEl.value : '',
+    hasSavedPassword: Boolean(status && status.has_saved_password && status.net_id && status.net_id.trim() === netId),
+  };
 }
 
 function updateClusterUI(connected, serverName) {
@@ -488,267 +1030,303 @@ function updateClusterUI(connected, serverName) {
   const statusText = document.getElementById('statusText');
   const clusterPanel = document.getElementById('clusterPanel');
   const localPanel = document.getElementById('localPanel');
-  const passwordGroup = document.getElementById('passwordGroup');
-  const netIdGroup = document.getElementById('netIdGroup');
-  
+  const authSheet = document.getElementById('clusterCredentialsRow');
+
   statusDot.className = 'status-dot ' + (connected ? 'connected' : 'disconnected');
-  statusText.textContent = connected ? `Connected to ${serverName}` : 'Disconnected';
-  
-  // Cluster panels are only relevant in cluster mode.
-  if (connectMode !== 'cluster') {
+  if (connected) {
+    statusText.textContent = 'Streaming from ' + serverName;
+  } else if (clusterStatusState && clusterStatusState.has_saved_password) {
+    statusText.textContent = 'Ready to scan with saved access';
+  } else {
+    statusText.textContent = 'Ready to scan';
+  }
+
+  if (connectMode === 'local') {
     clusterPanel.classList.remove('active');
     localPanel.classList.add('active');
     return;
   }
 
-  // Show appropriate cluster panel
   localPanel.classList.remove('active');
   clusterPanel.classList.add('active');
-  if (passwordGroup) {
-    passwordGroup.style.display = connected ? 'none' : '';
-  }
-  if (netIdGroup) {
-    netIdGroup.style.display = connected ? 'none' : '';
+  if (authSheet && (connected || (clusterStatusState && clusterStatusState.has_saved_password))) {
+    authSheet.style.display = 'none';
   }
 }
 
 function setConnectMode(mode) {
   connectMode = mode === 'local' ? 'local' : 'cluster';
-  const modeClusterBtn = document.getElementById('modeClusterBtn');
-  const modeLocalBtn = document.getElementById('modeLocalBtn');
-  const clusterPanel = document.getElementById('clusterPanel');
-  const localPanel = document.getElementById('localPanel');
-
-  modeClusterBtn.classList.toggle('active', connectMode === 'cluster');
-  modeLocalBtn.classList.toggle('active', connectMode === 'local');
-
-  // Default view; cluster status check will refine for connected/disconnected.
-  if (connectMode === 'local') {
-    clusterPanel.classList.remove('active');
-    localPanel.classList.add('active');
-  } else {
-    localPanel.classList.remove('active');
-    clusterPanel.classList.add('active');
-    // Let checkClusterStatus()/updateClusterUI decide connected/disconnected details.
-  }
+  document.getElementById('modeStreamBtn').classList.toggle('active', connectMode === 'cluster');
+  document.getElementById('modeLocalBtn').classList.toggle('active', connectMode === 'local');
+  updateClusterUI(Boolean(clusterStatusState && clusterStatusState.connected), clusterStatusState ? clusterStatusState.server || null : null);
 }
 
-// Toggle password visibility
 function togglePassword() {
   const input = document.getElementById('passwordInput');
-  const btn = document.querySelector('.toggle-password');
-  
+  const button = document.getElementById('togglePasswordBtn');
   if (input.type === 'password') {
     input.type = 'text';
-    btn.textContent = '🙈';
+    button.textContent = '🙈';
   } else {
     input.type = 'password';
-    btn.textContent = '👁';
+    button.textContent = '👁';
   }
 }
 
-function togglePasswordConfirm() {
-  // Removed (single password confirmation field only)
+function showClusterAuth(actionName) {
+  pendingClusterAction = actionName || null;
+  const authSheet = document.getElementById('clusterCredentialsRow');
+  authSheet.style.display = 'block';
+  document.getElementById('passwordInput').focus();
+}
+
+function hideClusterAuth(resetPending) {
+  if (resetPending) {
+    pendingClusterAction = null;
+  }
+  document.getElementById('clusterCredentialsRow').style.display = 'none';
 }
 
 async function clusterConnect() {
   const htmlPath = document.getElementById('remoteHtmlPathInput').value.trim();
   const videoPath = document.getElementById('remoteVideoPathInput').value.trim();
-  const outputPath = (document.getElementById('outputPathInput')?.value || '').trim();
-  const netId = (document.getElementById('netIdInput')?.value || '').trim();
-  const password = document.getElementById('passwordInput').value;
-  
+  const overlayPath = document.getElementById('remoteOverlayPathInput').value.trim();
+  const outputPath = document.getElementById('outputPathInput').value.trim();
+  const authContext = await resolveClusterAuthContext(true);
+  const netId = authContext.netId;
+  const password = authContext.password;
+  const usingSavedPassword = authContext.hasSavedPassword && !password;
+
   if (!htmlPath || !videoPath) {
-    showClusterMessage('Please enter both HTML and Video paths', 'error');
+    showClusterMessage('Enter both HTML and video paths first.', 'error');
     return false;
   }
-
   if (!netId) {
-    showClusterMessage('Please enter your Net ID', 'error');
+    showClusterMessage('No Net ID is available for this session. Open Hyperlink from your logged-in dashboard session and try again.', 'error');
+    return false;
+  }
+  if (!password && !authContext.hasSavedPassword) {
+    showClusterAuth(pendingClusterAction);
+    showClusterMessage('Enter your cluster password to continue.', 'info');
     return false;
   }
 
-  if (!password) {
-    showClusterMessage('Please enter your password', 'error');
-    return false;
-  }
-  
-  showLoading('Connecting...');
-  
+  showLoading(usingSavedPassword ? 'Opening stream session with saved access...' : 'Opening stream session...');
   try {
     const resp = await fetch(apiPath('api/cluster/connect'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html_path: htmlPath, video_path: videoPath, output_path: outputPath, net_id: netId, password })
+      body: JSON.stringify({
+        html_path: htmlPath,
+        video_path: videoPath,
+        overlay_path: overlayPath,
+        output_path: outputPath,
+        net_id: netId,
+        password: password,
+      })
     });
     const data = await resp.json();
-    
     hideLoading();
-    
-    if (data.success) {
-      showClusterMessage('Connected successfully!', 'success');
-      updateClusterUI(true, data.server || data.cluster || 'cluster');
-      // Best-effort: clear password after successful connect
-      const passEl = document.getElementById('passwordInput');
-      if (passEl) passEl.value = '';
-      return true;
-    } else {
-      showClusterMessage(data.error || 'Connection failed', 'error');
-      return false;
+
+    if (!data.success) {
+      throw new Error(data.error || 'Connection failed');
     }
-  } catch (e) {
+
+    document.getElementById('passwordInput').value = '';
+    hideClusterAuth(false);
+    clusterStatusState = null;
+    const status = await checkClusterStatus(true);
+    updateClusterUI(true, data.server || data.cluster || (status && status.server) || 'cluster');
+    showClusterMessage(usingSavedPassword ? 'Stream session ready using saved access.' : 'Stream session ready.', 'success');
+
+    const action = pendingClusterAction;
+    pendingClusterAction = null;
+    if (action === 'scan') {
+      await scanRemoteLogs(true);
+    }
+    return true;
+  } catch (error) {
     hideLoading();
-    showClusterMessage('Connection error: ' + e.message, 'error');
+    showClusterMessage('Connection error: ' + error.message, 'error');
     return false;
   }
 }
 
-async function ensureClusterConnected() {
-  // First check if already connected
-  try {
-    const resp = await fetch(apiPath('api/cluster/status'));
-    const data = await resp.json();
-    if (data && data.connected) {
-      updateClusterUI(true, data.server || 'cluster');
-      return true;
-    }
-  } catch (e) {
-    // ignore and attempt connect
+async function ensureClusterConnected(actionName) {
+  const authContext = await resolveClusterAuthContext(true);
+  if (authContext.status && authContext.status.connected) {
+    updateClusterUI(true, authContext.status.server || 'cluster');
+    return true;
   }
-  
-  // Not connected - check if credentials are available
-  const netId = (document.getElementById('netIdInput')?.value || '').trim();
-  const password = document.getElementById('passwordInput')?.value || '';
-  
-  if (!netId || !password) {
-    showClusterMessage('Please enter your Net ID and password, then click Connect', 'error');
+
+  if (!authContext.netId) {
+    showClusterMessage('No Net ID is available for this session. Open Hyperlink from your logged-in dashboard session and try again.', 'error');
     return false;
   }
-  
-  // Attempt connection with available credentials
-  const connected = await clusterConnect();
-  return connected === true;
-  } 
 
+  if (!authContext.password && !authContext.hasSavedPassword) {
+    showClusterAuth(actionName);
+    showClusterMessage('Enter your cluster password to scan remote logs.', 'info');
+    return false;
+  }
+  return clusterConnect();
+}
 
 async function clusterDisconnect() {
   try {
     await fetch(apiPath('api/cluster/disconnect'), { method: 'POST' });
-    updateClusterUI(false, null);
-    showClusterMessage('Disconnected', 'info');
-    
-    // Clear remote logs
-    document.getElementById('remoteLogsSection').style.display = 'none';
-    document.getElementById('remoteLogsList').innerHTML = '';
     remoteLogs = {};
-  } catch (e) {
-    console.error('Disconnect error:', e);
+    document.getElementById('remoteLogsList').innerHTML = '';
+    document.getElementById('remoteLogsSection').style.display = 'none';
+    document.getElementById('passwordInput').value = '';
+    hideClusterAuth(true);
+    clusterStatusState = null;
+    await checkClusterStatus(true);
+    showClusterMessage('Session reset.', 'info');
+  } catch (error) {
+    console.error('Disconnect error:', error);
   }
 }
 
-// Scan remote logs from the given path
-async function scanRemoteLogs() {
+async function scanRemoteLogs(skipConnect) {
   const htmlPath = document.getElementById('remoteHtmlPathInput').value.trim();
   const videoPath = document.getElementById('remoteVideoPathInput').value.trim();
-  const outputPath = (document.getElementById('outputPathInput')?.value || '').trim();
-  
+  const overlayPath = document.getElementById('remoteOverlayPathInput').value.trim();
+  const outputPath = document.getElementById('outputPathInput').value.trim();
+
   if (!htmlPath || !videoPath) {
-    showClusterMessage('Please enter both HTML and Video paths', 'error');
+    showClusterMessage('Enter both HTML and video paths.', 'error');
     return;
   }
 
-  const connected = await ensureClusterConnected();
-  if (!connected) {
-    showClusterMessage('Not connected', 'error');
-    return;
+  if (!skipConnect) {
+    const connected = await ensureClusterConnected('scan');
+    if (!connected) {
+      return;
+    }
   }
-  
-  showLoading('Scanning remote logs...');
-  
+
+  showLoading('Scanning matching pairs...');
   try {
     const resp = await fetch(apiPath('api/cluster/scan-logs'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html_path: htmlPath, video_path: videoPath, output_path: outputPath })
+      body: JSON.stringify({
+        html_path: htmlPath,
+        video_path: videoPath,
+        overlay_path: overlayPath,
+        output_path: outputPath,
+      })
     });
     const data = await resp.json();
-    
     hideLoading();
-    
-    if (data.success) {
-      remoteLogs = data.logs || {};
-      displayRemoteLogs();
-      showClusterMessage(`Found ${Object.keys(remoteLogs).length} logs`, 'success');
-    } else {
-      showClusterMessage(data.error || 'Scan failed', 'error');
+    if (!data.success) {
+      throw new Error(data.error || 'Scan failed');
     }
-  } catch (e) {
+    remoteLogs = data.logs || {};
+    displayRemoteLogs();
+    showClusterMessage('Found ' + Object.keys(remoteLogs).length + ' matching pairs.', 'success');
+  } catch (error) {
     hideLoading();
-    showClusterMessage('Scan error: ' + e.message, 'error');
+    showClusterMessage('Scan error: ' + error.message, 'error');
   }
 }
 
 function displayRemoteLogs() {
   const section = document.getElementById('remoteLogsSection');
   const list = document.getElementById('remoteLogsList');
-  
   list.innerHTML = '';
-  
-  const logKeys = Object.keys(remoteLogs).sort();
-  
-  if (logKeys.length === 0) {
+
+  const logKeys = Object.keys(remoteLogs).sort(function (left, right) {
+    const leftName = (remoteLogs[left] && remoteLogs[left].name) || left;
+    const rightName = (remoteLogs[right] && remoteLogs[right].name) || right;
+    return leftName.localeCompare(rightName);
+  });
+
+  if (!logKeys.length) {
     section.style.display = 'none';
     return;
   }
-  
+
   section.style.display = 'block';
-  
-  logKeys.forEach(key => {
+  logKeys.forEach(function (key) {
     const log = remoteLogs[key];
-    const isCached = log.cached === true;
     const item = document.createElement('div');
-    item.className = 'remote-log-item' + (isCached ? ' cached' : '');
+    item.className = 'remote-log-item' + (log.saved ? ' cached' : '');
     item.id = 'log-' + key;
-    item.onclick = () => downloadLog(key);
-    
-    const icon = isCached ? '✅' : '📦';
-    const status = isCached ? 'Cached - Click to view' : 'Click to download';
-    
-    item.innerHTML = `
-      <span class="remote-log-icon">${icon}</span>
-      <span class="remote-log-name">${log.name || key}</span>
-      <span class="remote-log-status">${status}</span>
-    `;
-    
+
+    const body = document.createElement('div');
+    body.className = 'remote-log-body';
+
+    const title = document.createElement('div');
+    title.className = 'remote-log-title';
+    title.textContent = log.name || key;
+    title.title = title.textContent;
+
+    const path = document.createElement('div');
+    path.className = 'remote-log-path';
+    path.textContent = log.video_name || log.video_path || '';
+    path.title = path.textContent;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'remote-log-overlay';
+    overlay.textContent = log.has_overlay
+      ? 'Overlay: ' + (log.overlay_name || log.overlay_path || 'matched')
+      : 'No overlay matched';
+    overlay.title = overlay.textContent;
+
+    const status = document.createElement('div');
+    status.className = 'remote-log-status';
+    status.textContent = log.saved
+      ? 'Already saved to your stream list'
+      : (log.has_overlay ? 'Ready to add with overlay' : 'Ready to add');
+
+    body.appendChild(title);
+    body.appendChild(path);
+    body.appendChild(overlay);
+    body.appendChild(status);
+
+    const actions = document.createElement('div');
+    actions.className = 'remote-log-actions';
+
+    const actionButton = document.createElement('button');
+    actionButton.type = 'button';
+    actionButton.className = 'remote-log-action' + (log.saved ? ' open' : ' add');
+    actionButton.textContent = log.saved ? 'Open' : 'Add';
+    actionButton.addEventListener('click', async function () {
+      await downloadLog(key);
+    });
+
+    actions.appendChild(actionButton);
+    item.appendChild(body);
+    item.appendChild(actions);
     list.appendChild(item);
   });
 }
 
 async function downloadLog(key) {
   const log = remoteLogs[key];
-  if (!log) return;
+  if (!log) {
+    return;
+  }
 
-  const outputPath = (document.getElementById('outputPathInput')?.value || '').trim();
-  
-  const item = document.getElementById('log-' + key);
-  
-  // If already cached or downloaded, just load it
-  if (item.classList.contains('cached') || item.classList.contains('downloaded')) {
-    closeClusterModal();
+  if (log.saved && log.saved_id) {
     await loadMappings();
-    updateScenario(key);
+    if (mappings[String(log.saved_id)]) {
+      await updateScenario(String(log.saved_id));
+      closeClusterModal();
+    }
     return;
   }
-  
-  if (item.classList.contains('downloading')) {
-    return;
+
+  const item = document.getElementById('log-' + key);
+  const actionButton = item ? item.querySelector('.remote-log-action') : null;
+  if (actionButton) {
+    actionButton.disabled = true;
+    actionButton.textContent = 'Adding...';
   }
-  
-  item.classList.add('downloading');
-  item.querySelector('.remote-log-status').textContent = 'Downloading...';
-  
-  showLoading('Downloading ' + (log.name || key) + '...');
-  
+
+  showLoading('Adding ' + (log.name || key) + '...');
   try {
     const resp = await fetch(apiPath('api/cluster/download-log'), {
       method: 'POST',
@@ -757,105 +1335,105 @@ async function downloadLog(key) {
         key: key,
         html_path: log.html_path,
         video_path: log.video_path,
-        output_path: outputPath
+        overlay_path: log.overlay_path || '',
+        output_path: document.getElementById('outputPathInput').value.trim(),
       })
     });
     const data = await resp.json();
-    
     hideLoading();
-    
-    if (data.success) {
-      item.classList.remove('downloading');
-      item.classList.add('downloaded');
-      item.querySelector('.remote-log-status').textContent = '✓ Downloaded';
-      item.querySelector('.remote-log-icon').textContent = '✅';
-      
-      showClusterMessage('Downloaded successfully! Click again to view.', 'success');
-      
-      // Reload mappings
-      await loadMappings();
-    } else {
-      item.classList.remove('downloading');
-      item.querySelector('.remote-log-status').textContent = 'Failed';
-      showClusterMessage(data.error || 'Download failed', 'error');
+    if (!data.success) {
+      throw new Error(data.error || 'Add failed');
     }
-  } catch (e) {
+    log.saved = true;
+    log.cached = true;
+    log.saved_id = data.saved_id;
+    await loadMappings();
+    displayRemoteLogs();
+    if (data.saved_id && mappings[String(data.saved_id)]) {
+      await updateScenario(String(data.saved_id));
+    }
+    showClusterMessage('Added to your stream list.', 'success');
+  } catch (error) {
     hideLoading();
-    item.classList.remove('downloading');
-    item.querySelector('.remote-log-status').textContent = 'Error';
-    showClusterMessage('Download error: ' + e.message, 'error');
+    if (actionButton) {
+      actionButton.disabled = false;
+      actionButton.textContent = 'Add';
+    }
+    showClusterMessage('Add error: ' + error.message, 'error');
   }
 }
 
 async function localUpload() {
   const htmlInput = document.getElementById('localHtmlFolderInput');
   const videoInput = document.getElementById('localVideoFilesInput');
-  const outputPath = (document.getElementById('localOutputPathInput')?.value || '').trim();
+  const outputPath = document.getElementById('localOutputPathInput').value.trim();
+  const htmlFiles = Array.from(htmlInput.files || []);
+  const videoFiles = Array.from(videoInput.files || []);
 
-  const htmlFiles = Array.from(htmlInput?.files || []);
-  const videoFiles = Array.from(videoInput?.files || []);
-
-  if (htmlFiles.length === 0 && videoFiles.length === 0) {
-    showClusterMessage('Please select HTML folder and/or video files', 'error');
+  if (!htmlFiles.length && !videoFiles.length) {
+    showClusterMessage('Please select HTML files or videos to upload.', 'error');
     return;
   }
 
-  const fd = new FormData();
-  fd.append('output_path', outputPath);
-
-  htmlFiles.forEach(f => {
-    const rel = f.webkitRelativePath || f.name;
-    fd.append('html_files', f, rel);
+  const formData = new FormData();
+  formData.append('output_path', outputPath);
+  htmlFiles.forEach(function (file) {
+    const rel = file.webkitRelativePath || file.name;
+    formData.append('html_files', file, rel);
   });
-  videoFiles.forEach(f => {
-    fd.append('video_files', f, f.name);
+  videoFiles.forEach(function (file) {
+    formData.append('video_files', file, file.name);
   });
 
-  showLoading('Uploading files to server...');
+  showLoading('Uploading files to the server...');
   try {
-    const resp = await fetch(apiPath('api/local/upload'), { method: 'POST', body: fd });
+    const resp = await fetch(apiPath('api/local/upload'), { method: 'POST', body: formData });
     const data = await resp.json();
     hideLoading();
-    if (data.success) {
-      showClusterMessage(`Upload complete (HTML: ${data.saved_html}, Video: ${data.saved_video})`, 'success');
-      closeClusterModal();
-      await loadMappings();
-    } else {
-      showClusterMessage(data.error || 'Upload failed', 'error');
+    if (!data.success) {
+      throw new Error(data.error || 'Upload failed');
     }
-  } catch (e) {
+    closeClusterModal();
+    await loadMappings();
+    showNotification('Upload complete.', 'success');
+  } catch (error) {
     hideLoading();
-    showClusterMessage('Upload error: ' + e.message, 'error');
+    showClusterMessage('Upload error: ' + error.message, 'error');
   }
 }
 
-// Loading helpers
 function showLoading(text) {
-  const overlay = document.getElementById('loadingOverlay');
   document.getElementById('loadingText').textContent = text || 'Loading...';
-  overlay.style.display = 'flex';
+  document.getElementById('loadingOverlay').style.display = 'flex';
 }
 
 function hideLoading() {
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
-function showClusterMessage(msg, type) {
+function showClusterMessage(message, type) {
   const el = document.getElementById('clusterMessage');
-  el.textContent = msg;
+  el.textContent = message;
   el.className = 'cluster-message ' + type;
   el.style.display = 'block';
-  
-  setTimeout(() => {
+  window.clearTimeout(el._timer);
+  el._timer = window.setTimeout(function () {
     el.style.display = 'none';
-  }, 5000);
+  }, 4000);
 }
 
-// Notification helper
 function showNotification(message, type) {
-  if (type === 'error') {
-    alert('Error: ' + message);
-  } else {
-    alert(message);
+  let toast = document.getElementById('viewerToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'viewerToast';
+    document.body.appendChild(toast);
   }
+  toast.className = 'viewer-toast ' + (type || 'info');
+  toast.textContent = message;
+  toast.classList.add('visible');
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(function () {
+    toast.classList.remove('visible');
+  }, 2600);
 }

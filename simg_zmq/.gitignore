@@ -35,3 +35,10 @@ thumbs.db
 html/
 node_modules/
 html_db/
+tmp/
+
+# Large local RAG/model artifacts
+rag/data/chroma/
+rag/qwn_kk_fine_model/
+rag/tools/
+rag/*.simg.filepart

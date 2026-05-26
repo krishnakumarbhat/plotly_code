@@ -10,7 +10,7 @@ from pathlib import Path
 import paramiko
 
 
-DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service"
+DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2"
 
 
 def ensure_remote_dir(sftp: paramiko.SFTPClient, remote_dir: str) -> None:
@@ -67,8 +67,7 @@ kill_port_listeners_force {args.broker_port}
 for pattern in 'run_hpcc_stack.sh' 'main_hpcc.sh' 'hpcc_main.pyz' 'main_html.simg' 'Singularity runtime parent' 'gunicorn'; do
     pkill -9 -u {args.user} -f "$pattern" >/dev/null 2>&1 || true
 done
-rm -f run_hpcc_stack.log
-mkdir -p logs runtime_state/main_html/cache_html/html runtime_state/main_html/cache_html/video runtime_state/main_html/cache_html/vlm_cache
+mkdir -p logs runtime_state/main_html/.cache_html/html runtime_state/main_html/.cache_html/video runtime_state/main_html/.cache_html/vlm_cache
 if command -v tmux >/dev/null 2>&1; then
   tmux new-session -d -s hpcc 'cd {remote_root} && env HPCC_PUBLIC_HOST={public_host} PORT={args.port} HPCC_BROKER_PORT={args.broker_port} HPCC_PORT_CONFLICT_POLICY=fail ./run_hpcc_stack.sh'
 else
@@ -93,7 +92,7 @@ def main() -> int:
     parser.add_argument("--user", default="ouymc2")
     parser.add_argument("--remote-root", default=DEFAULT_REMOTE_ROOT)
     parser.add_argument("--public-host", default="10.214.45.45")
-    parser.add_argument("--port", type=int, default=5001)
+    parser.add_argument("--port", type=int, default=5002)
     parser.add_argument("--broker-port", type=int, default=9100)
     parser.add_argument(
         "--bundle-root",

@@ -8,7 +8,7 @@ Usage:
 Defaults:
   host: 10.214.45.45 (Krakow)
   user: from USERNAME env or current user
-  dest: /net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA/{user}/all_services
+    dest: /net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2
 """
 import os
 import sys
@@ -24,11 +24,13 @@ except ImportError:
     print("ERROR: paramiko not installed. Run: pip install paramiko")
     sys.exit(1)
 
+KRAKOW_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2"
+
 # Cluster settings
 CLUSTERS = {
     "krakow": {
         "host": "10.214.45.45",
-        "base_path": "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA",
+        "remote_root": KRAKOW_REMOTE_ROOT,
     },
     "southfield": {
         "host": "10.192.224.131",
@@ -209,11 +211,10 @@ def main():
     if args.dest:
         remote_base = args.dest
     else:
-        base_path = cluster["base_path"]
         if args.cluster == "krakow":
-            remote_base = f"{base_path}/{args.user}/all_services"
+            remote_base = cluster["remote_root"]
         else:
-            remote_base = base_path  # Southfield already includes full path
+            remote_base = cluster["base_path"]  # Southfield already includes full path
     
     print("=" * 60)
     print("all_services Cluster Sync")

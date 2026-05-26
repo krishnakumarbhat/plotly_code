@@ -23,11 +23,13 @@ import getpass
 import platform
 from pathlib import Path
 
+KRAKOW_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2"
+
 # Cluster configurations
 CLUSTERS = {
     "krakow": {
         "host": "10.214.45.45",
-        "base_path": "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA",
+        "remote_root": KRAKOW_REMOTE_ROOT,
     },
     "southfield": {
         "host": "10.192.224.131",
@@ -132,7 +134,7 @@ def copy_simg_to_cluster(cluster: str, user: str, password: str, dest: str) -> b
     if dest:
         remote_dest = f"{dest}/simg"
     elif cluster == "krakow":
-        remote_dest = f"{cluster_info['base_path']}/{user}/all_services/simg"
+        remote_dest = f"{cluster_info['remote_root']}/simg"
     else:
         remote_dest = f"{cluster_info['base_path']}/simg"
     
@@ -157,7 +159,7 @@ def copy_simg_to_cluster(cluster: str, user: str, password: str, dest: str) -> b
     return result.returncode == 0
 
 
-def run_on_cluster(cluster: str, user: str, password: str, dest: str, port: int = 5001) -> bool:
+def run_on_cluster(cluster: str, user: str, password: str, dest: str, port: int = 5002) -> bool:
     """SSH to cluster and run the container."""
     print("\n" + "=" * 60)
     print(f"Starting container on {cluster.upper()}")
@@ -170,7 +172,7 @@ def run_on_cluster(cluster: str, user: str, password: str, dest: str, port: int 
     if dest:
         simg_dir = f"{dest}/simg"
     elif cluster == "krakow":
-        simg_dir = f"{cluster_info['base_path']}/{user}/all_services/simg"
+        simg_dir = f"{cluster_info['remote_root']}/simg"
     else:
         simg_dir = f"{cluster_info['base_path']}/simg"
     
@@ -216,7 +218,7 @@ def main():
                         help=f"Target cluster (default: {DEFAULT_CLUSTER})")
     parser.add_argument("--user", default=os.environ.get("CLUSTER_USER", os.environ.get("USERNAME", getpass.getuser())))
     parser.add_argument("--dest", default=None)
-    parser.add_argument("--port", type=int, default=5001)
+    parser.add_argument("--port", type=int, default=5002)
     parser.add_argument("--password", default=os.environ.get("CLUSTER_PASSWORD"))
     
     args = parser.parse_args()

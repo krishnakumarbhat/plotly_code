@@ -13,10 +13,11 @@ def main() -> int:
     parser.add_argument("--user", default="ouymc2")
     parser.add_argument(
         "--remote-root",
-        default="/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service",
+        default="/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2",
     )
-    parser.add_argument("--port", type=int, default=5006)
-    parser.add_argument("--broker-port", type=int, default=9106)
+    parser.add_argument("--port", type=int, default=5002)
+    parser.add_argument("--broker-port", type=int, default=9100)
+    parser.add_argument("--rag-port", type=int, default=5100)
     args = parser.parse_args()
 
     client = paramiko.SSHClient()
@@ -33,29 +34,29 @@ def main() -> int:
         command = f"""
 set -euo pipefail
 cd {args.remote_root}
-printf 'PWD=%s\\n' "$(pwd)"
-printf '\\nRELEVANT FILES\\n'
+printf 'PWD=%s\n' "$(pwd)"
+printf '\nRELEVANT FILES\n'
 find . -maxdepth 2 \( -name 'InputsInteractivePlot*.json' -o -name 'ConfigInteractivePlots*.xml' -o -name 'kpi.json' \) -type f | sort || true
-    printf '\\nLAUNCHER RUNTIME BLOCK\\n'
-    sed -n '100,150p' main_hpcc.sh || true
-    printf '\\nLAUNCHER UI BLOCK\\n'
-    sed -n '340,350p' main_hpcc.sh || true
-printf 'PORTS\\n'
-ss -ltnp | grep -E ':{args.port}|:{args.broker_port}' || true
-printf '\\nRECENT LOGS\\n'
+printf '\nLAUNCHER RUNTIME BLOCK\n'
+sed -n '100,150p' main_hpcc.sh || true
+printf '\nLAUNCHER UI BLOCK\n'
+sed -n '340,350p' main_hpcc.sh || true
+printf 'PORTS\n'
+ss -ltnp | grep -E ':{args.port}|:{args.broker_port}|:{args.rag_port}' || true
+printf '\nRECENT LOGS\n'
 ls -1t logs/restart_*.log 2>/dev/null | head -n 3 || true
 latest=$(ls -1t logs/restart_*.log 2>/dev/null | head -n 1 || true)
 if [[ -n "$latest" ]]; then
-  printf '\\nLATEST=%s\\n' "$latest"
+  printf '\nLATEST=%s\n' "$latest"
   tail -n 120 "$latest" || true
 fi
-printf '\\nDATABASE STATUS\\n'
+printf '\nDATABASE STATUS\n'
 python3 - <<'PY'
 import json
 import os
 import sqlite3
 
-db_path = 'runtime_state/main_html/cache_html/hpc_tools_dev.db'
+db_path = 'runtime_state/main_html/.cache_html/hpc_tools_dev.db'
 if not os.path.exists(db_path):
     print('missing db: ' + db_path)
     raise SystemExit(0)
@@ -68,7 +69,7 @@ print('runtime_jobs:')
 for row in cur.execute(
     'SELECT id, tool_key, status, input_path, output_path, log_path, error_message, created_at, completed_at FROM runtime_jobs ORDER BY id DESC LIMIT 5'
 ):
-    print(json.dumps(dict(row), ensure_ascii=False))
+    print(json.dumps(dict(row), ensure_ascii=False, default=str))
 
 print('job_history:')
 for row in cur.execute(
@@ -91,27 +92,17 @@ for row in cur.execute(
             lines = fp.readlines()[-80:]
         print(''.join(lines))
         print('--- tail end ---')
-        output_log_dir = os.path.join(row['output_path'], 'logs') if row['output_path'] else ''
-        if output_log_dir:
-            print('output_log_dir=' + output_log_dir)
-        for sibling_name in ('can_kpi.log', 'interactive_plot.log', 'udp_kpi_server.log', 'interactive_runtime_config.xml', 'interactive_inputs.json'):
-            sibling_path = os.path.join(output_log_dir, sibling_name) if output_log_dir else ''
-            if not os.path.exists(sibling_path):
-                continue
-            print('--- sibling ' + sibling_name + ' start ---')
-            with open(sibling_path, 'r', encoding='utf-8', errors='replace') as fp:
-                sibling_lines = fp.readlines()[-120:]
-            print(''.join(sibling_lines))
-            print('--- sibling ' + sibling_name + ' end ---')
     else:
         print('missing log file')
 PY
-printf '\\nMAIN HTML LOG\\n'
+printf '\nMAIN HTML LOG\n'
 tail -n 120 logs/main_html.log 2>/dev/null || true
-printf '\\nBROKER LOG\\n'
+printf '\nBROKER LOG\n'
 tail -n 120 logs/hpcc_broker.log 2>/dev/null || true
-printf '\\nPROCESSES\\n'
-ps -ef | grep -E 'main_hpcc.sh|hpcc_main.pyz|main_html.simg' | grep -v grep || true
+printf '\nRAG LOG\n'
+tail -n 120 logs/rag.log 2>/dev/null || true
+printf '\nPROCESSES\n'
+ps -ef | grep -E 'main_hpcc.sh|hpcc_main.pyz|main_html.simg|run_rag.sh|rag.simg' | grep -v grep || true
 """
         stdin, stdout, stderr = client.exec_command(command, timeout=120)
         out = stdout.read().decode("utf-8", errors="replace")

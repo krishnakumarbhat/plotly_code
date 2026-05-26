@@ -7,12 +7,15 @@ from pathlib import Path
 
 # Import environment utilities
 try:
-    from env_utils import get_env, get_db_uri, get_cache_dir, get_cluster_paths
+    from env_utils import get_env, get_db_uri, get_cache_dir, get_cluster_paths, get_cluster_slurm_defaults
 except ImportError:
     # Fallback if running from different location
     import sys
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from env_utils import get_env, get_db_uri, get_cache_dir, get_cluster_paths
+    from env_utils import get_env, get_db_uri, get_cache_dir, get_cluster_paths, get_cluster_slurm_defaults
+
+
+_SLURM_DEFAULTS = get_cluster_slurm_defaults()
 
 
 def _default_database_uri() -> str:
@@ -79,9 +82,9 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(hours=8)
     
     # HPC/Slurm Configuration
-    SLURM_PARTITION = os.environ.get('SLURM_PARTITION') or 'compute'
-    SLURM_ACCOUNT = os.environ.get('SLURM_ACCOUNT') or 'RNA-SDV-SRR7'
-    SLURM_QOS = (os.environ.get('SLURM_QOS') or '').strip()
+    SLURM_PARTITION = _SLURM_DEFAULTS['partition']
+    SLURM_ACCOUNT = _SLURM_DEFAULTS['account']
+    SLURM_QOS = _SLURM_DEFAULTS['qos']
     
     # File System Paths - auto-detected based on environment
     SCRATCH_DIR = _get_scratch_dir()
@@ -96,9 +99,6 @@ class Config:
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'simg'
     )
     SINGULARITY_MODULE = os.environ.get('SINGULARITY_MODULE') or 'singularity/3.11.4'
-    
-    # Slurm Partition Configuration for Krakow Cluster
-    SLURM_PARTITION = os.environ.get('SLURM_PARTITION') or 'plcyf-com'
     
     # LLM Configuration - auto-detected based on cluster
     LLM_SERVICE_URL = _get_llm_url()

@@ -117,6 +117,33 @@ fi
     return _SRUN_BINARY_CACHE
 
 
+def _cluster_slurm_defaults() -> Dict[str, str]:
+    if os.path.isdir('/mnt/usmidet'):
+        defaults = {
+            'partition': 'defq',
+            'account': 'radarcore',
+            'qos': '',
+        }
+    elif os.path.isdir('/net/8k3'):
+        defaults = {
+            'partition': 'plcyf-com',
+            'account': 'RNA-SDV-SRR7',
+            'qos': '',
+        }
+    else:
+        defaults = {
+            'partition': 'compute',
+            'account': '',
+            'qos': '',
+        }
+
+    return {
+        'partition': (os.environ.get('SLURM_PARTITION') or defaults['partition']).strip(),
+        'account': (os.environ.get('SLURM_ACCOUNT') or defaults['account']).strip(),
+        'qos': (os.environ.get('SLURM_QOS') or defaults['qos']).strip(),
+    }
+
+
 def _wsl_available() -> bool:
     return os.name == 'nt' and shutil.which('wsl') is not None
 
@@ -277,6 +304,24 @@ def _runtime_root(project_root: Path, script_anchor: Optional[Path] = None) -> P
     return project_root.resolve()
 
 
+def _runtime_work_root(project_root: Path) -> Path:
+    override = (os.environ.get('HPCC_RUNTIME_WORK_ROOT') or '').strip()
+    if override:
+        return Path(override).resolve()
+
+    if os.name != 'nt':
+        return (Path('/tmp') / 'hpcc_runtime').resolve()
+
+    return (_runtime_root(project_root) / 'runs').resolve()
+
+
+def _output_runtime_log_dir(output_path: str, job_dir_name: str) -> Optional[Path]:
+    candidate = _normalize_container_path(str(output_path or '').strip())
+    if not candidate:
+        return None
+    return Path(candidate) / '.hpcc_runtime' / job_dir_name
+
+
 def _default_interactive_config_path(project_root: Path, source_target: str) -> Path:
     runtime_root = _runtime_root(project_root)
     file_name = 'ConfigInteractivePlots_bordnet.xml' if source_target == 'can_kpi' else 'ConfigInteractivePlots.xml'
@@ -294,6 +339,11 @@ def _default_interactive_config_path(project_root: Path, source_target: str) -> 
 def _shell_join(arguments: List[str]) -> str:
     return ' '.join(shlex.quote(argument) for argument in arguments)
 
+
+def _write_askpass_script(password: str, path: Path) -> None:
+    """Write a chmod 0o500 script that echoes the password for SSH_ASKPASS."""
+    path.write_text(f'#!/bin/sh\nprintf \'%s\' {shlex.quote(password)}\n', encoding='utf-8')
+    path.chmod(0o500)
 
 def _tool_image_definition(workspace_root: Path, tool_key: str) -> Optional[Tuple[str, Path]]:
     definitions = {
@@ -371,6 +421,103 @@ def _resolve_image_path(workspace_root: Path, tool_key: str, configured_image_pa
     return ensure_image(workspace_root, image_name, definition_path)
 
 
+def _runtime_bundle_cache_root(workspace_root: Path) -> Path:
+    cache_root = _runtime_work_root(workspace_root) / '.bundle_cache'
+    cache_root.mkdir(parents=True, exist_ok=True)
+    if os.name != 'nt':
+        try:
+            cache_root.chmod(0o755)
+        except OSError:
+            pass
+    return cache_root
+
+
+def _stage_bundle_file_for_user_job(workspace_root: Path, source_path: Path) -> Path:
+    runtime_root = _runtime_root(workspace_root)
+    try:
+        relative_path = source_path.resolve().relative_to(runtime_root.resolve())
+    except (OSError, ValueError):
+        return source_path
+
+    try:
+        source_stat = source_path.stat()
+    except OSError:
+        return source_path
+
+    cache_root = _runtime_bundle_cache_root(workspace_root)
+    target_path = cache_root / relative_path
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        target_stat = target_path.stat()
+        if target_stat.st_size == source_stat.st_size and int(target_stat.st_mtime) >= int(source_stat.st_mtime):
+            return target_path
+    except OSError:
+        pass
+
+    temp_path = target_path.with_name(f'{target_path.name}.tmp.{os.getpid()}')
+    shutil.copy2(str(source_path), str(temp_path))
+    if os.name != 'nt':
+        try:
+            temp_path.chmod(0o755 if (source_stat.st_mode & 0o111) else 0o644)
+        except OSError:
+            pass
+    os.replace(str(temp_path), str(target_path))
+    return target_path
+
+
+def _stage_bundle_path_for_user_job(workspace_root: Path, path_value: str) -> str:
+    normalized = _normalize_container_path(str(path_value or '').strip())
+    if not normalized:
+        return normalized
+
+    candidate = Path(normalized)
+    try:
+        if not candidate.is_file():
+            return normalized
+    except OSError:
+        return normalized
+
+    return str(_stage_bundle_file_for_user_job(workspace_root, candidate))
+
+
+def _stage_kpi_bundle_support(workspace_root: Path, target: str, interactive_mode: str = 'disabled') -> Path:
+    runtime_root = _runtime_root(workspace_root)
+    required_files: List[Path] = [
+        runtime_root / 'bundle_common.sh',
+        runtime_root / 'kpi_runtime_launcher.sh',
+    ]
+
+    if target == 'udp_kpi':
+        required_files.extend([
+            runtime_root / 'kpi' / 'udp' / 'run_udp.sh',
+            runtime_root / 'kpi' / 'udp' / 'udp_kpi.simg',
+        ])
+        if interactive_mode == 'enabled':
+            required_files.append(runtime_root / 'kpi' / 'inplot_udp.sh')
+    elif target == 'can_kpi':
+        required_files.extend([
+            runtime_root / 'kpi' / 'can' / 'run_can.sh',
+            runtime_root / 'kpi' / 'can' / 'can_kpi.simg',
+        ])
+        if interactive_mode == 'enabled':
+            required_files.append(runtime_root / 'kpi' / 'inplot_can.sh')
+
+    if interactive_mode != 'disabled' or target == 'interactive_plot':
+        required_files.extend([
+            runtime_root / 'kpi' / 'int_plot' / 'run_intplot.sh',
+            runtime_root / 'kpi' / 'int_plot' / 'intplot_kpi.simg',
+            runtime_root / 'ConfigInteractivePlots.xml',
+            runtime_root / 'ConfigInteractivePlots_bordnet.xml',
+        ])
+
+    for path in required_files:
+        if path.exists():
+            _stage_bundle_file_for_user_job(workspace_root, path)
+
+    return _runtime_bundle_cache_root(workspace_root)
+
+
 def _container_run_command(
     image_path: Path,
     arguments: List[str],
@@ -446,7 +593,7 @@ def _service_environment(workspace_root: Path, tool_key: str) -> Dict[str, str]:
             'HPCC_BROKER_PORT': os.environ.get('HPCC_BROKER_PORT', '9100'),
             'RAG_SERVICE_URL': os.environ.get('RAG_SERVICE_URL', _rag_service_url(workspace_root)),
             'HOST': os.environ.get('HOST', '0.0.0.0'),
-            'PORT': os.environ.get('PORT', '5001'),
+            'PORT': os.environ.get('PORT', '5002'),
             'CACHE_HTML_DIR': normalized_cache_dir,
             'HYPERLINK_VLM_CACHE_DIR': normalized_vlm_cache_dir,
             'HYPERLINK_VLM_MODEL_DIR': normalized_local_model_dir,
@@ -684,6 +831,8 @@ class RuntimeBroker:
             status='QUEUED',
         )
         self.store.append_event(runtime_job_id, 'info', f'Prepared command for {tool_key}')
+        if spec.get('status_detail'):
+            self.store.append_event(runtime_job_id, 'warning', spec['status_detail'])
         self._launch(runtime_job_id, spec)
         return {
             'ok': True,
@@ -693,12 +842,19 @@ class RuntimeBroker:
             'output_path': spec['output_path'],
             'command': spec['command'],
             'console': spec.get('console', {}),
+            'status_detail': spec.get('status_detail', ''),
         }
 
     def _launch(self, runtime_job_id: int, spec: Dict[str, Any]) -> None:
         launcher_log_path = spec.get('launcher_log_path') or spec['log_path']
+        share_console_with_user = bool(spec.get('share_console_with_submitting_user'))
         os.makedirs(Path(launcher_log_path).parent, exist_ok=True)
         log_fp = open(launcher_log_path, 'a', encoding='utf-8', errors='replace')
+        if share_console_with_user:
+            try:
+                os.chmod(launcher_log_path, 0o666)
+            except OSError:
+                pass
         header_lines = [
             '[broker] COMMAND: ' + ' '.join(spec['command']),
             '[broker] START: ' + self._utcnow(),
@@ -710,6 +866,11 @@ class RuntimeBroker:
         if spec['log_path'] != launcher_log_path:
             os.makedirs(Path(spec['log_path']).parent, exist_ok=True)
             with open(spec['log_path'], 'a', encoding='utf-8', errors='replace') as console_fp:
+                if share_console_with_user:
+                    try:
+                        os.chmod(spec['log_path'], 0o666)
+                    except OSError:
+                        pass
                 console_fp.write('\n'.join(header_lines) + '\n')
                 console_fp.flush()
 
@@ -848,15 +1009,29 @@ class RuntimeBroker:
         paths = payload.get('paths', {}) or {}
         resources = payload.get('resources', {}) or {}
         requested_by = payload.get('user', 'unknown')
+        user_password = (payload.get('user_password') or '').strip()
         timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
-        run_dir = _runtime_root(self.workspace_root) / 'runs' / requested_by / f'{tool_key}_{timestamp}'
+        job_dir_name = f'{tool_key}_{timestamp}'
+        run_dir = _runtime_work_root(self.workspace_root) / requested_by / job_dir_name
         run_dir.mkdir(parents=True, exist_ok=True)
-        output_path = paths.get('output_dir') or str(run_dir / 'output')
-        os.makedirs(output_path, exist_ok=True)
+        run_dir.chmod(0o777)  # allow the submitting user's srun job to write exit/log files back
+        output_path, output_warning = self._resolve_output_path(paths.get('output_dir'), run_dir, requested_by)
         use_tmux_console = str(resources.get('scheduler', '')).lower() == 'slurm' and _srun_binary() is not None and os.name != 'nt'
+        output_log_dir = _output_runtime_log_dir(output_path, job_dir_name)
         log_path = str(run_dir / ('runtime_console.log' if use_tmux_console else 'execution.log'))
         launcher_log_path = str(run_dir / 'launcher.log') if use_tmux_console else log_path
         launch_plan = self._tool_command(tool_key, tool, paths, output_path)
+        launch_plan['output_path'] = output_path
+        launch_plan['runtime_control_dir'] = str(run_dir)
+        if output_log_dir is not None:
+            launch_plan['pane_log_dir'] = str(output_log_dir)
+            if use_tmux_console:
+                launch_plan['project_console_log_path'] = str(output_log_dir / 'runtime_console.log')
+        if user_password and os.name != 'nt':
+            askpass_path = run_dir / '.ssh_askpass.sh'
+            _write_askpass_script(user_password, askpass_path)
+            launch_plan['ssh_run_as_user'] = requested_by
+            launch_plan['ssh_askpass_path'] = str(askpass_path)
         pane_names = ['udp', 'interactive'] if launch_plan.get('kind') == 'udp_interactive_dual' else ['main']
         console = {
             'display_name': f"{tool.get('display_name', tool_key)} console",
@@ -865,7 +1040,8 @@ class RuntimeBroker:
             'pane_names': pane_names,
             'input_queue_path': str(run_dir / 'tmux_input.queue') if use_tmux_console else '',
             'log_path': log_path,
-            'run_dir': str(run_dir),
+            'run_dir': str(output_log_dir or run_dir),
+            'control_dir': str(run_dir),
             'supports_input': use_tmux_console,
         }
         if use_tmux_console:
@@ -876,10 +1052,16 @@ class RuntimeBroker:
             launch_plan['service_host_file'] = str(run_dir / 'service_host.txt')
         command = self._maybe_prefix_scheduler(tool_key, launch_plan, resources, run_dir, requested_by)
 
+        spec_env = os.environ.copy()
+        if launch_plan.get('ssh_askpass_path'):
+            spec_env['SSH_ASKPASS'] = launch_plan['ssh_askpass_path']
+            spec_env['SSH_ASKPASS_REQUIRE'] = 'force'
+            spec_env.setdefault('DISPLAY', 'x')
+
         return {
             'command': command,
             'cwd': str(self.workspace_root),
-            'env': os.environ.copy(),
+            'env': spec_env,
             'mode': launch_plan['mode'],
             'input_path': launch_plan['input_path'],
             'output_path': output_path,
@@ -890,7 +1072,24 @@ class RuntimeBroker:
             'service_port': launch_plan.get('service_port'),
             'service_host_file': launch_plan.get('service_host_file', ''),
             'console': console,
+            'share_console_with_submitting_user': bool(launch_plan.get('ssh_run_as_user')),
+            'status_detail': output_warning,
         }
+
+    def _resolve_output_path(self, requested_output_dir: Any, run_dir: Path, requested_by: str) -> Tuple[str, str]:
+        fallback_path = run_dir / 'output'
+        fallback_path.mkdir(parents=True, exist_ok=True)
+
+        candidate = str(requested_output_dir or '').strip()
+        if not candidate:
+            return str(fallback_path), ''
+
+        # Accept the explicit path without a broker-side write test.
+        # The broker service account may not have access to other users' project
+        # spaces (e.g. GPO-IFV7XX group-restricted directories). The Slurm
+        # launcher script will attempt `mkdir -p` at job run time; if that also
+        # fails, the job exits immediately with a clear filesystem error.
+        return candidate, ''
 
     def _tool_command(
         self,
@@ -900,29 +1099,34 @@ class RuntimeBroker:
         output_path: str,
     ) -> Dict[str, Any]:
         image_path = _resolve_image_path(self.workspace_root, tool_key, tool.get('image_path', ''))
+        if image_path is not None:
+            image_path = _stage_bundle_file_for_user_job(self.workspace_root, image_path)
+
         input_mode = (paths.get('input_mode') or 'json').strip().lower()
         runtime_output_path = _normalize_container_path(output_path)
         interactive_plot_mode = (paths.get('interactive_plot_mode') or 'disabled').strip().lower()
         interactive_source_target = (paths.get('interactive_source_target') or tool_key).strip() or tool_key
         if interactive_source_target not in {'can_kpi', 'udp_kpi'}:
             interactive_source_target = 'udp_kpi'
-        config_xml = _sanitize_runtime_path(paths.get('config_xml', '').strip())
-        optional_config = _sanitize_runtime_path(paths.get('optional_config', '').strip())
+        config_xml = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('config_xml', '').strip()))
+        optional_config = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('optional_config', '').strip()))
         launcher_path = _runtime_root(self.workspace_root) / 'kpi_runtime_launcher.sh'
 
         if tool_key != 'hyperlink' and image_path is None:
             raise ValueError(f'Container image is not available for {tool_key}')
 
         if tool_key == 'udp_kpi' and interactive_plot_mode == 'enabled' and input_mode == 'json':
-            json_path = _sanitize_runtime_path(paths.get('json_path', '').strip())
+            json_path = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('json_path', '').strip()))
             if not json_path:
                 raise ValueError('json_path is required for JSON mode')
 
             interactive_image = _resolve_image_path(self.workspace_root, 'interactive_plot', '')
             if interactive_image is None:
                 raise ValueError('Container image is not available for interactive_plot')
+            interactive_image = _stage_bundle_file_for_user_job(self.workspace_root, interactive_image)
 
             if optional_config:
+                launcher_path = _stage_kpi_bundle_support(self.workspace_root, tool_key, interactive_plot_mode) / 'kpi_runtime_launcher.sh'
                 launcher_args = [
                     '--target', tool_key,
                     '--source-target', interactive_source_target,
@@ -943,8 +1147,11 @@ class RuntimeBroker:
 
             effective_config_xml = config_xml
             if not effective_config_xml:
-                effective_config_xml = _sanitize_runtime_path(
+                effective_config_xml = _stage_bundle_path_for_user_job(
+                    self.workspace_root,
+                    _sanitize_runtime_path(
                     str(_default_interactive_config_path(self.workspace_root, interactive_source_target))
+                    ),
                 )
 
             zmq_port = str(paths.get('port') or os.environ.get('KPI_SERVER_PORT', '5560')).strip() or '5560'
@@ -977,6 +1184,7 @@ class RuntimeBroker:
             }
 
         if tool_key in {'can_kpi', 'udp_kpi'} and interactive_plot_mode == 'enabled':
+            launcher_path = _stage_kpi_bundle_support(self.workspace_root, tool_key, interactive_plot_mode) / 'kpi_runtime_launcher.sh'
             if not launcher_path.exists():
                 raise ValueError(f'Combined KPI launcher is not available: {launcher_path}')
 
@@ -993,8 +1201,8 @@ class RuntimeBroker:
                 launcher_args.extend(['--optional-config', optional_config])
 
             if input_mode == 'hdf':
-                input_hdf = _sanitize_runtime_path(paths.get('input_hdf', '').strip())
-                output_hdf = _sanitize_runtime_path(paths.get('output_hdf', '').strip())
+                input_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('input_hdf', '').strip()))
+                output_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('output_hdf', '').strip()))
                 if not input_hdf or not output_hdf:
                     raise ValueError('input_hdf and output_hdf are required for HDF mode')
                 launcher_args.extend(['--input-hdf', input_hdf, '--output-hdf', output_hdf])
@@ -1005,7 +1213,7 @@ class RuntimeBroker:
                     'input_path': input_hdf,
                 }
 
-            json_path = _sanitize_runtime_path(paths.get('json_path', '').strip())
+            json_path = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('json_path', '').strip()))
             if not json_path:
                 raise ValueError('json_path is required for JSON mode')
             launcher_args.extend(['--json-path', json_path])
@@ -1018,8 +1226,8 @@ class RuntimeBroker:
 
         if tool_key in {'can_kpi', 'udp_kpi'}:
             if input_mode == 'hdf':
-                input_hdf = _sanitize_runtime_path(paths.get('input_hdf', '').strip())
-                output_hdf = _sanitize_runtime_path(paths.get('output_hdf', '').strip())
+                input_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('input_hdf', '').strip()))
+                output_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('output_hdf', '').strip()))
                 if not input_hdf or not output_hdf:
                     raise ValueError('input_hdf and output_hdf are required for HDF mode')
                 return {
@@ -1028,7 +1236,7 @@ class RuntimeBroker:
                     'mode': 'hdf',
                     'input_path': input_hdf,
                 }
-            json_path = _sanitize_runtime_path(paths.get('json_path', '').strip())
+            json_path = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('json_path', '').strip()))
             if not json_path:
                 raise ValueError('json_path is required for JSON mode')
             return {
@@ -1039,6 +1247,7 @@ class RuntimeBroker:
             }
 
         if tool_key == 'interactive_plot':
+            launcher_path = _stage_kpi_bundle_support(self.workspace_root, tool_key, 'only') / 'kpi_runtime_launcher.sh'
             if not launcher_path.exists():
                 raise ValueError(f'Interactive Plot launcher is not available: {launcher_path}')
 
@@ -1055,8 +1264,8 @@ class RuntimeBroker:
                 launcher_args.extend(['--optional-config', optional_config])
 
             if input_mode == 'hdf':
-                input_hdf = _sanitize_runtime_path(paths.get('input_hdf', '').strip())
-                output_hdf = _sanitize_runtime_path(paths.get('output_hdf', '').strip())
+                input_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('input_hdf', '').strip()))
+                output_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('output_hdf', '').strip()))
                 if not input_hdf or not output_hdf:
                     raise ValueError('input_hdf and output_hdf are required for HDF mode')
                 launcher_args.extend(['--input-hdf', input_hdf, '--output-hdf', output_hdf])
@@ -1067,7 +1276,7 @@ class RuntimeBroker:
                     'input_path': input_hdf,
                 }
 
-            inputs_json = _sanitize_runtime_path(paths.get('json_path', '').strip())
+            inputs_json = _stage_bundle_path_for_user_job(self.workspace_root, _sanitize_runtime_path(paths.get('json_path', '').strip()))
             if not inputs_json:
                 raise ValueError('json_path is required for interactive plot JSON mode')
             launcher_args.extend(['--json-path', inputs_json])
@@ -1149,21 +1358,21 @@ class RuntimeBroker:
             if default_args:
                 command_args = default_args
             elif default_mode == 'json':
-                json_path = _normalize_container_path(paths.get('json_path', '').strip())
+                json_path = _stage_bundle_path_for_user_job(self.workspace_root, _normalize_container_path(paths.get('json_path', '').strip()))
                 if not json_path:
                     raise ValueError('json_path is required for JSON launch mode')
                 command_args = [json_path, runtime_output_path]
                 primary_input = json_path
             elif default_mode == 'hdf':
-                input_hdf = _normalize_container_path(paths.get('input_hdf', '').strip())
-                output_hdf = _normalize_container_path(paths.get('output_hdf', '').strip())
+                input_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _normalize_container_path(paths.get('input_hdf', '').strip()))
+                output_hdf = _stage_bundle_path_for_user_job(self.workspace_root, _normalize_container_path(paths.get('output_hdf', '').strip()))
                 if not input_hdf or not output_hdf:
                     raise ValueError('input_hdf and output_hdf are required for HDF launch mode')
                 command_args = [input_hdf, output_hdf, runtime_output_path]
                 primary_input = input_hdf
             else:
                 command_args = []
-                primary_input = _normalize_container_path(paths.get('json_path', '').strip()) or _normalize_container_path(paths.get('input_hdf', '').strip())
+                primary_input = _stage_bundle_path_for_user_job(self.workspace_root, _normalize_container_path(paths.get('json_path', '').strip())) or _stage_bundle_path_for_user_job(self.workspace_root, _normalize_container_path(paths.get('input_hdf', '').strip()))
 
             return {
                 'kind': 'single',
@@ -1186,22 +1395,36 @@ class RuntimeBroker:
         log_path: Path,
         exit_path: Path,
         shared_log_path: Optional[Path] = None,
+        mirror_log_path: Optional[Path] = None,
         service_host_file: str = '',
         wait_for_port: str = '',
     ) -> str:
         pane_label = pane_name.upper()
+        tee_targets = []
+        if shared_log_path:
+            tee_targets.append('"$SHARED_LOG"')
+        if mirror_log_path:
+            tee_targets.append('"$MIRROR_LOG"')
+        if tee_targets:
+            exec_redirect = (
+                'exec > >(sed -u '
+                + shlex.quote(f"s/^/[{pane_label}] /")
+                + ' | tee -a '
+                + ' '.join(tee_targets)
+                + ' >> "$PANE_LOG") 2>&1'
+            )
+        else:
+            exec_redirect = 'exec >> "$PANE_LOG" 2>&1'
         payload_parts = [
             'set -uo pipefail',
             f"PANE_LOG={shlex.quote(str(log_path))}",
             f"SHARED_LOG={shlex.quote(str(shared_log_path))}" if shared_log_path else "SHARED_LOG=''",
+            f"MIRROR_LOG={shlex.quote(str(mirror_log_path))}" if mirror_log_path else "MIRROR_LOG=''",
             'mkdir -p "$(dirname \"$PANE_LOG\")"',
             'touch "$PANE_LOG"',
             'if [[ -n "$SHARED_LOG" ]]; then mkdir -p "$(dirname \"$SHARED_LOG\")"; touch "$SHARED_LOG"; fi',
-            (
-                'if [[ -n "$SHARED_LOG" ]]; then '
-                f'exec > >(sed -u {shlex.quote(f"s/^/[{pane_label}] /")} | tee -a "$SHARED_LOG" >> "$PANE_LOG") 2>&1; '
-                'else exec >> "$PANE_LOG" 2>&1; fi'
-            ),
+            'if [[ -n "$MIRROR_LOG" ]]; then mkdir -p "$(dirname \"$MIRROR_LOG\")"; touch "$MIRROR_LOG"; fi',
+            exec_redirect,
             f"printf '%s\\n' {shlex.quote(f'[{pane_label}] COMMAND: {_shell_join(command)}')}",
             f'printf "%s\\n" "[{pane_label}] START: $(date -Iseconds 2>/dev/null || date)"',
         ]
@@ -1272,22 +1495,27 @@ INPUT_WATCHER_PID=$!
         script_path = run_dir / 'slurm_tmux_launcher.sh'
         session_name = self._tmux_session_name(tool_key, requested_by, run_dir)
         singularity_module = (os.environ.get('SINGULARITY_MODULE') or 'singularity/3.11.4').strip()
+        slurm_defaults = _cluster_slurm_defaults()
+        account_value = str(resources.get('account') or slurm_defaults['account']).strip()
+        partition_value = str(resources.get('partition') or slurm_defaults['partition']).strip()
 
-        srun_command = [
-            _srun_binary() or 'srun',
-            f"--account={resources.get('account') or os.environ.get('SLURM_ACCOUNT') or 'RNA-SDV-SRR7'}",
-            f"--partition={resources.get('partition') or os.environ.get('SLURM_PARTITION') or 'plcyf-com'}",
+        srun_command = [_srun_binary() or 'srun']
+        if account_value:
+            srun_command.append(f'--account={account_value}')
+        if partition_value:
+            srun_command.append(f'--partition={partition_value}')
+        srun_command.extend([
             f"--nodes={resources.get('nodes') or 1}",
             f"--ntasks={resources.get('ntasks') or 1}",
             f"--cpus-per-task={resources.get('cpus') or 8}",
             f"--mem={resources.get('memory') or '72G'}",
             f"--time={resources.get('time_limit') or '18:00:00'}",
             f"--job-name={session_name}",
-        ]
+        ])
         immediate_seconds = _slurm_immediate_seconds(tool_key, resources)
         if immediate_seconds:
             srun_command.append(f'--immediate={immediate_seconds}')
-        qos = (resources.get('qos') or os.environ.get('SLURM_QOS') or '').strip()
+        qos = str(resources.get('qos') or slurm_defaults['qos']).strip()
         if qos:
             srun_command.append(f'--qos={qos}')
         exclude_nodes = (resources.get('exclude') or os.environ.get('HPC_TOOLS_SLURM_EXCLUDE_NODES') or '').strip()
@@ -1300,15 +1528,20 @@ INPUT_WATCHER_PID=$!
             srun_command.append(f'--gres={gres_value}')
 
         service_host_file = launch_plan.get('service_host_file', '')
+        pane_log_dir = Path(launch_plan.get('pane_log_dir') or run_dir)
         console_log = Path(launch_plan.get('console_log_path') or run_dir / 'runtime_console.log')
+        project_console_log = Path(launch_plan['project_console_log_path']) if launch_plan.get('project_console_log_path') else None
         input_queue = Path(launch_plan.get('input_queue_path') or run_dir / 'tmux_input.queue')
         pane_names = launch_plan.get('pane_names') or ['main']
         single_exit = run_dir / 'compute_main.exit'
-        single_log = run_dir / 'compute_main.log'
+        single_log = pane_log_dir / 'compute_main.log'
         udp_exit = run_dir / 'compute_udp.exit'
-        udp_log = run_dir / 'compute_udp.log'
+        udp_log = pane_log_dir / 'compute_udp.log'
         interactive_exit = run_dir / 'compute_interactive.exit'
-        interactive_log = run_dir / 'compute_interactive.log'
+        interactive_log = pane_log_dir / 'compute_interactive.log'
+
+        output_dir_for_mkdir = (launch_plan.get('output_path') or '').strip()
+        mkdir_step = f'mkdir -p {shlex.quote(output_dir_for_mkdir)}\n' if output_dir_for_mkdir else ''
 
         if launch_plan.get('kind') == 'udp_interactive_dual':
             udp_payload = self._window_payload(
@@ -1316,14 +1549,16 @@ INPUT_WATCHER_PID=$!
                 'udp',
                 udp_log,
                 udp_exit,
-                shared_log_path=console_log,
+                shared_log_path=project_console_log or console_log,
+                mirror_log_path=console_log if project_console_log else None,
             )
             interactive_payload = self._window_payload(
                 launch_plan['secondary_command'],
                 'interactive',
                 interactive_log,
                 interactive_exit,
-                shared_log_path=console_log,
+                shared_log_path=project_console_log or console_log,
+                mirror_log_path=console_log if project_console_log else None,
                 wait_for_port=str(launch_plan.get('secondary_port') or '5560'),
             )
             input_worker = self._tmux_input_worker(input_queue, ['udp', 'interactive'])
@@ -1332,7 +1567,7 @@ if type module >/dev/null 2>&1; then
     module load slurm >/dev/null 2>&1 || true
     module load {shlex.quote(singularity_module)} >/dev/null 2>&1 || true
 fi
-SESSION_NAME={shlex.quote(session_name)}
+{mkdir_step}SESSION_NAME={shlex.quote(session_name)}
 UDP_EXIT={shlex.quote(str(udp_exit))}
 INTERACTIVE_EXIT={shlex.quote(str(interactive_exit))}
 INPUT_QUEUE={shlex.quote(str(input_queue))}
@@ -1385,7 +1620,8 @@ exit \"$interactive_status\"
                 'main',
                 single_log,
                 single_exit,
-                shared_log_path=console_log,
+                shared_log_path=project_console_log or console_log,
+                mirror_log_path=console_log if project_console_log else None,
                 service_host_file=service_host_file,
             )
             input_worker = self._tmux_input_worker(input_queue, pane_names)
@@ -1394,7 +1630,7 @@ if type module >/dev/null 2>&1; then
     module load slurm >/dev/null 2>&1 || true
     module load {shlex.quote(singularity_module)} >/dev/null 2>&1 || true
 fi
-SESSION_NAME={shlex.quote(session_name)}
+{mkdir_step}SESSION_NAME={shlex.quote(session_name)}
 EXIT_FILE={shlex.quote(str(single_exit))}
 INPUT_QUEUE={shlex.quote(str(input_queue))}
 rm -f \"$EXIT_FILE\"
@@ -1420,6 +1656,12 @@ bash -lc {shlex.quote(single_payload)}
             '#!/usr/bin/env bash\n'
             'set -euo pipefail\n\n'
             f"cd {shlex.quote(str(self.workspace_root))}\n"
+            + (_shell_join(['ssh',
+                            '-o', 'StrictHostKeyChecking=no',
+                            '-o', 'PasswordAuthentication=yes',
+                            '-o', 'NumberOfPasswordPrompts=1',
+                            f'{launch_plan["ssh_run_as_user"]}@127.0.0.1']) + ' '
+               if (launch_plan.get('ssh_run_as_user') or '').strip() else '')
             + _shell_join(srun_command)
             + ' bash -lc '
             + shlex.quote(remote_script)
@@ -1458,6 +1700,7 @@ bash -lc {shlex.quote(single_payload)}
 
 class BrokerHandler(socketserver.StreamRequestHandler):
     def handle(self) -> None:
+        import traceback as _traceback
         raw = self.rfile.readline()
         if not raw:
             return
@@ -1465,6 +1708,7 @@ class BrokerHandler(socketserver.StreamRequestHandler):
             payload = json.loads(raw.decode('utf-8'))
             response = self.server.runtime_broker.handle(payload)
         except Exception as exc:
+            _traceback.print_exc()
             response = {'ok': False, 'error': str(exc)}
         self.wfile.write((json.dumps(response) + '\n').encode('utf-8'))
 
@@ -1514,6 +1758,11 @@ def maybe_start_rag(launch_env: Dict[str, str]) -> Optional[subprocess.Popen]:
 
 
 def main() -> None:
+    # Set umask 022 so all dirs/files the broker creates are readable and traversable
+    # by other users (e.g. the user's own srun job needs to traverse run_dir parents).
+    if os.name != 'nt':
+        os.umask(0o022)
+
     parser = argparse.ArgumentParser(description='HPCC runtime broker for main_html + SIMG tools')
     parser.add_argument('--host', default=os.environ.get('HPCC_BROKER_HOST', '127.0.0.1'))
     parser.add_argument('--port', type=int, default=int(os.environ.get('HPCC_BROKER_PORT', '9100')))
@@ -1537,7 +1786,7 @@ def main() -> None:
             _rag_service_url(workspace_root, for_wsl_client=rag_on_host and not main_html_on_host),
         )
         launch_env.setdefault('HOST', '0.0.0.0')
-        launch_env.setdefault('PORT', '5001')
+        launch_env.setdefault('PORT', '5002')
         launch_env.setdefault('FLASK_HOST', '0.0.0.0')
         launch_env.setdefault('FLASK_PORT', '5100')
         os.environ.update({
@@ -1620,7 +1869,7 @@ def main() -> None:
     launch_env.setdefault('HPCC_BROKER_PORT', str(args.port))
     launch_env.setdefault('RAG_SERVICE_URL', _rag_service_url(workspace_root))
     launch_env.setdefault('HOST', '0.0.0.0')
-    launch_env.setdefault('PORT', '5001')
+    launch_env.setdefault('PORT', '5002')
     launch_env.setdefault('FLASK_HOST', '0.0.0.0')
     launch_env.setdefault('FLASK_PORT', '5100')
     os.environ.update({

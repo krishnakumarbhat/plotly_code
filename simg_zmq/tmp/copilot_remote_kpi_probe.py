@@ -8,7 +8,7 @@ from textwrap import dedent
 import paramiko
 
 
-DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service"
+DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2"
 
 
 MODE_CONFIG = {

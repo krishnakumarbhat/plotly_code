@@ -18,6 +18,7 @@ Usage:
 import os
 import sys
 import platform
+import stat
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
@@ -109,6 +110,25 @@ def _get_project_root() -> Path:
     return Path(__file__).parent.resolve()
 
 
+def _ensure_private_directory(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    if os.name != 'nt':
+        try:
+            path.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        except OSError:
+            pass
+    return path
+
+
+def _prefer_hidden_cache_dir(preferred: Path, legacy: Optional[Path] = None) -> Path:
+    if legacy and legacy.exists() and not preferred.exists():
+        try:
+            legacy.rename(preferred)
+        except OSError:
+            pass
+    return _ensure_private_directory(preferred)
+
+
 def _get_cache_dir(runtime: RuntimeEnv, project_root: Path) -> str:
     """Get the cache directory based on environment"""
     
@@ -119,15 +139,17 @@ def _get_cache_dir(runtime: RuntimeEnv, project_root: Path) -> str:
 
     bundle_root_override = (os.environ.get('HPCC_BUNDLE_ROOT') or '').strip()
     if bundle_root_override:
-        cache_dir = Path(bundle_root_override).resolve() / 'runtime_state' / 'main_html' / 'cache_html'
-        os.makedirs(str(cache_dir), exist_ok=True)
+        runtime_state_dir = Path(bundle_root_override).resolve() / 'runtime_state' / 'main_html'
+        cache_dir = _prefer_hidden_cache_dir(
+            runtime_state_dir / '.cache_html',
+            runtime_state_dir / 'cache_html',
+        )
         return str(cache_dir)
     
     # For container environments, default to /tmp because SIF images are read-only at runtime.
     if runtime in (RuntimeEnv.SINGULARITY, RuntimeEnv.DOCKER):
-        cache_dir = '/tmp/hpc_tools/.cache_html'
-        os.makedirs(cache_dir, exist_ok=True)
-        return cache_dir
+        cache_dir = _ensure_private_directory(Path('/tmp/hpc_tools/.cache_html'))
+        return str(cache_dir)
     
     # For cluster environments, use simg/.cache_html in project
     if runtime in (RuntimeEnv.KRAKOW, RuntimeEnv.SOUTHFIELD):
@@ -136,13 +158,11 @@ def _get_cache_dir(runtime: RuntimeEnv, project_root: Path) -> str:
             cache_dir = simg_dir / '.cache_html'
         else:
             cache_dir = project_root / '.cache_html'
-        os.makedirs(str(cache_dir), exist_ok=True)
-        return str(cache_dir)
+        return str(_ensure_private_directory(cache_dir))
     
     # For Windows/WSL/Linux development
     cache_dir = project_root / 'simg' / '.cache_html'
-    os.makedirs(str(cache_dir), exist_ok=True)
-    return str(cache_dir)
+    return str(_ensure_private_directory(cache_dir))
 
 
 def _get_db_path(cache_dir: str) -> str:
@@ -252,6 +272,43 @@ def get_cluster_paths(cluster: str = None) -> dict:
             'scratch': '/tmp',
             'host': 'localhost'
         }
+
+
+def get_cluster_slurm_defaults(cluster: str = None) -> dict:
+    env = get_env()
+
+    if cluster is None:
+        if env.runtime == RuntimeEnv.KRAKOW:
+            cluster = 'krakow'
+        elif env.runtime == RuntimeEnv.SOUTHFIELD:
+            cluster = 'southfield'
+        else:
+            cluster = 'generic'
+
+    if cluster == 'southfield':
+        defaults = {
+            'partition': 'defq',
+            'account': 'radarcore',
+            'qos': '',
+        }
+    elif cluster == 'krakow':
+        defaults = {
+            'partition': 'plcyf-com',
+            'account': 'RNA-SDV-SRR7',
+            'qos': '',
+        }
+    else:
+        defaults = {
+            'partition': 'compute',
+            'account': 'default',
+            'qos': '',
+        }
+
+    return {
+        'partition': (os.environ.get('SLURM_PARTITION') or defaults['partition']).strip(),
+        'account': (os.environ.get('SLURM_ACCOUNT') or defaults['account']).strip(),
+        'qos': (os.environ.get('SLURM_QOS') or defaults['qos']).strip(),
+    }
 
 
 def get_static_dir() -> str:

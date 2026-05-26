@@ -123,12 +123,12 @@ def main() -> int:
   parser.add_argument('--local-ui-image', default=None)
   parser.add_argument(
     '--remote-root',
-    default='/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service',
+    default='/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2',
   )
   parser.add_argument('--host', default='10.214.45.45')
   parser.add_argument('--user', default='ouymc2')
-  parser.add_argument('--port', type=int, default=5006)
-  parser.add_argument('--broker-port', type=int, default=9106)
+  parser.add_argument('--port', type=int, default=5002)
+  parser.add_argument('--broker-port', type=int, default=9100)
   args = parser.parse_args()
 
   bundle_root = resolve_bundle_root(args)

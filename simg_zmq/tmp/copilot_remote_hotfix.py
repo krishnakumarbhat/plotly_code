@@ -10,7 +10,7 @@ from pathlib import Path
 import paramiko
 
 
-DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service"
+DEFAULT_REMOTE_ROOT = "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_service2"
 
 
 def ensure_remote_dir(sftp: paramiko.SFTPClient, remote_dir: str) -> None:
@@ -69,32 +69,35 @@ kill_port_listeners_force() {{
 tmux kill-server >/dev/null 2>&1 || true
 kill_port_listeners {args.port}
 kill_port_listeners {args.broker_port}
-for pattern in 'run_hpcc_stack.sh' 'main_hpcc.sh' 'hpcc_main.pyz' 'main_html.simg' 'Singularity runtime parent' 'gunicorn'; do
+kill_port_listeners {args.rag_port}
+for pattern in 'run_hpcc_stack.sh' 'main_hpcc.sh' 'hpcc_main.pyz' 'main_html.simg' 'run_rag.sh' 'rag.simg' 'Singularity runtime parent' 'gunicorn'; do
     pkill -u {args.user} -f "$pattern" >/dev/null 2>&1 || true
 done
 sleep 2
 kill_port_listeners_force {args.port}
 kill_port_listeners_force {args.broker_port}
-for pattern in 'run_hpcc_stack.sh' 'main_hpcc.sh' 'hpcc_main.pyz' 'main_html.simg' 'Singularity runtime parent' 'gunicorn'; do
+kill_port_listeners_force {args.rag_port}
+for pattern in 'run_hpcc_stack.sh' 'main_hpcc.sh' 'hpcc_main.pyz' 'main_html.simg' 'run_rag.sh' 'rag.simg' 'Singularity runtime parent' 'gunicorn'; do
     pkill -9 -u {args.user} -f "$pattern" >/dev/null 2>&1 || true
 done
-rm -f run_hpcc_stack.log
-mkdir -p logs runtime_state/main_html/cache_html/html runtime_state/main_html/cache_html/video runtime_state/main_html/cache_html/vlm_cache
-find logs -maxdepth 1 -type f \\( -name '*.log' -o -name '*.pid' -o -name '*.prev' \\) -delete
+mkdir -p logs runtime_state/main_html/.cache_html/html runtime_state/main_html/.cache_html/video runtime_state/main_html/.cache_html/vlm_cache
+find logs -maxdepth 1 -type f \( -name '*.log' -o -name '*.pid' -o -name '*.prev' \) -delete
 if command -v tmux >/dev/null 2>&1; then
-  tmux new-session -d -s hpcc 'cd {remote_root} && env HPCC_PUBLIC_HOST={public_host} PORT={args.port} HPCC_BROKER_PORT={args.broker_port} HPCC_PORT_CONFLICT_POLICY=fail ./run_hpcc_stack.sh'
+  tmux new-session -d -s hpcc 'cd {remote_root} && env HPCC_PUBLIC_HOST={public_host} PORT={args.port} HPCC_BROKER_PORT={args.broker_port} HPCC_PORT_CONFLICT_POLICY=fail HPCC_AUTO_START_RAG=1 RAG_PORT={args.rag_port} ./run_hpcc_stack.sh'
 else
-  nohup env HPCC_PUBLIC_HOST={public_host} PORT={args.port} HPCC_BROKER_PORT={args.broker_port} HPCC_PORT_CONFLICT_POLICY=fail ./run_hpcc_stack.sh > logs/restart_{stamp}.log 2>&1 < /dev/null &
+  nohup env HPCC_PUBLIC_HOST={public_host} PORT={args.port} HPCC_BROKER_PORT={args.broker_port} HPCC_PORT_CONFLICT_POLICY=fail HPCC_AUTO_START_RAG=1 RAG_PORT={args.rag_port} ./run_hpcc_stack.sh > logs/restart_{stamp}.log 2>&1 < /dev/null &
 fi
 sleep 8
 printf 'PORTS\n'
-ss -ltnp | grep -E ':{args.port}|:{args.broker_port}' || true
+ss -ltnp | grep -E ':{args.port}|:{args.broker_port}|:{args.rag_port}' || true
 printf '\nWRAPPER\n'
 tail -n 80 run_hpcc_stack.log 2>/dev/null || true
 printf '\nBROKER\n'
 tail -n 120 logs/hpcc_broker.log 2>/dev/null || true
 printf '\nUI\n'
 tail -n 120 logs/main_html.log 2>/dev/null || true
+printf '\nRAG\n'
+tail -n 120 logs/rag.log 2>/dev/null || true
 """
 
 
@@ -105,8 +108,9 @@ def main() -> int:
     parser.add_argument("--user", default="ouymc2")
     parser.add_argument("--remote-root", default=DEFAULT_REMOTE_ROOT)
     parser.add_argument("--public-host", default="10.214.45.45")
-    parser.add_argument("--port", type=int, default=5001)
+    parser.add_argument("--port", type=int, default=5002)
     parser.add_argument("--broker-port", type=int, default=9100)
+    parser.add_argument("--rag-port", type=int, default=5100)
     parser.add_argument(
         "--bundle-root",
         default=r"C:\Users\ouymc2\Desktop\simg_zmq\simg_sh_hpcc",
@@ -115,9 +119,13 @@ def main() -> int:
 
     bundle_root = Path(args.bundle_root).resolve()
     uploads = [
+        (bundle_root / "run_hpcc_stack.sh", posixpath.join(args.remote_root, "run_hpcc_stack.sh")),
         (bundle_root / "main_hpcc.sh", posixpath.join(args.remote_root, "main_hpcc.sh")),
         (bundle_root / "bundle_common.sh", posixpath.join(args.remote_root, "bundle_common.sh")),
         (bundle_root / "hpcc_main.pyz", posixpath.join(args.remote_root, "hpcc_main.pyz")),
+        (bundle_root / "main_html.simg", posixpath.join(args.remote_root, "main_html.simg")),
+        (bundle_root / "rag" / "rag.simg", posixpath.join(args.remote_root, "rag", "rag.simg")),
+        (bundle_root / "rag" / "run_rag.sh", posixpath.join(args.remote_root, "rag", "run_rag.sh")),
     ]
     upload_dirs = [
         (bundle_root / "bundle_src" / "main_html", posixpath.join(args.remote_root, "bundle_src", "main_html")),

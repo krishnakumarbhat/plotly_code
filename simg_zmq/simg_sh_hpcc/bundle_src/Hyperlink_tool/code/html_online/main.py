@@ -24,6 +24,8 @@ else:
 
 OUT_DIR = os.path.join(BASE_DIR, "out")
 CWD = os.getcwd()
+VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv"}
+VIDEO_SUFFIXES = ("_web",)
 
 
 def get_cache_dir() -> str:
@@ -101,6 +103,97 @@ def _validate_remote_path_for_server(server_name: str, path_value: str) -> None:
         raise ValueError(f"For server '{server_name}', path must start with '{expected}'")
 
 
+def normalized_video_base(name: str) -> str:
+    """Normalize a video filename to its base log name."""
+    base = os.path.splitext(os.path.basename(name or ""))[0]
+    lower_base = base.lower()
+    for suffix in VIDEO_SUFFIXES:
+        if lower_base.endswith(suffix):
+            return base[:-len(suffix)]
+    return base
+
+
+def mapping_key_from_name(name: str) -> Optional[str]:
+    """Extract the two-part key used throughout the viewer pipeline."""
+    base = normalized_video_base(name)
+    parts = base.split("_")
+    return "_".join(parts[-2:]) if len(parts) >= 2 else None
+
+
+def is_supported_video_file(name: str) -> bool:
+    return os.path.splitext(name or "")[1].lower() in VIDEO_EXTENSIONS
+
+
+def is_overlay_video_name(name: str) -> bool:
+    """Return True for overlay-style render outputs such as *_video_overlay.mp4."""
+    base = normalized_video_base(name).lower().replace('-', '_')
+    if not base or 'overlay' not in base:
+        return False
+    return (
+        base.endswith('_overlay')
+        or base.endswith('_video_overlay')
+        or 'video_overlay' in base
+        or '_overlay_' in base
+    )
+
+
+def _base_matches_prefix(candidate_base: str, prefix_base: str) -> bool:
+    if not candidate_base or not prefix_base:
+        return False
+    return (
+        candidate_base == prefix_base
+        or candidate_base.startswith(prefix_base + '_')
+        or candidate_base.startswith(prefix_base + '-')
+        or candidate_base.startswith(prefix_base + '.')
+    )
+
+
+def _overlay_candidate_sort_key(candidate_name: str):
+    candidate_base = normalized_video_base(candidate_name).lower().replace('-', '_')
+    if 'output_video_overlay' in candidate_base:
+        pattern_rank = 0
+    elif candidate_base.endswith('_video_overlay'):
+        pattern_rank = 1
+    elif candidate_base.endswith('_overlay'):
+        pattern_rank = 2
+    else:
+        pattern_rank = 3
+    manual_rank = 1 if 'manual' in candidate_base else 0
+    return (pattern_rank, manual_rank, len(candidate_base), candidate_name.lower())
+
+
+def find_overlay_video_name(log_name: str, primary_video_name: str, candidate_names: List[str]) -> Optional[str]:
+    """Pick the best overlay video candidate for a given log."""
+    if not candidate_names:
+        return None
+
+    folder_base = normalized_video_base(log_name).lower()
+    primary_base = normalized_video_base(primary_video_name).lower()
+    matching = []
+
+    for candidate_name in candidate_names:
+        if not is_overlay_video_name(candidate_name):
+            continue
+        candidate_base = normalized_video_base(candidate_name).lower()
+        if _base_matches_prefix(candidate_base, folder_base) or _base_matches_prefix(candidate_base, primary_base):
+            matching.append(candidate_name)
+
+    if not matching:
+        key = mapping_key_from_name(log_name) or mapping_key_from_name(primary_video_name)
+        if key:
+            token = key.lower().replace('-', '_')
+            for candidate_name in candidate_names:
+                candidate_base = normalized_video_base(candidate_name).lower().replace('-', '_')
+                if is_overlay_video_name(candidate_name) and token in candidate_base:
+                    matching.append(candidate_name)
+
+    if not matching:
+        return None
+
+    matching.sort(key=_overlay_candidate_sort_key)
+    return matching[0]
+
+
 class LogViewerApp:
     """Core log viewer application - scans and processes log data for online mode"""
     
@@ -112,13 +205,7 @@ class LogViewerApp:
     @staticmethod
     def _key(name: str) -> Optional[str]:
         """Extract key from filename"""
-        base = os.path.splitext(os.path.basename(name))[0]
-        for suffix in ["_web"]:
-            if base.endswith(suffix):
-                base = base[:-len(suffix)]
-                break
-        parts = base.split("_")
-        return "_".join(parts[-2:]) if len(parts) >= 2 else None
+        return mapping_key_from_name(name)
 
     def _scan_html(self) -> Dict[str, List[str]]:
         """Scan HTML folders"""
@@ -208,19 +295,29 @@ class LogViewerApp:
             m[k] = {"path": path, "content": content}
         return m
 
-    def _scan_video(self) -> Dict[str, str]:
-        """Scan video files"""
+    def _scan_video(self) -> tuple[Dict[str, Dict[str, str]], List[Dict[str, str]]]:
+        """Scan primary videos and overlay candidates."""
         if not os.path.isdir(self.video_root):
-            return {}
-        m: Dict[str, str] = {}
+            return {}, []
+        primary_map: Dict[str, Dict[str, str]] = {}
+        overlay_candidates: List[Dict[str, str]] = []
         for entry in os.scandir(self.video_root):
-            if not entry.is_file() or os.path.splitext(entry.name)[1].lower() not in {".mp4", ".avi", ".mov", ".mkv"}:
+            if not entry.is_file() or not is_supported_video_file(entry.name):
                 continue
+            rel = os.path.relpath(entry.path, self.video_root).replace("\\", "/")
+            item = {
+                "name": entry.name,
+                "url": f"/data/video/{rel}",
+            }
+            if is_overlay_video_name(entry.name):
+                overlay_candidates.append(item)
+                continue
+
             k = self._key(entry.name)
             if k:
-                rel = os.path.relpath(entry.path, self.video_root).replace("\\", "/")
-                m[k] = f"/data/video/{rel}"
-        return m
+                primary_map[k] = item
+        overlay_candidates.sort(key=lambda item: item["name"].lower())
+        return primary_map, overlay_candidates
 
     def _get_html_folder_name(self, key: str) -> str:
         """Get HTML folder name for a key"""
@@ -233,8 +330,10 @@ class LogViewerApp:
         """Build complete mapping of all data for online mode"""
         html_map = self._scan_html()
         img_map = self._scan_images()
-        video_map = self._scan_video()
+        video_map, overlay_candidates = self._scan_video()
         text_map = self._scan_text()
+        overlay_by_name = {item["name"]: item for item in overlay_candidates}
+        overlay_names = list(overlay_by_name)
 
         html_keys = set(html_map)
         video_keys = set(video_map)
@@ -248,8 +347,12 @@ class LogViewerApp:
         mapping: Dict[str, Dict[str, Any]] = {}
         print("Matched keys:")
         for k in matched:
-            video_url = video_map[k]
-            video_name = os.path.basename(video_url)
+            video_info = video_map[k]
+            video_url = video_info["url"]
+            video_name = video_info["name"]
+            html_folder = self._get_html_folder_name(k)
+            overlay_name = find_overlay_video_name(html_folder, video_name, overlay_names)
+            overlay_info = overlay_by_name.get(overlay_name) if overlay_name else None
             
             text_info = text_map.get(k)
             if text_info:
@@ -263,13 +366,16 @@ class LogViewerApp:
             mapping[k] = {
                 "video": video_url,
                 "video_name": video_name,
+                "overlay_video": overlay_info["url"] if overlay_info else "",
+                "overlay_video_name": overlay_info["name"] if overlay_info else "",
                 "html_files": html_map[k],
-                "html_folder": self._get_html_folder_name(k),
+                "html_folder": html_folder,
                 "images": img_map.get(k, {}),
                 "comment_path": comment_path,
                 "comment_content": comment_content,
             }
-            print(f"  {k} -> {len(html_map[k])} HTML file(s), video: {video_url}")
+            overlay_suffix = f", overlay: {overlay_info['name']}" if overlay_info else ""
+            print(f"  {k} -> {len(html_map[k])} HTML file(s), video: {video_url}{overlay_suffix}")
 
         return mapping
 

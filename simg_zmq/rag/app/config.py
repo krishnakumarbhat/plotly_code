@@ -28,14 +28,14 @@ class AppConfig:
         self.project_root = Path(__file__).resolve().parents[1]
         _load_env_file(self.project_root / '.env')
         self.workspace_root = self.project_root.parent
-        default_data_dir = Path('/tmp/rag_data') if self._running_in_container() else self.project_root / 'data'
+        default_data_dir = self._default_cache_root() / 'rag'
         self.data_dir = Path(self._sanitize_path(os.getenv('RAG_DATA_DIR', str(default_data_dir))))
         self.sqlite_path = Path(
             self._sanitize_path(os.getenv('RAG_SQLITE_PATH', str(self.data_dir / 'rag_logs.db')))
         )
         self.vector_store_dir = Path(
             self._sanitize_path(
-                os.getenv('RAG_VECTOR_STORE_DIR', str(self.data_dir / 'vector_store'))
+                os.getenv('RAG_VECTOR_STORE_DIR', str(self.data_dir / 'chroma.db'))
             )
         )
 
@@ -78,14 +78,15 @@ class AppConfig:
         }
         self.chunk_size = int(os.getenv("CHUNK_SIZE", "1800"))
         self.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "160"))
-        self.vector_backend = "simple"
+        self.embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+        self.vector_backend = (os.getenv("VECTOR_BACKEND", "chroma") or "chroma").strip().lower()
         default_vector_store_path = self.vector_store_dir / "vector_store.json"
         self.vector_store_json_path = Path(
             self._sanitize_path(
                 os.getenv("VECTOR_STORE_JSON_PATH", str(default_vector_store_path))
             )
         )
-        self.collection_name = os.getenv("CHROMA_COLLECTION", "html_narrative_docs")
+        self.collection_name = os.getenv("CHROMA_COLLECTION", "runtime_validation_logs")
         self.llm_similarity_top_k = int(os.getenv("LLM_SIMILARITY_TOP_K", "5"))
         self.auto_ingest_on_start = os.getenv("RAG_AUTO_INGEST_ON_START", "true").lower() in {
             "1",
@@ -143,6 +144,20 @@ class AppConfig:
         if cleaned.endswith("'"):
             cleaned = cleaned[:-1]
         return cleaned
+
+    def _default_cache_root(self) -> Path:
+        explicit = self._sanitize_path(os.getenv('RAG_CACHE_ROOT', ''))
+        if explicit:
+            return Path(explicit)
+
+        bundle_root = self._sanitize_path(os.getenv('HPCC_BUNDLE_ROOT', ''))
+        if bundle_root:
+            return Path(bundle_root) / 'runtime_state' / 'main_html' / '.cache_html'
+
+        if self._running_in_container():
+            return Path('/tmp/hpc_tools/.cache_html')
+
+        return self.workspace_root / 'simg' / '.cache_html'
 
     def _resolve_project_path(self, raw_path: str, default_relative_path: str) -> Path:
         cleaned = self._sanitize_path(raw_path or default_relative_path)

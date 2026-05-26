@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="mb-1"><i class="bi bi-terminal"></i> Runtime Console</h3>
-            <div class="text-muted">Queued runs, live tmux-backed consoles, and archived outputs live together here.</div>
+            <div class="text-muted">Queued runs, live tmux-backed consoles, and archived outputs are visible to every logged-in user here.</div>
         </div>
         <div class="d-flex gap-2">
             <select class="form-select form-select-sm" id="toolFilter" onchange="applyFilters()">
@@ -25,6 +25,7 @@
                 <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Completed</option>
                 <option value="FAILED" {% if status_filter == 'FAILED' %}selected{% endif %}>Failed</option>
             </select>
+            <input class="form-control form-control-sm" id="ownerFilter" value="{{ owner_filter or '' }}" placeholder="Owner NetID" onkeydown="if (event.key === 'Enter') applyFilters()">
         </div>
     </div>
     
@@ -39,6 +40,7 @@
                             <th>Tool</th>
                             <th>Status</th>
                             <th>Output Path</th>
+                            <th>Owner</th>
                             <th>Created</th>
                             <th>Actions</th>
                         </tr>
@@ -122,9 +124,24 @@
                                 <small class="text-truncate d-block" style="max-width: 200px;" title="{{ job.output_path }}">
                                     {{ job.output_path }}
                                 </small>
+                                {% set runtime_artifacts = job.parameters.get('runtime_artifacts') if job.parameters else [] %}
+                                {% if runtime_artifacts %}
+                                <small class="text-muted d-block">{{ runtime_artifacts|length }} indexed artifact{{ '' if runtime_artifacts|length == 1 else 's' }}</small>
+                                {% endif %}
                                 {% else %}
                                 <small class="text-muted">-</small>
                                 {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <strong>{{ job.user.net_id if job.user else (job.parameters.get('requested_by') if job.parameters else 'unknown') }}</strong>
+                                    {% if job.user_id == current_user.id %}
+                                    <small class="text-success">You</small>
+                                    {% endif %}
+                                    {% if job.parameters and job.parameters.get('shared_result') %}
+                                    <small class="text-muted">Shared result</small>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
                                 {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
@@ -133,6 +150,7 @@
                                 {% endif %}
                             </td>
                             <td>
+                                <small class="text-muted d-block mb-1">{{ job.user.net_id if job.user else (job.parameters.get('requested_by') if job.parameters else 'unknown') }}</small>
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-secondary" data-action="refresh" data-job-id="{{ job.id }}" title="Refresh status">
                                         <i class="bi bi-arrow-repeat"></i>
@@ -151,7 +169,7 @@
                                         <i class="bi bi-folder2-open"></i>
                                     </a>
                                     {% endif %}
-                                    {% if job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
+                                    {% if job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] and (job.user_id == current_user.id or current_user.role == 'admin') %}
                                     <button class="btn btn-outline-danger" data-action="cancel" data-job-id="{{ job.id }}" title="Cancel">
                                         <i class="bi bi-x-circle"></i>
                                     </button>
@@ -161,7 +179,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
+                            <td colspan="8" class="text-center text-muted py-5">
                                 <i class="bi bi-inbox display-4 d-block mb-3"></i>
                                 No jobs found matching your criteria.
                             </td>
@@ -210,7 +228,8 @@
 function applyFilters() {
     const tool = document.getElementById('toolFilter').value;
     const status = document.getElementById('statusFilter').value;
-    window.location.href = `?tool=${tool}&status=${status}`;
+    const owner = document.getElementById('ownerFilter').value;
+    window.location.href = `?tool=${encodeURIComponent(tool)}&status=${encodeURIComponent(status)}&owner=${encodeURIComponent(owner)}`;
 }
 
 async function refreshJobStatus(jobId) {

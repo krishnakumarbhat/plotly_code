@@ -65,7 +65,7 @@ From: docker.io/python:3.10-slim
 
 %runscript
     HOST="${HOST:-0.0.0.0}"
-    PORT="${PORT:-5001}"
+    PORT="${PORT:-5002}"
     
     . /opt/venv/bin/activate
     
@@ -90,7 +90,7 @@ From: docker.io/python:3.10-slim
 
 %startscript
     HOST="${HOST:-0.0.0.0}"
-    PORT="${PORT:-5001}"
+    PORT="${PORT:-5002}"
     
     . /opt/venv/bin/activate
     cd /app

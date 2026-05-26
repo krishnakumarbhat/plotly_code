@@ -21,7 +21,7 @@ fi
 LOG_DIR="$SCRIPT_DIR/logs"
 RUNTIME_STATE_DIR="$SCRIPT_DIR/runtime_state"
 MAIN_HTML_STATE_DIR="$RUNTIME_STATE_DIR/main_html"
-MAIN_HTML_CACHE_DIR="$MAIN_HTML_STATE_DIR/cache_html"
+MAIN_HTML_CACHE_DIR="$MAIN_HTML_STATE_DIR/.cache_html"
 mkdir -p "$LOG_DIR" "$MAIN_HTML_CACHE_DIR/html" "$MAIN_HTML_CACHE_DIR/video" "$MAIN_HTML_CACHE_DIR/vlm_cache"
 
 rotate_log() {
@@ -38,12 +38,23 @@ rotate_log "$LOG_DIR/main_html.log"
 rotate_log "$LOG_DIR/rag.log"
 
 export HPCC_PROJECT_ROOT="${HPCC_PROJECT_ROOT:-$DEFAULT_PROJECT_ROOT}"
-export HPCC_RUNTIME_DB="${HPCC_RUNTIME_DB:-$MAIN_HTML_CACHE_DIR/hpc_tools_dev.db}"
+if [[ -z "${HPCC_RUNTIME_DB:-}" ]]; then
+    if [[ -d /net/8k3 || -d /mnt/usmidet ]]; then
+        runtime_db_user="$(id -un 2>/dev/null || printf '%s' hpcc)"
+        runtime_db_root="${TMPDIR:-/tmp}/hpcc_runtime_db_${runtime_db_user}"
+        mkdir -p "$runtime_db_root"
+        export HPCC_RUNTIME_DB="$runtime_db_root/hpc_tools_dev.db"
+    else
+        export HPCC_RUNTIME_DB="$MAIN_HTML_CACHE_DIR/hpc_tools_dev.db"
+    fi
+else
+    export HPCC_RUNTIME_DB
+fi
 export HPCC_BUNDLE_VERSION="${HPCC_BUNDLE_VERSION:-2026-04-13-hpcc-standalone}"
 export HPCC_PUBLIC_HOST="${HPCC_PUBLIC_HOST:-}"
 export HPCC_BROKER_HOST="${HPCC_BROKER_HOST:-0.0.0.0}"
 export HPCC_BROKER_PORT="${HPCC_BROKER_PORT:-9100}"
-export PORT="${PORT:-5001}"
+export PORT="${PORT:-5002}"
 export HOST_SIMG_PATH="$SCRIPT_DIR"
 export HPCC_AUTO_START_RAG="${HPCC_AUTO_START_RAG:-0}"
 export HPCC_PORT_CONFLICT_POLICY="${HPCC_PORT_CONFLICT_POLICY:-shift}"

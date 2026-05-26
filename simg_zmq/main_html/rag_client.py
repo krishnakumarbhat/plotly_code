@@ -1,3 +1,4 @@
+import ipaddress
 import json
 import os
 from typing import Any, Dict, Optional
@@ -25,8 +26,9 @@ class RagClient:
             headers={'Content-Type': 'application/json'},
             method='POST',
         )
+        opener = self._build_opener(url)
         try:
-            with request.urlopen(http_request, timeout=120) as response:
+            with opener.open(http_request, timeout=120) as response:
                 data = json.loads(response.read().decode('utf-8'))
             return {
                 'ok': True,
@@ -48,3 +50,20 @@ class RagClient:
         if rag_tool and rag_tool.get('service_url'):
             return rag_tool['service_url']
         return None
+
+    def _build_opener(self, url: str):
+        if self._should_bypass_proxy(url):
+            return request.build_opener(request.ProxyHandler({}))
+        return request.build_opener()
+
+    def _should_bypass_proxy(self, url: str) -> bool:
+        hostname = (parse.urlparse(url).hostname or '').strip().lower()
+        if not hostname:
+            return False
+        if hostname == 'localhost':
+            return True
+        try:
+            address = ipaddress.ip_address(hostname)
+        except ValueError:
+            return False
+        return address.is_private or address.is_loopback or address.is_link_local

@@ -79,6 +79,7 @@
       <h4 class="mb-1"><i class="bi bi-terminal"></i> Runtime Console</h4>
       <div class="text-muted">
         Job <strong>#{{ job.id }}</strong> — Tool: <strong>{{ job.tool_name }}</strong>
+        — Owner: <strong>{{ job_owner }}</strong>
         {% if job.slurm_job_id %} — Slurm: <strong>{{ job.slurm_job_id }}</strong>{% endif %}
       </div>
     </div>
@@ -97,8 +98,10 @@
             <div class="console-toolbar mb-3">
               <div class="d-flex flex-wrap gap-2 align-items-center">
                 <span class="console-chip {% if not (console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}offline{% endif %}" id="consoleModeChip">
-                  {% if console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
+                  {% if can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
                   <i class="bi bi-lightning-charge"></i> Live tmux console
+                  {% elif console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
+                  <i class="bi bi-journal-text"></i> Shared log view
                   {% else %}
                   <i class="bi bi-journal-text"></i> Log viewer
                   {% endif %}
@@ -112,11 +115,15 @@
 
             <div class="row g-3 console-meta">
               <div class="col-lg-7">
-                <div><strong>Log path</strong></div>
+                <div><strong>Stored log path</strong></div>
                 {% if display_log_path %}
                   <code>{{ display_log_path }}</code>
                 {% else %}
                   <span class="text-muted">No log path recorded for this job.</span>
+                {% endif %}
+                {% if display_source_log_path and display_source_log_path != display_log_path %}
+                <div class="mt-2"><strong>Original runtime log</strong></div>
+                <code>{{ display_source_log_path }}</code>
                 {% endif %}
               </div>
               <div class="col-lg-5">
@@ -139,6 +146,33 @@
               {% endif %}
             </div>
             {% endif %}
+
+            <div class="row g-3 mt-1 console-meta">
+              <div class="col-lg-4">
+                <div><strong>Execution path</strong></div>
+                <code>{{ runtime_job.get('execution_path') if runtime_job else (job.parameters.get('execution_path') if job.parameters else '') }}</code>
+              </div>
+              <div class="col-lg-4">
+                <div><strong>Tool version</strong></div>
+                <code>{{ runtime_job.get('tool_version') if runtime_job else (job.parameters.get('tool_version') if job.parameters else '') }}</code>
+              </div>
+              <div class="col-lg-4">
+                <div><strong>DB version</strong></div>
+                <code>{{ runtime_job.get('db_version') if runtime_job else (job.parameters.get('db_version') if job.parameters else '') }}</code>
+              </div>
+            </div>
+
+            {% if job_artifacts %}
+            <div class="mt-3">
+              <div><strong>Generated artifacts</strong></div>
+              <div class="small text-muted mb-2">Indexed from the persistent runtime store.</div>
+              <div class="d-grid gap-2">
+                {% for artifact in job_artifacts[:8] %}
+                <code>{{ artifact.relative_path or artifact.artifact_path }}</code>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
           </div>
         </div>
 
@@ -153,25 +187,27 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <strong>Console input</strong>
-                <div class="text-muted small">Send a command or interactive response to the running tmux pane.</div>
+                <div class="text-muted small">Only the job owner can send interactive input. Other users can monitor the shared console.</div>
               </div>
               <div class="text-muted small" id="consoleInputState">
-                {% if console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
+                {% if can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
                 Input is enabled while the job stays active.
+                {% elif console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'] %}
+                You can watch this shared run, but only {{ job_owner }} can send input.
                 {% else %}
                 Input is not available for this run.
                 {% endif %}
               </div>
             </div>
             <div class="console-input-row">
-              <select class="form-select" id="consolePaneSelect" {% if not (console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>
+              <select class="form-select" id="consolePaneSelect" {% if not (can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>
                 {% for pane in console.get('pane_names', ['main']) %}
                 <option value="{{ pane }}">{{ pane }}</option>
                 {% endfor %}
               </select>
-              <input type="text" class="form-control" id="consoleInput" placeholder="Type input for the running console" {% if not (console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>
-              <button type="button" class="btn btn-primary" id="sendConsoleInputBtn" {% if not (console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>Send</button>
-              <button type="button" class="btn btn-outline-danger" id="sendInterruptBtn" {% if not (console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>Ctrl+C</button>
+              <input type="text" class="form-control" id="consoleInput" placeholder="Type input for the running console" {% if not (can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>
+              <button type="button" class="btn btn-primary" id="sendConsoleInputBtn" {% if not (can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>Send</button>
+              <button type="button" class="btn btn-outline-danger" id="sendInterruptBtn" {% if not (can_send_input and console.get('supports_input') and job.status in ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING']) %}disabled{% endif %}>Ctrl+C</button>
             </div>
           </div>
         </div>
@@ -192,6 +228,7 @@ const consoleStatusChip = document.getElementById('consoleStatusChip');
 const consoleModeChip = document.getElementById('consoleModeChip');
 const consoleInputState = document.getElementById('consoleInputState');
 const consoleStatusNote = document.getElementById('consoleStatusNote');
+const viewerCanSendInput = {{ can_send_input|tojson }};
 
 if (consoleOutput && consolePaneSelect && consoleInput && sendConsoleInputBtn && sendInterruptBtn && consoleStatusChip && consoleModeChip && consoleInputState && consoleStatusNote) {
   let consoleOffset = {{ initial_offset|default(0) }};
@@ -203,16 +240,20 @@ if (consoleOutput && consolePaneSelect && consoleInput && sendConsoleInputBtn &&
   }
 
   function updateConsoleInteractivity(payload) {
-    const inputEnabled = Boolean(payload.supports_input);
+    const inputEnabled = Boolean(payload.supports_input) && viewerCanSendInput;
     consolePaneSelect.disabled = !inputEnabled;
     consoleInput.disabled = !inputEnabled;
     sendConsoleInputBtn.disabled = !inputEnabled;
     sendInterruptBtn.disabled = !inputEnabled;
     consoleStatusChip.textContent = payload.status || '{{ job.status }}';
     consoleModeChip.classList.toggle('offline', !inputEnabled);
-    consoleInputState.textContent = inputEnabled
-      ? 'Input is enabled while the job stays active.'
-      : 'Input is not available for this run.';
+    if (inputEnabled) {
+      consoleInputState.textContent = 'Input is enabled while the job stays active.';
+    } else if (!viewerCanSendInput && ['QUEUED', 'RUNNING', 'SUBMITTED', 'PENDING'].includes(payload.status || '')) {
+      consoleInputState.textContent = 'You can watch this shared run, but only {{ job_owner }} can send input.';
+    } else {
+      consoleInputState.textContent = 'Input is not available for this run.';
+    }
     if ((payload.status || '') === 'PENDING') {
       consoleStatusNote.textContent = payload.status_detail || 'Waiting for Slurm allocation. The console will update when compute starts.';
     } else if (['QUEUED', 'RUNNING', 'SUBMITTED'].includes(payload.status || '')) {

@@ -20,7 +20,7 @@ class Application:
 
         self.sqlite_store = SQLiteLogStore(self.config.sqlite_path)
         self.rag_engine = RagEngine(
-            chroma_path="",
+            chroma_path=str(self.config.vector_store_dir),
             collection_name=self.config.collection_name,
             vector_backend=self.config.vector_backend,
             vector_store_json_path=str(self.config.vector_store_json_path),
@@ -42,6 +42,7 @@ class Application:
             llm_n_gpu_layers=self.config.llm_n_gpu_layers,
             chunk_size=self.config.chunk_size,
             chunk_overlap=self.config.chunk_overlap,
+            embedding_dimension=self.config.embedding_dimension,
         )
         self.parser = HtmlParser(english_only=self.config.parse_english_only)
         self.ingestor = HtmlIngestor(

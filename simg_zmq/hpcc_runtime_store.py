@@ -3,6 +3,7 @@ import os
 import re
 import sqlite3
 import sys
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -51,30 +52,92 @@ def _runtime_dir(repo_root: Path) -> Path:
 
 def _default_db_path() -> str:
     runtime_dir = _runtime_dir(_project_root())
-    cache_dir = runtime_dir / 'runtime_state' / 'main_html' / 'cache_html'
+    runtime_state_dir = runtime_dir / 'runtime_state' / 'main_html'
+    cache_dir = runtime_state_dir / '.cache_html'
+    legacy_cache_dir = runtime_state_dir / 'cache_html'
+    if legacy_cache_dir.exists() and not cache_dir.exists():
+        try:
+            legacy_cache_dir.rename(cache_dir)
+        except OSError:
+            pass
     cache_dir.mkdir(parents=True, exist_ok=True)
     return str(cache_dir / 'hpc_tools_dev.db')
 
 
 class RuntimeStore:
     ACTIVE_JOB_STATUSES = {'QUEUED', 'SUBMITTED', 'PENDING', 'RUNNING'}
+    REUSABLE_JOB_STATUSES = {'QUEUED', 'SUBMITTED', 'PENDING', 'RUNNING', 'COMPLETED'}
+    RUNTIME_DB_VERSION = '2026.04.27'
+    ARTIFACT_SUFFIXES = {'.html', '.htm', '.hdf', '.hdf5', '.mf4', '.csv', '.json', '.xml', '.txt', '.log', '.md'}
+    MAX_INDEXED_ARTIFACTS = 2048
 
     def __init__(self, db_path: Optional[str] = None):
         self.repo_root = _project_root()
         self.runtime_dir = _runtime_dir(self.repo_root)
-        self.db_path = db_path or os.environ.get('HPCC_RUNTIME_DB') or _default_db_path()
+        configured_path = db_path or os.environ.get('HPCC_RUNTIME_DB') or _default_db_path()
+        self.db_path = self._resolve_db_path(configured_path)
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
         self._ensure_schema()
 
+    @staticmethod
+    def _resolve_db_path(configured_path: str) -> str:
+        """If the configured path is on an NFS/networked filesystem that can't support
+        SQLite locking, relocate the DB to a local /tmp directory."""
+        import hashlib
+        p = Path(configured_path)
+        # Quick WAL-mode probe to detect NFS before fully initialising
+        probe_db = p.parent / '.sqlite_wal_probe.db'
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            import sqlite3 as _sqlite3
+            conn = _sqlite3.connect(str(probe_db), timeout=5)
+            conn.execute('PRAGMA journal_mode = WAL')
+            conn.close()
+            # Clean up probe files (compatible with Python 3.6)
+            for ext in ('', '-wal', '-shm'):
+                try:
+                    (probe_db.parent / (probe_db.name + ext)).unlink()
+                except OSError:
+                    pass
+            return configured_path  # WAL works -> local FS, use configured path
+        except Exception:
+            pass
+        # NFS detected: use /tmp with a stable hash of the original path
+        tag = hashlib.sha1(configured_path.encode()).hexdigest()[:12]
+        local_dir = Path('/tmp') / 'hpcc_runtime_{}'.format(tag)
+        local_dir.mkdir(parents=True, exist_ok=True)
+        return str(local_dir / p.name)
+
     def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(self.db_path)
+        connection = sqlite3.connect(self.db_path, timeout=30)
         connection.row_factory = sqlite3.Row
         return connection
 
+    def _configure_sqlite(self, connection: sqlite3.Connection) -> None:
+        connection.execute('PRAGMA foreign_keys = ON')
+        connection.execute('PRAGMA busy_timeout = 30000')
+        try:
+            row = connection.execute('PRAGMA journal_mode = WAL').fetchone()
+            if not row or str(row[0]).lower() != 'wal':
+                connection.execute('PRAGMA journal_mode = DELETE')
+        except sqlite3.OperationalError:
+            try:
+                connection.execute('PRAGMA journal_mode = DELETE')
+            except sqlite3.OperationalError:
+                pass  # NFS filesystem; proceed without journal mode change
+        connection.execute('PRAGMA synchronous = NORMAL')
+
     def _ensure_schema(self) -> None:
         with self._connect() as connection:
+            self._configure_sqlite(connection)
             connection.executescript(
                 """
+                CREATE TABLE IF NOT EXISTS runtime_meta (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
                 CREATE TABLE IF NOT EXISTS runtime_tools (
                     tool_key TEXT PRIMARY KEY,
                     display_name TEXT NOT NULL,
@@ -120,6 +183,32 @@ class RuntimeStore:
                     FOREIGN KEY(runtime_job_id) REFERENCES runtime_jobs(id)
                 );
 
+                CREATE TABLE IF NOT EXISTS runtime_job_logs (
+                    runtime_job_id INTEGER PRIMARY KEY,
+                    source_log_path TEXT,
+                    mirror_log_path TEXT,
+                    content TEXT NOT NULL DEFAULT '',
+                    byte_count INTEGER NOT NULL DEFAULT 0,
+                    content_hash TEXT,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(runtime_job_id) REFERENCES runtime_jobs(id)
+                );
+
+                CREATE TABLE IF NOT EXISTS runtime_job_artifacts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    runtime_job_id INTEGER NOT NULL,
+                    artifact_type TEXT NOT NULL,
+                    artifact_path TEXT NOT NULL,
+                    relative_path TEXT,
+                    size_bytes INTEGER,
+                    exists_flag INTEGER NOT NULL DEFAULT 1,
+                    metadata_json TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    UNIQUE(runtime_job_id, artifact_path),
+                    FOREIGN KEY(runtime_job_id) REFERENCES runtime_jobs(id)
+                );
+
                 CREATE TABLE IF NOT EXISTS runtime_graph_variants (
                     variant_key TEXT PRIMARY KEY,
                     display_name TEXT NOT NULL,
@@ -131,6 +220,33 @@ class RuntimeStore:
                 );
                 """
             )
+            self._ensure_column(connection, 'runtime_jobs', 'request_fingerprint', 'TEXT')
+            self._ensure_column(connection, 'runtime_jobs', 'execution_path', 'TEXT')
+            self._ensure_column(connection, 'runtime_jobs', 'tool_version', 'TEXT')
+            self._ensure_column(connection, 'runtime_jobs', 'db_version', 'TEXT')
+            self._ensure_column(connection, 'runtime_jobs', 'mirror_log_path', 'TEXT')
+            self._ensure_column(connection, 'runtime_jobs', 'reused_from_runtime_job_id', 'INTEGER')
+            self._ensure_column(connection, 'runtime_jobs', 'last_seen_at', 'TEXT')
+            self._set_meta(connection, 'runtime_db_version', self.RUNTIME_DB_VERSION)
+
+    @staticmethod
+    def _ensure_column(connection: sqlite3.Connection, table_name: str, column_name: str, column_type: str) -> None:
+        rows = connection.execute(f'PRAGMA table_info({table_name})').fetchall()
+        existing_columns = {row[1] for row in rows}
+        if column_name in existing_columns:
+            return
+        connection.execute(f'ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}')
+
+    def _set_meta(self, connection: sqlite3.Connection, key: str, value: str) -> None:
+        connection.execute(
+            """
+            INSERT INTO runtime_meta (key, value, updated_at) VALUES (?, ?, ?)
+            ON CONFLICT(key) DO UPDATE SET
+                value = excluded.value,
+                updated_at = excluded.updated_at
+            """,
+            (key, value, self._utcnow()),
+        )
 
     def ensure_defaults(self) -> None:
         defaults = [
@@ -140,11 +256,11 @@ class RuntimeStore:
                 'category': 'service',
                 'image_path': str(self.runtime_dir / 'main_html.simg'),
                 'entry_command': 'singularity run main_html.simg',
-                'service_url': 'http://127.0.0.1:5001/html',
+                'service_url': 'http://127.0.0.1:5002/html',
                 'input_hint': 'Browser traffic only',
-                'output_hint': 'Flask UI on port 5001',
+                'output_hint': 'Flask UI on port 5002',
                 'notes': 'Main login + dashboard service',
-                'metadata_json': {'port': 5001, 'node_color': '#d4efe8'},
+                'metadata_json': {'port': 5002, 'node_color': '#d4efe8'},
             },
             {
                 'tool_key': 'can_kpi',
@@ -289,14 +405,18 @@ class RuntimeStore:
         request_payload: Dict[str, Any],
         status: str = 'QUEUED',
     ) -> int:
+        request_fingerprint = self.compute_request_fingerprint(tool_key, mode, request_payload)
+        execution_path = str(Path(log_path).parent) if log_path else str(Path(output_path).parent) if output_path else ''
+        tool_version = self._tool_version()
         with self._connect() as connection:
             cursor = connection.execute(
                 """
                 INSERT INTO runtime_jobs (
                     tool_key, requested_by, session_id, status, mode, input_path,
                     output_path, log_path, command_json, resources_json,
-                    request_json, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    request_json, request_fingerprint, execution_path, tool_version,
+                    db_version, mirror_log_path, created_at, last_seen_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     tool_key,
@@ -310,10 +430,34 @@ class RuntimeStore:
                     json.dumps(command),
                     json.dumps(resources),
                     json.dumps(request_payload),
+                    request_fingerprint,
+                    execution_path,
+                    tool_version,
+                    self.RUNTIME_DB_VERSION,
+                    str(self._job_mirror_log_path(-1, create_dir=False)),
+                    self._utcnow(),
                     self._utcnow(),
                 ),
             )
-            return int(cursor.lastrowid)
+            runtime_job_id = int(cursor.lastrowid)
+            mirror_path = str(self._job_mirror_log_path(runtime_job_id))
+            connection.execute(
+                'UPDATE runtime_jobs SET mirror_log_path = ? WHERE id = ?',
+                (mirror_path, runtime_job_id),
+            )
+            connection.execute(
+                """
+                INSERT INTO runtime_job_logs (
+                    runtime_job_id, source_log_path, mirror_log_path, content, byte_count, content_hash, updated_at
+                ) VALUES (?, ?, ?, '', 0, ?, ?)
+                ON CONFLICT(runtime_job_id) DO UPDATE SET
+                    source_log_path = excluded.source_log_path,
+                    mirror_log_path = excluded.mirror_log_path,
+                    updated_at = excluded.updated_at
+                """,
+                (runtime_job_id, log_path, mirror_path, self._hash_text(''), self._utcnow()),
+            )
+            return runtime_job_id
 
     def update_job(self, runtime_job_id: int, **fields: Any) -> Optional[Dict[str, Any]]:
         if not fields:
@@ -325,6 +469,8 @@ class RuntimeStore:
                 value = json.dumps(value)
             columns.append(f'{key} = ?')
             values.append(value)
+        columns.append('last_seen_at = ?')
+        values.append(self._utcnow())
         values.append(runtime_job_id)
         with self._connect() as connection:
             connection.execute(f"UPDATE runtime_jobs SET {', '.join(columns)} WHERE id = ?", tuple(values))
@@ -346,6 +492,304 @@ class RuntimeStore:
         with self._connect() as connection:
             rows = connection.execute('SELECT * FROM runtime_jobs ORDER BY id DESC LIMIT ?', (limit,)).fetchall()
         return [self._row_to_job(row) for row in rows]
+
+    @classmethod
+    def compute_request_fingerprint(cls, tool_key: str, mode: str, request_payload: Dict[str, Any]) -> str:
+        payload = request_payload if isinstance(request_payload, dict) else {}
+        raw_paths = payload.get('paths') if isinstance(payload.get('paths'), dict) else {}
+        filtered_paths = {}
+        for key, value in sorted(raw_paths.items()):
+            if key in {'output_dir', 'output_path', 'log_path'}:
+                continue
+            normalized_value = str(value or '').strip()
+            if normalized_value:
+                filtered_paths[key] = normalized_value
+
+        normalized_payload = {
+            'tool_key': str(tool_key or '').strip(),
+            'mode': str(mode or '').strip(),
+            'variant': str(payload.get('variant') or '').strip(),
+            'paths': filtered_paths,
+            'ingest_only': bool(payload.get('ingest_only')),
+        }
+        return hashlib.sha256(
+            json.dumps(normalized_payload, sort_keys=True, ensure_ascii=True).encode('utf-8', errors='ignore')
+        ).hexdigest()
+
+    def find_reusable_job(self, tool_key: str, mode: str, request_payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        request_fingerprint = self.compute_request_fingerprint(tool_key, mode, request_payload)
+        placeholders = ', '.join('?' for _ in self.REUSABLE_JOB_STATUSES)
+        with self._connect() as connection:
+            row = connection.execute(
+                f"""
+                SELECT *
+                FROM runtime_jobs
+                WHERE request_fingerprint = ?
+                  AND status IN ({placeholders})
+                ORDER BY CASE status
+                    WHEN 'RUNNING' THEN 0
+                    WHEN 'PENDING' THEN 1
+                    WHEN 'QUEUED' THEN 2
+                    WHEN 'SUBMITTED' THEN 3
+                    WHEN 'COMPLETED' THEN 4
+                    ELSE 9
+                END, id DESC
+                LIMIT 1
+                """,
+                (request_fingerprint, *self.REUSABLE_JOB_STATUSES),
+            ).fetchone()
+        return self._row_to_job(row) if row else None
+
+    def get_events(self, runtime_job_id: int) -> List[Dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                'SELECT level, message, created_at FROM runtime_events WHERE runtime_job_id = ? ORDER BY id',
+                (runtime_job_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def get_job_log_record(self, runtime_job_id: int) -> Optional[Dict[str, Any]]:
+        with self._connect() as connection:
+            row = connection.execute(
+                'SELECT * FROM runtime_job_logs WHERE runtime_job_id = ?',
+                (runtime_job_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return {
+            'runtime_job_id': row['runtime_job_id'],
+            'source_log_path': row['source_log_path'] or '',
+            'mirror_log_path': row['mirror_log_path'] or '',
+            'content': row['content'] or '',
+            'byte_count': int(row['byte_count'] or 0),
+            'content_hash': row['content_hash'] or '',
+            'updated_at': row['updated_at'] or '',
+        }
+
+    def list_job_artifacts(self, runtime_job_id: int) -> List[Dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                'SELECT * FROM runtime_job_artifacts WHERE runtime_job_id = ? ORDER BY artifact_type, relative_path, artifact_path',
+                (runtime_job_id,),
+            ).fetchall()
+        artifacts: List[Dict[str, Any]] = []
+        for row in rows:
+            artifacts.append(
+                {
+                    'artifact_type': row['artifact_type'],
+                    'artifact_path': row['artifact_path'],
+                    'relative_path': row['relative_path'] or '',
+                    'size_bytes': int(row['size_bytes'] or 0),
+                    'exists': bool(row['exists_flag']),
+                    'metadata': self._loads(row['metadata_json'], {}),
+                    'created_at': row['created_at'],
+                    'updated_at': row['updated_at'],
+                }
+            )
+        return artifacts
+
+    def _tool_version(self) -> str:
+        explicit = str(os.environ.get('HPCC_TOOL_VERSION') or '').strip()
+        if explicit:
+            return explicit
+        try:
+            modified_at = datetime.fromtimestamp(self.runtime_dir.stat().st_mtime, tz=timezone.utc)
+        except OSError:
+            return 'unknown'
+        return modified_at.strftime('%Y.%m.%d')
+
+    def _job_state_dir(self, runtime_job_id: int, create_dir: bool = True) -> Path:
+        base_dir = Path(self.db_path).resolve().parent / 'runtime_jobs' / str(runtime_job_id)
+        if create_dir:
+            base_dir.mkdir(parents=True, exist_ok=True)
+        return base_dir
+
+    def _job_mirror_log_path(self, runtime_job_id: int, create_dir: bool = True) -> Path:
+        return self._job_state_dir(runtime_job_id, create_dir=create_dir) / 'runtime_console.log'
+
+    @staticmethod
+    def _hash_text(text: str) -> str:
+        return hashlib.sha256((text or '').encode('utf-8', errors='ignore')).hexdigest()
+
+    def _sync_job_log(self, runtime_job_id: int, source_log_path: str) -> str:
+        mirror_path = self._job_mirror_log_path(runtime_job_id)
+        source_path = Path(str(source_log_path or '').strip())
+        existing_record = self.get_job_log_record(runtime_job_id) or {}
+
+        if not source_path.exists() or not source_path.is_file():
+            return str(mirror_path if mirror_path.exists() else source_path)
+
+        source_size = source_path.stat().st_size
+        stored_bytes = int(existing_record.get('byte_count') or 0)
+        stored_content = str(existing_record.get('content') or '')
+        if source_size == stored_bytes and mirror_path.exists():
+            return str(mirror_path)
+
+        if source_size < stored_bytes:
+            new_content = source_path.read_text(encoding='utf-8', errors='replace')
+            mirror_path.write_text(new_content, encoding='utf-8', errors='replace')
+            byte_count = source_size
+        else:
+            with source_path.open('rb') as handle:
+                handle.seek(stored_bytes)
+                delta = handle.read()
+            delta_text = delta.decode('utf-8', errors='replace')
+            if stored_bytes == 0:
+                new_content = delta_text
+                mirror_path.write_text(delta_text, encoding='utf-8', errors='replace')
+            else:
+                new_content = stored_content + delta_text
+                with mirror_path.open('a', encoding='utf-8', errors='replace') as handle:
+                    handle.write(delta_text)
+            byte_count = source_size
+
+        now = self._utcnow()
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO runtime_job_logs (
+                    runtime_job_id, source_log_path, mirror_log_path, content, byte_count, content_hash, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(runtime_job_id) DO UPDATE SET
+                    source_log_path = excluded.source_log_path,
+                    mirror_log_path = excluded.mirror_log_path,
+                    content = excluded.content,
+                    byte_count = excluded.byte_count,
+                    content_hash = excluded.content_hash,
+                    updated_at = excluded.updated_at
+                """,
+                (runtime_job_id, str(source_path), str(mirror_path), new_content, byte_count, self._hash_text(new_content), now),
+            )
+        return str(mirror_path)
+
+    def _sync_job_artifacts(self, runtime_job_id: int, output_path: str) -> List[Dict[str, Any]]:
+        root = Path(str(output_path or '').strip())
+        # Python 3.9 on some RHEL builds raises PermissionError from both
+        # Path.exists() and Path.is_dir() instead of returning False.
+        # Use an explicit try/except to handle inaccessible output dirs.
+        try:
+            if not root.is_dir():
+                return self.list_job_artifacts(runtime_job_id)
+        except OSError:
+            return self.list_job_artifacts(runtime_job_id)
+
+        now = self._utcnow()
+        remaining = self.MAX_INDEXED_ARTIFACTS
+        with self._connect() as connection:
+            # Mark all previously indexed artifacts as gone; the INSERT loop below
+            # will set exists_flag = 1 for each path that still exists.  This avoids
+            # a single large NOT IN (?, ?, …) clause that would exceed SQLite's
+            # SQLITE_LIMIT_VARIABLE_NUMBER (999) when there are many artifacts.
+            connection.execute(
+                'UPDATE runtime_job_artifacts SET exists_flag = 0, updated_at = ? WHERE runtime_job_id = ?',
+                (now, runtime_job_id),
+            )
+            for current_root, _, filenames in os.walk(root):
+                for filename in sorted(filenames):
+                    if remaining <= 0:
+                        break
+                    full_path = Path(current_root) / filename
+                    lower_name = filename.lower()
+                    if full_path.suffix.lower() not in self.ARTIFACT_SUFFIXES and 'report' not in lower_name:
+                        continue
+
+                    artifact_path = str(full_path)
+                    remaining -= 1
+                    try:
+                        relative_path = os.path.relpath(artifact_path, str(root))
+                    except ValueError:
+                        relative_path = filename
+                    try:
+                        size_bytes = int(full_path.stat().st_size)
+                    except OSError:
+                        size_bytes = 0
+
+                    metadata = {
+                        'extension': full_path.suffix.lower(),
+                        'filename': filename,
+                    }
+                    connection.execute(
+                        """
+                        INSERT INTO runtime_job_artifacts (
+                            runtime_job_id, artifact_type, artifact_path, relative_path,
+                            size_bytes, exists_flag, metadata_json, created_at, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
+                        ON CONFLICT(runtime_job_id, artifact_path) DO UPDATE SET
+                            artifact_type = excluded.artifact_type,
+                            relative_path = excluded.relative_path,
+                            size_bytes = excluded.size_bytes,
+                            exists_flag = excluded.exists_flag,
+                            metadata_json = excluded.metadata_json,
+                            updated_at = excluded.updated_at
+                        """,
+                        (
+                            runtime_job_id,
+                            self._artifact_type_for_path(full_path),
+                            artifact_path,
+                            relative_path,
+                            size_bytes,
+                            json.dumps(metadata),
+                            now,
+                            now,
+                        ),
+                    )
+                if remaining <= 0:
+                    break
+        return self.list_job_artifacts(runtime_job_id)
+
+    @staticmethod
+    def _artifact_type_for_path(path: Path) -> str:
+        lower_name = path.name.lower()
+        if path.suffix.lower() in {'.html', '.htm'}:
+            return 'html'
+        if path.suffix.lower() in {'.hdf', '.hdf5', '.mf4'}:
+            return 'hdf'
+        if 'report' in lower_name:
+            return 'report'
+        if path.suffix.lower() == '.log':
+            return 'log'
+        return 'artifact'
+
+    def _refresh_persisted_job(self, job: Dict[str, Any]) -> None:
+        runtime_job_id = int(job['id'])
+        request_payload = job.get('request') if isinstance(job.get('request'), dict) else {}
+        request_fingerprint = job.get('request_fingerprint') or self.compute_request_fingerprint(job['tool_key'], job.get('mode') or '', request_payload)
+        execution_path = str(Path(str(job.get('log_path') or '').strip()).parent) if str(job.get('log_path') or '').strip() else str(Path(str(job.get('output_path') or '').strip())) if str(job.get('output_path') or '').strip() else ''
+        tool_version = job.get('tool_version') or self._tool_version()
+        mirror_log_path = ''
+        if str(job.get('log_path') or '').strip():
+            mirror_log_path = self._sync_job_log(runtime_job_id, str(job['log_path']))
+        artifacts = self._sync_job_artifacts(runtime_job_id, str(job.get('output_path') or ''))
+        with self._connect() as connection:
+            connection.execute(
+                """
+                UPDATE runtime_jobs
+                SET request_fingerprint = ?, execution_path = ?, tool_version = ?,
+                    db_version = ?, mirror_log_path = ?, last_seen_at = ?
+                WHERE id = ?
+                """,
+                (
+                    request_fingerprint,
+                    execution_path,
+                    tool_version,
+                    self.RUNTIME_DB_VERSION,
+                    mirror_log_path,
+                    self._utcnow(),
+                    runtime_job_id,
+                ),
+            )
+        job['request_fingerprint'] = request_fingerprint
+        job['execution_path'] = execution_path
+        job['tool_version'] = tool_version
+        job['db_version'] = self.RUNTIME_DB_VERSION
+        job['mirror_log_path'] = mirror_log_path
+        job['artifacts'] = artifacts
+        log_record = self.get_job_log_record(runtime_job_id)
+        if log_record is not None:
+            job['console_log'] = log_record['content']
+            job['log_size_bytes'] = log_record['byte_count']
+            if not job['mirror_log_path']:
+                job['mirror_log_path'] = log_record['mirror_log_path']
 
     @staticmethod
     def _utcnow() -> str:
@@ -396,11 +840,23 @@ class RuntimeStore:
             'pid': row['pid'],
             'return_code': row['return_code'],
             'error_message': row['error_message'],
+            'request_fingerprint': row['request_fingerprint'],
+            'execution_path': row['execution_path'],
+            'tool_version': row['tool_version'],
+            'db_version': row['db_version'],
+            'mirror_log_path': row['mirror_log_path'],
+            'reused_from_runtime_job_id': row['reused_from_runtime_job_id'],
+            'last_seen_at': row['last_seen_at'],
             'created_at': row['created_at'],
             'started_at': row['started_at'],
             'completed_at': row['completed_at'],
         }
-        return self._derive_job_state(job)
+        job = self._derive_job_state(job)
+        self._refresh_persisted_job(job)
+        job['events'] = self.get_events(int(row['id']))
+        if 'artifacts' not in job:
+            job['artifacts'] = self.list_job_artifacts(int(row['id']))
+        return job
 
     def _derive_job_state(self, job: Dict[str, Any]) -> Dict[str, Any]:
         if job.get('status') not in self.ACTIVE_JOB_STATUSES:

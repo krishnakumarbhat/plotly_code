@@ -2,13 +2,50 @@
 Database Models for HPC Flask Application
 Using SQLAlchemy ORM with PostgreSQL
 """
+import base64
+import hashlib
 import os
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+
+from flask import current_app
 from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect, text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+
+def _cluster_password_fernet():
+    try:
+        from cryptography.fernet import Fernet
+    except Exception as exc:
+        raise RuntimeError('cryptography is required for cluster credential storage') from exc
+
+    secret = (
+        os.environ.get('HPCC_CLUSTER_CREDENTIAL_SECRET')
+        or current_app.config.get('HPCC_CLUSTER_CREDENTIAL_SECRET')
+        or current_app.config.get('SECRET_KEY')
+        or 'hpc-tools-cluster-credential'
+    )
+    digest = hashlib.sha256(str(secret).encode('utf-8')).digest()
+    return Fernet(base64.urlsafe_b64encode(digest))
+
+
+def _ensure_column(table_name: str, column_name: str, ddl: str) -> None:
+    inspector = inspect(db.engine)
+    columns = {column['name'] for column in inspector.get_columns(table_name)}
+    if column_name in columns:
+        return
+    with db.engine.begin() as connection:
+        connection.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {column_name} {ddl}'))
+
+
+def _ensure_runtime_schema() -> None:
+    _ensure_column('users', 'cluster_password_ciphertext', 'TEXT')
+    _ensure_column('users', 'cluster_password_updated_at', 'TIMESTAMP')
+    _ensure_column('hyperlink_saved_pairs', 'overlay_name', 'VARCHAR(255)')
+    _ensure_column('hyperlink_saved_pairs', 'remote_overlay_path', 'VARCHAR(1000)')
 
 
 class User(UserMixin, db.Model):
@@ -22,11 +59,14 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), default='user')  # 'user', 'admin'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
+    cluster_password_ciphertext = db.Column(db.Text)
+    cluster_password_updated_at = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     
     # Relationship to job history
     jobs = db.relationship('JobHistory', backref='user', lazy='dynamic')
     chat_sessions = db.relationship('ChatSession', backref='user', lazy='dynamic')
+    hyperlink_saved_pairs = db.relationship('HyperlinkSavedPair', backref='owner', lazy='dynamic')
     
     def set_password(self, password):
         """Hash and set user password"""
@@ -35,6 +75,33 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         """Verify password against hash"""
         return check_password_hash(self.password_hash, password)
+
+    def set_cluster_password(self, password):
+        """Encrypt and persist the current cluster password for reconnect flows."""
+        if not password:
+            self.cluster_password_ciphertext = None
+            self.cluster_password_updated_at = None
+            return
+        token = _cluster_password_fernet().encrypt(password.encode('utf-8'))
+        self.cluster_password_ciphertext = token.decode('utf-8')
+        self.cluster_password_updated_at = datetime.utcnow()
+
+    def get_cluster_password(self):
+        """Return the decrypted cluster password or an empty string."""
+        token = (self.cluster_password_ciphertext or '').strip()
+        if not token:
+            return ''
+        try:
+            return _cluster_password_fernet().decrypt(token.encode('utf-8')).decode('utf-8')
+        except Exception:
+            return ''
+
+    def has_cluster_password(self):
+        return bool((self.cluster_password_ciphertext or '').strip())
+
+    def clear_cluster_password(self):
+        self.cluster_password_ciphertext = None
+        self.cluster_password_updated_at = None
     
     def update_last_login(self):
         """Update last login timestamp"""
@@ -121,10 +188,35 @@ class ChatMessage(db.Model):
         return f'<ChatMessage {self.id} - {self.role}>'
 
 
+class HyperlinkSavedPair(db.Model):
+    """Per-user saved hyperlink HTML/video pair metadata."""
+    __tablename__ = 'hyperlink_saved_pairs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    owner_net_id = db.Column(db.String(50), nullable=False, index=True)
+    label = db.Column(db.String(255), nullable=False)
+    pair_key = db.Column(db.String(128), nullable=False, index=True)
+    html_folder = db.Column(db.String(255), nullable=False)
+    video_name = db.Column(db.String(255), nullable=False)
+    overlay_name = db.Column(db.String(255))
+    remote_html_path = db.Column(db.String(1000), nullable=False)
+    remote_video_path = db.Column(db.String(1000), nullable=False)
+    remote_overlay_path = db.Column(db.String(1000))
+    output_root = db.Column(db.String(1000))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_used_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return f'<HyperlinkSavedPair {self.owner_net_id} - {self.label}>'
+
+
 def init_db(app):
     """Initialize the database"""
     with app.app_context():
         db.create_all()
+        _ensure_runtime_schema()
 
         disable_default_admin = (os.environ.get('HPC_TOOLS_DISABLE_DEFAULT_ADMIN') or '').strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
         auth_mode = (os.environ.get('HPC_TOOLS_AUTH_MODE') or '').strip().lower()

@@ -3,7 +3,7 @@ import os
 import multiprocessing
 
 # Server socket
-bind = f"{os.environ.get('HOST', '0.0.0.0')}:{os.environ.get('PORT', '5001')}"
+bind = f"{os.environ.get('HOST', '0.0.0.0')}:{os.environ.get('PORT', '5002')}"
 backlog = int(os.environ.get('BACKLOG', '1024'))
 
 # Fewer worker processes keep RSS bounded on the shared 15 GB login node.
