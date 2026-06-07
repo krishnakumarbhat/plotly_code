@@ -103,7 +103,9 @@ Current permission rules are intentional.
 
 Southfield:
 - host: `10.192.224.131`
-- bundle root: `/mnt/usmidet/projects/RADARCORE/2-Sim/all_service`
+- bundle root: `/mnt/usmidet/projects/RADARCORE/2-Sim/all_service` or  `/mnt/usmidet/projects/RADARCORE/2-Sim/all_service2` or 3 see /mnt/usmidet/projects/RADARCORE/2-Sim you will come to know as number increse version also imporves 
+
+
 - default Slurm account/partition: `radarcore` / `defq`
 
 Krakow all_service2:
