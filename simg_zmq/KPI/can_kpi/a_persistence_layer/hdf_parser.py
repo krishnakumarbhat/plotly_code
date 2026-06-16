@@ -43,25 +43,58 @@ class KpiHdfParser:
             required_detection_signals or default_signals
         )
         self._required_detection_set: Set[str] = set(self._required_detection_signals)
+        self._last_parse_report = self._new_parse_report("")
+
+    def get_last_parse_report(self) -> Dict[str, Any]:
+        report = self._last_parse_report or self._new_parse_report("")
+        return {
+            "path": report.get("path", ""),
+            "status": report.get("status", "ok"),
+            "parsed_sensors": list(report.get("parsed_sensors", [])),
+            "skipped_sensors": list(report.get("skipped_sensors", [])),
+            "warnings": list(report.get("warnings", [])),
+            "errors": list(report.get("errors", [])),
+            "sensor_scan_counts": dict(report.get("sensor_scan_counts", {})),
+        }
 
     def parse_file(self, hdf_path: str) -> Dict[str, Any]:
         """Parse one HDF file into sensor-wise scan-index keyed structures."""
+        report = self._new_parse_report(hdf_path)
         if not hdf_path:
+            report["status"] = "error"
+            report["errors"].append("HDF was unable to parse: path was not provided.")
+            self._last_parse_report = report
             return {}
 
         try:
             raw = self._reader.read_hdf_attrs(hdf_path)
         except Exception as exc:
             logger.exception(f"Failed to read HDF file {hdf_path}: {exc}")
+            report["status"] = "error"
+            report["errors"].append(f"HDF was unable to parse: {exc}")
+            self._last_parse_report = report
             return {}
 
         parsed: Dict[str, Any] = {}
+        if not raw:
+            report["status"] = "error"
+            report["errors"].append(
+                "HDF was unable to parse: no sensor groups were found in this file."
+            )
+            self._last_parse_report = report
+            return parsed
 
         for sensor_id, sensor_data in raw.items():
             try:
                 scan_index = self._reader.get_scan_index(sensor_data)
                 if not isinstance(scan_index, np.ndarray) or scan_index.size == 0:
-                    logger.debug(f"Skip sensor {sensor_id}: no scan index")
+                    msg = (
+                        "skipped because no HED_SCAN_INDEX/HED_LOOK_INDEX and no "
+                        "real detection arrays were found"
+                    )
+                    logger.warning(f"Skip sensor {sensor_id} in {hdf_path}: {msg}")
+                    report["warnings"].append(f"{sensor_id}: {msg}.")
+                    self._append_unique(report["skipped_sensors"], sensor_id)
                     continue
 
                 scan_index = np.rint(scan_index).astype(np.int64)
@@ -105,10 +138,27 @@ class KpiHdfParser:
                     "alignment": alignment,
                     "detection": detection,
                 }
+                self._append_unique(report["parsed_sensors"], sensor_id)
+                report["sensor_scan_counts"][sensor_id] = int(len(scan_index))
             except Exception as exc:
                 logger.exception(
                     f"Failed parsing sensor {sensor_id} in {hdf_path}: {exc}"
                 )
+                report["errors"].append(
+                    f"{sensor_id}: HDF was unable to parse sensor payload: {exc}"
+                )
+                self._append_unique(report["skipped_sensors"], sensor_id)
+
+        if not parsed:
+            report["status"] = "error"
+            if not report["errors"]:
+                report["errors"].append(
+                    "HDF was unable to parse: no supported sensor payloads were extracted."
+                )
+        elif report["warnings"] or report["errors"]:
+            report["status"] = "partial"
+
+        self._last_parse_report = report
 
         return parsed
 
@@ -357,3 +407,18 @@ class KpiHdfParser:
 
     def _is_per_scan(self, arr: Any, scan_count: int) -> bool:
         return isinstance(arr, np.ndarray) and len(arr) >= scan_count
+
+    def _new_parse_report(self, hdf_path: str) -> Dict[str, Any]:
+        return {
+            "path": hdf_path or "",
+            "status": "ok",
+            "parsed_sensors": [],
+            "skipped_sensors": [],
+            "warnings": [],
+            "errors": [],
+            "sensor_scan_counts": {},
+        }
+
+    def _append_unique(self, values: List[str], value: str) -> None:
+        if value not in values:
+            values.append(value)

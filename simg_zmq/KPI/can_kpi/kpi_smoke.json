@@ -1,8 +1,8 @@
 {
     "INPUT_HDF": [
-        "C:/Users/ouymc2/Desktop/alldb/cankpi/CCA_9010_3100099_BUS_20260119_120811_0006_HDF.h5"
+        "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/outputs/CCA_9010_3100099_DEBUG_20251105_132836_0022.h5"
     ],
     "OUTPUT_HDF": [
-        "C:/Users/ouymc2/Desktop/alldb/cankpi/CCA_9010_3100099_BUS_20260119_120811_0006_rR00080104_HDF.h5"
+        "/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/outputs/CCA_9010_3100099_DEBUG_20251105_132836_0022_HIL_OUT.h5"
     ]
 }

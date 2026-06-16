@@ -180,6 +180,16 @@ class KpiHtmlGen:
 
         return "\n".join(parts)
 
+    def build_status_tab(
+        self,
+        sensor_name: str,
+        messages: List[str],
+        tone: str = "warning",
+    ) -> str:
+        parts: List[str] = [f"<h2>{sensor_name}</h2>"]
+        parts.append(self.notice_block(f"{sensor_name} Status", messages, tone=tone))
+        return "\n".join(parts)
+
     def build_kpi_tab(
         self,
         summary_table_html: str,
@@ -234,6 +244,57 @@ class KpiHtmlGen:
         )
         return self._div(fig)
 
+    def index_accuracy_plot(
+        self,
+        log_names: List[str],
+        avg_accuracy: List[float],
+        title: str,
+    ) -> str:
+        if not log_names or not avg_accuracy:
+            return ""
+
+        def extract_short_name(name: str) -> str:
+            import re
+            match = re.search(r"_(\d{4})_(?:HDF|PreDetList)", name)
+            if match:
+                return match.group(1)
+            parts = name.split("_")
+            if len(parts) >= 2 and parts[-2].isdigit() and len(parts[-2]) == 4:
+                return parts[-2]
+            return name[-4:] if len(name) >= 4 else name
+
+        paired = list(zip(log_names, avg_accuracy))
+        paired.sort(key=lambda x: extract_short_name(x[0]))
+
+        short_names = [extract_short_name(name) for name, _ in paired]
+        sorted_accuracy = [acc for _, acc in paired]
+
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=short_names,
+                y=sorted_accuracy,
+                mode="lines+markers",
+                line=dict(color="rgba(13,106,139,1)", width=2),
+                marker=dict(size=8, color="rgba(13,106,139,1)", symbol="circle"),
+                text=[f"{value:.2f}%" for value in sorted_accuracy],
+                textposition="top center",
+                hovertemplate="Log: %{x}<br>Avg Accuracy: %{y:.2f}%<extra></extra>",
+                name="Avg Accuracy",
+            )
+        )
+        fig.update_layout(
+            title=title,
+            xaxis_title="Log ID (last 4 digits)",
+            yaxis_title="Average Accuracy %",
+            yaxis=dict(range=[0, 105]),
+            template=self._template,
+            hovermode="closest",
+            margin=dict(l=50, r=20, t=60, b=60),
+            height=420,
+        )
+        return self._div(fig)
+
     def stats_table(self, title: str, headers: List[str], rows: List[List[str]]) -> str:
         th = "".join(f"<th>{h}</th>" for h in headers)
         trs = []
@@ -244,6 +305,24 @@ class KpiHtmlGen:
             f"<h3>{title}</h3>"
             f'<div class="scroll"><table><thead><tr>{th}</tr></thead>'
             f"<tbody>{''.join(trs)}</tbody></table></div>"
+        )
+
+    def notice_block(
+        self,
+        title: str,
+        messages: List[str],
+        tone: str = "warning",
+    ) -> str:
+        if not messages:
+            return ""
+
+        tone_cls = tone if tone in {"warning", "error", "info"} else "info"
+        items = "".join(f"<li>{message}</li>" for message in messages)
+        return (
+            f'<section class="notice-block {tone_cls}">' 
+            f"<h3>{title}</h3>"
+            f"<ul>{items}</ul>"
+            "</section>"
         )
 
     def build_tabbed_html(
@@ -350,6 +429,16 @@ h3 { color: var(--text-main); margin: 12px 0 6px 0; }
     background: var(--panel-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px;
     box-shadow: var(--shadow); border: 1px solid var(--panel-border);
 }
+.notice-block {
+    border-radius: 14px; padding: 12px 14px; margin: 0 0 12px 0;
+    border: 1px solid transparent;
+}
+.notice-block h3 { margin: 0 0 8px 0; }
+.notice-block ul { margin: 0; padding-left: 18px; }
+.notice-block li { margin: 4px 0; }
+.notice-block.warning { background: #fff6e5; border-color: #f0cf82; color: #7a5412; }
+.notice-block.error { background: #fff0ef; border-color: #e8b2ac; color: #8b3127; }
+.notice-block.info { background: #eef7ff; border-color: #bfd6ea; color: #214968; }
 .tables-container { display: flex; flex-wrap: wrap; gap: 12px; }
 .table-wrapper { flex: 1 1 300px; max-width: 48%; }
 @media (max-width: 900px) {

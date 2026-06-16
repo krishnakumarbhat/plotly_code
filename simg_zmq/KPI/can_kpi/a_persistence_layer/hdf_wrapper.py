@@ -1,6 +1,7 @@
 """HDF5 reader for CAN KPI project.
 
-CAN HDF5 files store data as group attributes (not datasets).
+CAN HDF5 files may store signal payloads either as group attributes or as
+datasets under each subgroup, depending on producer version.
 """
 
 import logging
@@ -15,6 +16,12 @@ logger = logging.getLogger(__name__)
 
 class HdfAttrReader:
     """Loads a CAN-radar HDF5 file into nested dicts."""
+
+    SENSOR_ALIASES = {
+        "CEER_FC": "CEER_FLR",
+        "FC": "CEER_FLR",
+        "FLR": "CEER_FLR",
+    }
 
     SENSOR_NAME_MAP = {
         "CEER_FL": "Front Left (SRR_FL)",
@@ -32,18 +39,22 @@ class HdfAttrReader:
                 if not isinstance(sensor_grp, h5py.Group):
                     continue
 
-                sensor_data: Dict[str, Any] = {
-                    "friendly_name": self.SENSOR_NAME_MAP.get(sensor_id, sensor_id)
-                }
+                canonical_sensor_id = self._canonical_sensor_id(sensor_id)
+
+                sensor_data = result.get(canonical_sensor_id, {})
+                sensor_data["friendly_name"] = self.SENSOR_NAME_MAP.get(
+                    canonical_sensor_id, canonical_sensor_id
+                )
                 classified = self._classify_subgroups(list(sensor_grp.keys()))
                 for category, names in classified.items():
-                    sensor_data[category] = {
-                        gname: self._read_group_attrs(sensor_grp[gname])
-                        for gname in names
-                        if isinstance(sensor_grp[gname], h5py.Group)
-                        and len(sensor_grp[gname].attrs.keys()) > 0
-                    }
-                result[sensor_id] = sensor_data
+                    category_payload = sensor_data.setdefault(category, {})
+                    for gname in names:
+                        if not isinstance(sensor_grp[gname], h5py.Group):
+                            continue
+                        payload = self._read_group_payload(sensor_grp[gname])
+                        if payload:
+                            category_payload[gname] = payload
+                result[canonical_sensor_id] = sensor_data
         return result
 
     def get_scan_index(self, sensor_data: Dict[str, Any]) -> np.ndarray:
@@ -55,7 +66,9 @@ class HdfAttrReader:
 
         det_groups = sensor_data.get("detection", {})
         for attrs in det_groups.values():
-            for val in attrs.values():
+            for key, val in attrs.items():
+                if key.startswith("id_") or key.startswith("timestamp_"):
+                    continue
                 if isinstance(val, np.ndarray) and val.ndim == 1:
                     return np.arange(1, len(val) + 1)
         return np.array([])
@@ -145,6 +158,20 @@ class HdfAttrReader:
             out[k] = v if isinstance(v, np.ndarray) else np.array(v)
         return out
 
+    def _read_group_payload(self, grp: h5py.Group) -> Dict[str, np.ndarray]:
+        out = self._read_group_attrs(grp)
+        for key in grp.keys():
+            child = grp[key]
+            if not isinstance(child, h5py.Dataset):
+                continue
+            try:
+                value = child[()]
+            except Exception as exc:
+                logger.warning("Failed reading dataset %s: %s", child.name, exc)
+                continue
+            out[key] = value if isinstance(value, np.ndarray) else np.array(value)
+        return out
+
     def _extract_flat(
         self, groups: Dict[str, Dict[str, np.ndarray]]
     ) -> Dict[str, np.ndarray]:
@@ -179,3 +206,6 @@ class HdfAttrReader:
             else:
                 cats["other"].append(name)
         return cats
+
+    def _canonical_sensor_id(self, sensor_id: str) -> str:
+        return self.SENSOR_ALIASES.get(sensor_id.upper(), sensor_id)

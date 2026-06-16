@@ -23,7 +23,7 @@ This platform follows a **Manager-Worker** model designed for HPC clusters:
 ├─────────────────────────────────────────────────────────────────────┤
 │                       COMPUTE NODES (Workers)                        │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │  DC HTML    │  │ Interactive │  │    KPI      │  │  Hyperlink │ │
+│  │  can HTML    │  │ Interactive │  │    KPI      │  │  Hyperlink │ │
 │  │  Container  │  │    Plot     │  │  Analysis   │  │    Tool    │ │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘ │
 ├─────────────────────────────────────────────────────────────────────┤

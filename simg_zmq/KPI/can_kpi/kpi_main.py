@@ -80,6 +80,10 @@ class KpiMain:
                     {
                         "name": stem,
                         "filename": filename,
+                        "accuracy_rows": result.get("index_accuracy_rows", []),
+                        "overall_accuracy": float(
+                            result.get("index_overall_accuracy", 0.0)
+                        ),
                         "f1_rows": result.get("index_f1_rows", []),
                         "overall_f1": float(result.get("index_overall_f1", 0.0)),
                     }
@@ -109,16 +113,33 @@ class KpiMain:
             raise ValueError("At least one of input_hdf/output_hdf must be provided")
 
         in_parsed = self._business._hdf.parse_file(input_hdf) if input_hdf else {}
+        in_parse_report = (
+            self._business._hdf.get_last_parse_report()
+            if input_hdf
+            else self._empty_parse_report(input_hdf)
+        )
         out_parsed = self._business._hdf.parse_file(output_hdf) if output_hdf else {}
+        out_parse_report = (
+            self._business._hdf.get_last_parse_report()
+            if output_hdf
+            else self._empty_parse_report(output_hdf)
+        )
         in_stores = self._business._hdf.extract_storages(in_parsed)
         out_stores = self._business._hdf.extract_storages(out_parsed)
 
-        all_sensors = sorted(
-            set(in_stores.keys()) | set(out_stores.keys()),
-            key=lambda s: self._business.SENSOR_ORDER.index(s)
-            if s in self._business.SENSOR_ORDER
-            else 99,
+        all_sensors = self._sorted_sensors(
+            set(in_stores.keys())
+            | set(out_stores.keys())
+            | set(in_parse_report.get("parsed_sensors", []))
+            | set(out_parse_report.get("parsed_sensors", []))
+            | set(in_parse_report.get("skipped_sensors", []))
+            | set(out_parse_report.get("skipped_sensors", []))
         )
+        metric_sensors = [
+            sensor_id
+            for sensor_id in all_sensors
+            if in_stores.get(sensor_id) is not None or out_stores.get(sensor_id) is not None
+        ]
 
         match_results = {
             sensor_id: self._business._compute_match_pct(
@@ -130,14 +151,38 @@ class KpiMain:
         summary_headers, summary_rows = self._business._build_summary_tables(
             in_stores, out_stores, all_sensors
         )
-        summary_html = self._html.stats_table(
-            "Overview — All Sensors", summary_headers, summary_rows
+        summary_parts: List[str] = []
+        for label, path, report in (
+            ("Input HDF", input_hdf, in_parse_report),
+            ("Output HDF", output_hdf, out_parse_report),
+        ):
+            notice = self._build_parse_notice(label, path, report)
+            if notice:
+                summary_parts.append(notice)
+        summary_parts.append(
+            self._html.stats_table("Overview — All Sensors", summary_headers, summary_rows)
         )
+        summary_html = "\n".join(summary_parts)
 
         sensor_tabs = {}
         for sensor_id in all_sensors:
             label = self._business.FRIENDLY.get(sensor_id, sensor_id)
             result = match_results.get(sensor_id, {})
+            sensor_messages = self._sensor_status_messages(
+                sensor_id,
+                in_parse_report,
+                out_parse_report,
+                in_stores,
+                out_stores,
+            )
+            if sensor_messages and not result.get("scan", np.array([], dtype=np.int64)).size:
+                sensor_tabs[label] = self._html.build_status_tab(
+                    label,
+                    sensor_messages,
+                    tone="warning",
+                )
+                continue
+
             sensor_tabs[label] = self._html.build_sensor_tab(
                 label,
                 result.get("scan", np.array([], dtype=np.int64)),
@@ -156,8 +201,10 @@ class KpiMain:
         kpi_rows: List[List[str]] = []
         radar_plot_data = {}
         index_f1_rows: List[Dict[str, Any]] = []
+        index_accuracy_rows: List[Dict[str, Any]] = []
         f1_for_overall: List[float] = []
-        for sensor_id in all_sensors:
+        accuracy_for_overall: List[float] = []
+        for sensor_id in metric_sensors:
             result = match_results.get(sensor_id, {})
             scan = result.get("scan", np.array([], dtype=np.int64))
             overall = result.get("overall", np.array([], dtype=np.float16))
@@ -168,8 +215,13 @@ class KpiMain:
 
             radar_name = self._business.FRIENDLY.get(sensor_id, sensor_id)
             f1_avg = self._business._avg(f1)
+            accuracy_avg = self._business._avg(accuracy)
             index_f1_rows.append({"sensor": radar_name, "f1": f1_avg})
+            index_accuracy_rows.append(
+                {"sensor": radar_name, "accuracy": accuracy_avg}
+            )
             f1_for_overall.append(f1_avg)
+            accuracy_for_overall.append(accuracy_avg)
             radar_plot_data[radar_name] = (scan, overall)
             kpi_rows.append(
                 [
@@ -179,13 +231,18 @@ class KpiMain:
                     f"{self._business._avg(precision):.2f}",
                     f"{self._business._avg(recall):.2f}",
                     f"{f1_avg:.2f}",
-                    f"{self._business._avg(accuracy):.2f}",
+                    f"{accuracy_avg:.2f}",
                 ]
             )
 
         index_overall_f1 = (
             float(np.mean(np.asarray(f1_for_overall, dtype=np.float64)))
             if f1_for_overall
+            else 0.0
+        )
+        index_overall_accuracy = (
+            float(np.mean(np.asarray(accuracy_for_overall, dtype=np.float64)))
+            if accuracy_for_overall
             else 0.0
         )
 
@@ -219,26 +276,84 @@ class KpiMain:
             "html": html,
             "signals": signals,
             "storages": {"input": in_stores, "output": out_stores},
+            "parse_reports": {
+                "input": in_parse_report,
+                "output": out_parse_report,
+            },
+            "index_accuracy_rows": index_accuracy_rows,
+            "index_overall_accuracy": index_overall_accuracy,
             "index_f1_rows": index_f1_rows,
             "index_overall_f1": index_overall_f1,
         }
 
+    def _empty_parse_report(self, hdf_path: Optional[str]) -> Dict[str, Any]:
+        return {
+            "path": hdf_path or "",
+            "status": "ok",
+            "parsed_sensors": [],
+            "skipped_sensors": [],
+            "warnings": [],
+            "errors": [],
+            "sensor_scan_counts": {},
+        }
+
+    def _build_parse_notice(
+        self,
+        label: str,
+        hdf_path: Optional[str],
+        report: Dict[str, Any],
+    ) -> str:
+        if not hdf_path:
+            return ""
+
+        errors = list(report.get("errors", []))
+        warnings = list(report.get("warnings", []))
+        if not errors and not warnings:
+            return ""
+
+        messages: List[str] = []
+        messages.extend(errors)
+        messages.extend(warnings)
+
+        parsed_sensors = list(report.get("parsed_sensors", []))
+        sensor_scan_counts = dict(report.get("sensor_scan_counts", {}))
+        if parsed_sensors:
+            parsed_desc = ", ".join(
+                f"{sensor} ({sensor_scan_counts.get(sensor, 0)} scans)"
+                for sensor in parsed_sensors
+            )
+            messages.append(f"Parsed sensor payloads: {parsed_desc}.")
+
+        tone = "error" if report.get("status") == "error" else "warning"
+        return self._html.notice_block(
+            f"{label} — {Path(hdf_path).name}",
+            messages,
+            tone=tone,
+        )
+
     def _build_index(self, reports: List[Dict[str, Any]]) -> str:
+        plot_html = self._html.index_accuracy_plot(
+            [str(report.get("name", "Unknown")) for report in reports],
+            [float(report.get("overall_accuracy", 0.0)) for report in reports],
+            "Average Accuracy Across Logs",
+        )
         cards: List[str] = []
         for idx, report in enumerate(reports):
             name = report.get("name", "Unknown")
             filename = report.get("filename", "#")
-            f1_rows = report.get("f1_rows", [])
-            overall_f1 = float(report.get("overall_f1", 0.0))
+            accuracy_rows = report.get("accuracy_rows", [])
+            overall_accuracy = float(report.get("overall_accuracy", 0.0))
 
             row_html = ""
-            for row in f1_rows:
+            for row in accuracy_rows:
                 sensor = row.get("sensor", "Unknown")
-                f1_val = float(row.get("f1", 0.0))
-                row_html += f"<tr><td>{sensor}</td><td>{f1_val:.2f}%</td></tr>"
+                accuracy_val = float(row.get("accuracy", 0.0))
+                row_html += (
+                    f"<tr><td>{sensor}</td><td>{accuracy_val:.2f}%</td></tr>"
+                )
             row_html += (
-                f'<tr class="overall-row"><td>Overall Average (All Sensors)</td>'
-                f"<td>{overall_f1:.2f}%</td></tr>"
+                f'<tr class="overall-row"><td>Overall Average Accuracy</td>'
+                f"<td>{overall_accuracy:.2f}%</td></tr>"
             )
 
             cards.append(
@@ -264,12 +379,14 @@ class KpiMain:
                 '<meta charset="utf-8"/>',
                 '<meta name="viewport" content="width=device-width, initial-scale=1"/>',
                 "<title>PCAN KPI — Index</title>",
+                '<script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>',
                 "<style>",
                 "*{box-sizing:border-box;}",
                 "body{font-family:Segoe UI,Arial,sans-serif;margin:0;padding:20px;background:#f5f6fa;color:#2c3e50;}",
                 ".page{max-width:1200px;margin:0 auto;}",
                 "h1{margin:0 0 8px 0;color:#2c3e50;}",
                 ".sub{margin:0 0 18px 0;color:#5b6b7b;font-size:14px;}",
+                ".plot-shell{background:#fff;border:1px solid #e8ecef;border-radius:14px;padding:12px;box-shadow:0 4px 14px rgba(0,0,0,.06);margin:0 0 18px 0;}",
                 ".cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}",
                 ".report-card{background:#fff;border:1px solid #e8ecef;border-radius:12px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.06);opacity:0;transform:translateY(10px);animation:cardIn .45s ease forwards;animation-delay:calc(var(--i)*.06s);transition:transform .2s ease, box-shadow .2s ease;}",
                 ".report-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.10);}",
@@ -290,12 +407,47 @@ class KpiMain:
                 "</head><body>",
                 '<main class="page">',
                 "<h1>PCAN KPI Reports</h1>",
-                '<p class="sub">Open a log report and review F1 by sensor plus overall average.</p>',
+                '<p class="sub">Open a log report and review average accuracy by sensor plus overall average accuracy.</p>',
+                f'<section class="plot-shell">{plot_html}</section>' if plot_html else "",
                 f'<section class="cards">{"".join(cards)}</section>',
                 "</main>",
                 "</body></html>",
             ]
         )
+
+    def _sorted_sensors(self, sensor_ids: set[str]) -> List[str]:
+        return sorted(
+            sensor_ids,
+            key=lambda sensor_id: (
+                self._business.SENSOR_ORDER.index(sensor_id)
+                if sensor_id in self._business.SENSOR_ORDER
+                else 99,
+                self._business.FRIENDLY.get(sensor_id, sensor_id),
+            ),
+        )
+
+    def _sensor_status_messages(
+        self,
+        sensor_id: str,
+        in_parse_report: Dict[str, Any],
+        out_parse_report: Dict[str, Any],
+        in_stores: Dict[str, Any],
+        out_stores: Dict[str, Any],
+    ) -> List[str]:
+        if in_stores.get(sensor_id) is not None or out_stores.get(sensor_id) is not None:
+            return []
+
+        messages: List[str] = []
+        for label, report in (("Input", in_parse_report), ("Output", out_parse_report)):
+            for message in list(report.get("errors", [])) + list(report.get("warnings", [])):
+                if not message.startswith(f"{sensor_id}:"):
+                    continue
+                detail = message.split(": ", 1)[1] if ": " in message else message
+                messages.append(f"{label}: {detail}")
+
+        if messages:
+            return messages
+        return ["HDF was unable to parse this sensor into KPI data for the current report."]
 
 
 def _resolve_config_path(cli_arg: Optional[str]) -> str:
