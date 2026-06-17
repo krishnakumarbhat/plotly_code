@@ -66,6 +66,7 @@ class Application:
             ingestor=self.ingestor,
             query_graph=self.query_graph,
             sqlite_store=self.sqlite_store,
+            max_session_messages=self.config.max_session_messages,
         )
         self._bootstrap_index()
 

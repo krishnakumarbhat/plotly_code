@@ -16,10 +16,12 @@ class RagApi:
         ingestor: HtmlIngestor,
         query_graph: QueryGraph,
         sqlite_store: SQLiteLogStore,
+        max_session_messages: int,
     ) -> None:
         self.ingestor = ingestor
         self.query_graph = query_graph
         self.sqlite_store = sqlite_store
+        self.max_session_messages = max(2, max_session_messages)
         self.app = Flask(__name__)
         self._session_messages: dict[str, list[dict[str, str]]] = {}
         self._register_routes()
@@ -62,7 +64,7 @@ class RagApi:
 
             session_messages.append({"role": "user", "content": question})
             session_messages.append({"role": "assistant", "content": answer})
-            if len(session_messages) > 20:
-                self._session_messages[session_id] = session_messages[-20:]
+            if len(session_messages) > self.max_session_messages:
+                self._session_messages[session_id] = session_messages[-self.max_session_messages:]
 
             return jsonify({"session_id": session_id, "question": question, "answer": answer}), 200

@@ -13,10 +13,11 @@ From: docker.io/python:3.10-slim
     export PYTHONPATH=/app/rag
     export FLASK_HOST=${FLASK_HOST:-0.0.0.0}
     export FLASK_PORT=${FLASK_PORT:-5100}
-    export VECTOR_BACKEND=${VECTOR_BACKEND:-simple}
+    export VECTOR_BACKEND=${VECTOR_BACKEND:-chroma}
+    export LLAMA_SERVER_PATH=${LLAMA_SERVER_PATH:-/app/rag/tools/llama.cpp/llama-server}
 
 %post
-    apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    apt-get update && apt-get install -y --no-install-recommends ca-certificates build-essential cmake git \
         && rm -rf /var/lib/apt/lists/*
 
     python -m venv /opt/venv
@@ -24,7 +25,18 @@ From: docker.io/python:3.10-slim
     pip install --upgrade pip setuptools wheel
     pip install --no-cache-dir -r /app/rag/requirements.txt
 
-    mkdir -p /app/rag/data /app/rag/tools
+    git clone --depth 1 https://github.com/ggerganov/llama.cpp.git /tmp/llama.cpp
+    cmake -S /tmp/llama.cpp -B /tmp/llama.cpp/build -DBUILD_SHARED_LIBS=OFF -DLLAMA_BUILD_SERVER=ON
+    cmake --build /tmp/llama.cpp/build --config Release -j"$(nproc)"
+
+    mkdir -p /app/rag/data /app/rag/tools/llama.cpp
+    if [ -f /tmp/llama.cpp/build/bin/llama-server ]; then \
+        cp /tmp/llama.cpp/build/bin/llama-server /app/rag/tools/llama.cpp/llama-server; \
+    else \
+        cp /tmp/llama.cpp/build/bin/Release/llama-server /app/rag/tools/llama.cpp/llama-server; \
+    fi
+    chmod 755 /app/rag/tools/llama.cpp/llama-server
+
     chmod -R 755 /app
 
 %files

@@ -80,6 +80,7 @@ class AppConfig:
         self.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "160"))
         self.embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
         self.vector_backend = (os.getenv("VECTOR_BACKEND", "chroma") or "chroma").strip().lower()
+        self.max_session_messages = max(2, int(os.getenv("RAG_SESSION_MESSAGES", "6")))
         default_vector_store_path = self.vector_store_dir / "vector_store.json"
         self.vector_store_json_path = Path(
             self._sanitize_path(
@@ -150,12 +151,21 @@ class AppConfig:
         if explicit:
             return Path(explicit)
 
+        explicit_local_root = self._sanitize_path(os.getenv('HPCC_RUNTIME_LOCAL_ROOT', ''))
+        if explicit_local_root:
+            return Path(explicit_local_root) / '.cache_html'
+
         bundle_root = self._sanitize_path(os.getenv('HPCC_BUNDLE_ROOT', ''))
         if bundle_root:
             return Path(bundle_root) / 'runtime_state' / 'main_html' / '.cache_html'
 
         if self._running_in_container():
-            return Path('/tmp/hpc_tools/.cache_html')
+            for candidate in (Path('/local/hpc_tools/.cache_html'), Path('/var/tmp/hpc_tools/.cache_html'), Path('/tmp/hpc_tools/.cache_html')):
+                try:
+                    candidate.mkdir(parents=True, exist_ok=True)
+                except OSError:
+                    continue
+                return candidate
 
         return self.workspace_root / 'simg' / '.cache_html'
 
@@ -167,9 +177,18 @@ class AppConfig:
         return self.project_root / candidate
 
     def _resolve_llama_server_path(self, raw_path: str) -> Path:
-        explicit = self._resolve_project_path(raw_path, 'tools/llama.cpp-vulkan/llama-server.exe')
-        if explicit.exists():
-            return explicit
-
-        fallback = self.project_root / 'tools' / 'llama.cpp' / 'llama-server.exe'
-        return fallback if fallback.exists() else explicit
+        candidates = []
+        cleaned = self._sanitize_path(raw_path)
+        if cleaned:
+            candidates.append(self._resolve_project_path(cleaned, cleaned))
+        candidates.extend(
+            [
+                self.project_root / 'tools' / 'llama.cpp' / 'llama-server',
+                self.project_root / 'tools' / 'llama.cpp-vulkan' / 'llama-server.exe',
+                self.project_root / 'tools' / 'llama.cpp' / 'llama-server.exe',
+            ]
+        )
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+        return candidates[0]
