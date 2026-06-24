@@ -44,7 +44,7 @@ def _runtime_dir(repo_root: Path) -> Path:
         if candidate and ((candidate / 'main_html.simg').exists() or (candidate / 'hpcc_main.pyz').exists()):
             return candidate.resolve()
 
-    runtime_dir = repo_root / 'simg_sh_hpcc'
+    runtime_dir = repo_root / 'generate_upload'
     if runtime_dir.is_dir():
         return runtime_dir.resolve()
     return runtime_dir

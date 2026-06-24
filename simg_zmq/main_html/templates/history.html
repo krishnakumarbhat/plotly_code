@@ -12,7 +12,6 @@
         <div class="d-flex gap-2">
             <select class="form-select form-select-sm" id="toolFilter" onchange="applyFilters()">
                 <option value="">All Tools</option>
-                <option value="dc_html" {% if tool_filter == 'dc_html' %}selected{% endif %}>DC HTML</option>
                 <option value="interactive_plot" {% if tool_filter == 'interactive_plot' %}selected{% endif %}>Interactive Plot</option>
                 <option value="kpi" {% if tool_filter == 'kpi' %}selected{% endif %}>KPI</option>
                 <option value="hyperlink_tool" {% if tool_filter == 'hyperlink_tool' %}selected{% endif %}>Hyperlink Tool</option>
@@ -62,9 +61,7 @@
                             </td>
                             <td>
                                 <div class="d-flex flex-column gap-1">
-                                {% if job.tool_name == 'dc_html' %}
-                                    <span class="badge bg-primary"><i class="bi bi-file-earmark-code"></i> DC HTML</span>
-                                {% elif job.tool_name == 'interactive_plot' %}
+                                {% if job.tool_name == 'interactive_plot' %}
                                     <span class="badge bg-success"><i class="bi bi-graph-up"></i> Interactive Plot</span>
                                 {% elif job.tool_name == 'kpi' %}
                                     <span class="badge bg-warning text-dark"><i class="bi bi-speedometer2"></i> KPI</span>

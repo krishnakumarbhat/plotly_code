@@ -26,7 +26,7 @@ From: docker.io/python:3.10-slim
     python -m venv /opt/venv
     . /opt/venv/bin/activate
     pip install --upgrade pip setuptools wheel
-    pip install --no-cache-dir numpy pandas h5py plotly
+    pip install --no-cache-dir numpy pandas h5py plotly scipy
 
     mkdir -p /app/can_kpi /app/output
     chmod -R 755 /app
@@ -37,6 +37,7 @@ From: docker.io/python:3.10-slim
     KPI/can_kpi/c_business_layer /app/can_kpi/c_business_layer
     KPI/can_kpi/d_presentation_layer /app/can_kpi/d_presentation_layer
     KPI/can_kpi/kpi_main.py /app/can_kpi/kpi_main.py
+    KPI/can_kpi/kpi_rag_bridge.py /app/can_kpi/kpi_rag_bridge.py
     KPI/can_kpi/kpi.json /app/can_kpi/kpi.json
 
 %runscript

@@ -39,7 +39,7 @@ class RuntimeStore:
                 return bundle_root.resolve()
         if (self.repo_root / 'main_html.simg').exists() or (self.repo_root / 'main_hpcc.sh').exists():
             return self.repo_root
-        return self.repo_root / 'simg_sh_hpcc'
+        return self.repo_root / 'generate_upload'
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.db_path)

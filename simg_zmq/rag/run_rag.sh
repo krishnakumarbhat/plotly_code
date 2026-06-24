@@ -18,11 +18,11 @@ runtime_bin() {
 }
 
 IMAGE_PATH="$SCRIPT_DIR/rag.simg"
-if [[ ! -f "$IMAGE_PATH" && -f "$BUNDLE_ROOT/simg_sh_hpcc/rag/rag.simg" ]]; then
-    IMAGE_PATH="$BUNDLE_ROOT/simg_sh_hpcc/rag/rag.simg"
-fi
-if [[ ! -f "$IMAGE_PATH" ]]; then
-    echo "Missing rag.simg next to run_rag.sh or under simg_sh_hpcc/rag/." >&2
+if [[ ! -f "$IMAGE_PATH" && -f "$BUNDLE_ROOT/generate_upload/rag/rag.simg" ]]; then
+    IMAGE_PATH="$BUNDLE_ROOT/generate_upload/rag/rag.simg"
+    echo "Using $IMAGE_PATH"
+elif [[ ! -f "$IMAGE_PATH" ]]; then
+    echo "Missing rag.simg next to run_rag.sh or under generate_upload/rag/." >&2
     exit 1
 fi
 

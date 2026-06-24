@@ -330,7 +330,7 @@ export RAG_PORT
 PUBLIC_HOST="$(detect_public_host)"
 RAG_SERVICE_URL=''
 if [[ "$HPCC_AUTO_START_RAG" =~ ^(1|true|yes|y)$ ]]; then
-    RAG_SERVICE_URL="http://127.0.0.1:$RAG_PORT"
+    RAG_SERVICE_URL="http://${PUBLIC_HOST:-127.0.0.1}:$RAG_PORT"
 fi
 
 ui_cmd=(
@@ -429,8 +429,8 @@ if [[ "$HPCC_AUTO_START_RAG" =~ ^(1|true|yes|y)$ ]]; then
     FLASK_PORT="$RAG_PORT" "$SCRIPT_DIR/rag/run_rag.sh" --talk >> "$RAG_LOG" 2>&1 &
     RAG_PID="$!"
     if ! wait_for_http 127.0.0.1 "$RAG_PORT" /health 120; then
-        echo 'rag did not become ready.' >&2
-        exit 1
+        echo 'WARNING: rag did not become ready (continuing without rag).' >&2
+        RAG_PID=''
     fi
 fi
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-SRC_DIR="${1:-$ROOT_DIR/simg_sh_hpcc}"
+SRC_DIR="${1:-$ROOT_DIR/generate_upload}"
 HOST="${2:-}"
 DEST_DIR="${3:-}"
 REMOTE_USER="${4:-${USER:-}}"
@@ -14,7 +14,7 @@ Usage:
   ./scripts/wsl_push_hpcc_bundle.sh [src_dir] <host> <dest_dir> [remote_user]
 
 Example:
-  ./scripts/wsl_push_hpcc_bundle.sh ./simg_sh_hpcc 10.192.224.131 /mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3 ouymc2
+  python3 generate_upload.py deploy
 EOF
 }
 

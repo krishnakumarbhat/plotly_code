@@ -30,6 +30,7 @@ from sqlalchemy.exc import OperationalError
 
 from config import config
 from hpcc_broker_client import HpccBrokerClient
+from jira_integration import JiraIntegration
 from models import db, User, JobHistory, ChatSession, ChatMessage, HyperlinkSavedPair, init_db
 from rag_client import RagClient
 from runtime_store import RuntimeStore
@@ -84,6 +85,8 @@ file_browser = FileBrowser([
     app.config.get('DATA_BASE_PATH', '/data'),
     app.config.get('SCRATCH_DIR', '/scratch')
 ])
+
+jira_integration = JiraIntegration()
 
 
 def _repo_root() -> Path:
@@ -2671,6 +2674,39 @@ def api_runtime_kpi_reuse_check():
             'existing': _serialize_runtime_match(existing_runtime_job, submission['execution_label']),
         }
     )
+
+
+@app.route('/api/kpi/alert', methods=['POST'])
+@login_required
+def api_kpi_alert():
+    payload = request.get_json(silent=True) or {}
+    accuracy = float(payload.get('accuracy', 100))
+    hdf_path = (payload.get('hdf_path') or '').strip()
+    log_path = (payload.get('log_path') or '').strip()
+    html_path = (payload.get('html_path') or '').strip()
+    sensor_id = (payload.get('sensor_id') or '').strip()
+    details = payload.get('details', {})
+
+    if accuracy >= 60:
+        return jsonify({'success': True, 'action': 'skipped', 'reason': 'accuracy above threshold'})
+
+    if not hdf_path:
+        return jsonify({'success': False, 'error': 'hdf_path required'}), 400
+
+    ticket_key = jira_integration.create_kpi_ticket(
+        accuracy_score=accuracy,
+        log_path=log_path,
+        hdf_path=hdf_path,
+        html_path=html_path,
+        details_dict=details if isinstance(details, dict) else {},
+        sensor_id=sensor_id,
+    )
+
+    return jsonify({
+        'success': True,
+        'ticket_key': ticket_key,
+        'accuracy': accuracy,
+    })
 
 
 def _container_path_to_host_path(container_path: str) -> str:

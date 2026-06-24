@@ -24,7 +24,7 @@ class Application:
             collection_name=self.config.collection_name,
             vector_backend=self.config.vector_backend,
             vector_store_json_path=str(self.config.vector_store_json_path),
-            embedding_model_path="",
+            embedding_model_path=str(self.config.embedding_model_path),
             qwen_gguf_path=str(self.config.qwen_gguf_path),
             qwen_fallback_gguf_path=str(self.config.qwen_fallback_gguf_path),
             qwen_model_id=self.config.qwen_model_id,

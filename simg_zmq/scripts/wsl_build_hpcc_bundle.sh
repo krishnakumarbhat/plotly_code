@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-OUT_DIR="${1:-$ROOT_DIR/simg_sh_hpcc}"
+OUT_DIR="${1:-$ROOT_DIR/generate_upload}"
 TMP_DIR="$(mktemp -d)"
 
 cleanup() {

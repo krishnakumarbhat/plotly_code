@@ -70,20 +70,20 @@ def main() -> None:
     parser.add_argument(
         "--embedding",
         choices=["bge-small", "nomic"],
-        default="nomic",
+        default="bge-small",
         help="Embedding model preset to download",
     )
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent
-    model_dir = project_root / "model"
+    model_dir = project_root / "embding_mod"
     model_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.embedding == "nomic":
-        _download_nomic(model_dir)
+    if args.embedding == "bge-small":
+        _download_bge_small(model_dir)
         return
 
-    _download_bge_small(model_dir)
+    _download_nomic(model_dir)
 
 
 if __name__ == "__main__":

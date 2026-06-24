@@ -298,7 +298,7 @@ def _runtime_root(project_root: Path, script_anchor: Optional[Path] = None) -> P
     if (anchor / 'main_html.simg').exists() or (anchor / 'main_hpcc.sh').exists():
         return anchor
 
-    runtime_dir = project_root / 'simg_sh_hpcc'
+    runtime_dir = project_root / 'generate_upload'
     if runtime_dir.is_dir():
         return runtime_dir.resolve()
     return project_root.resolve()
@@ -416,6 +416,10 @@ def _rag_service_url(workspace_root: Path, for_wsl_client: bool = False) -> str:
     port = str(os.environ.get('FLASK_PORT', '5100'))
     if for_wsl_client and _should_run_rag_on_host(workspace_root):
         return f"http://{_wsl_windows_host_ip() or '127.0.0.1'}:{port}"
+
+    advertised_host = (os.environ.get('HPCC_BROKER_ADVERTISE_HOST') or '').strip()
+    if advertised_host and advertised_host != '127.0.0.1':
+        return f'http://{advertised_host}:{port}'
     return f'http://127.0.0.1:{port}'
 
 
@@ -647,6 +651,18 @@ def _service_environment(workspace_root: Path, tool_key: str) -> Dict[str, str]:
             'LLM_N_GPU_LAYERS': os.environ.get('LLM_N_GPU_LAYERS', '35'),
             'HF_HUB_OFFLINE': os.environ.get('HF_HUB_OFFLINE', '1'),
             'TRANSFORMERS_OFFLINE': os.environ.get('TRANSFORMERS_OFFLINE', '1'),
+        }
+    if tool_key in {'can_kpi', 'udp_kpi', 'interactive_plot'}:
+        rag_url = os.environ.get('RAG_SERVICE_URL', _rag_service_url(workspace_root))
+        base = rag_url.rstrip('/')
+        if base.startswith('http://'):
+            host_part = base.split('://', 1)[1].rsplit(':', 1)[0]
+            llama_url = f'http://{host_part}:8081'
+        else:
+            llama_url = os.environ.get('LLAMA_SERVER_BASE_URL', os.environ.get('RAG_LLAMA_URL', 'http://127.0.0.1:8081'))
+        return {
+            'RAG_SERVICE_URL': rag_url,
+            'LLAMA_SERVER_BASE_URL': llama_url,
         }
     return {}
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import math
 import os
 import re
@@ -18,6 +19,8 @@ try:
     import chromadb
 except ImportError:  # pragma: no cover - validated at runtime in the deployment image
     chromadb = None
+
+
 
 
 class RagEngine:
@@ -73,6 +76,8 @@ class RagEngine:
         self._llm_n_gpu_layers = max(0, int(llm_n_gpu_layers or 0))
         self._llama_server_process: Optional[subprocess.Popen] = None
         self._llama_server_lock = threading.Lock()
+        self._embedding_model = self._load_embedding_model(Path(embedding_model_path).expanduser() if embedding_model_path else None)
+        self._embedding_fn = self._build_embedding_function()
         self._client = None
         self._collection = self._create_collection()
         self._documents = self._load_documents()
@@ -81,12 +86,41 @@ class RagEngine:
     def document_count(self) -> int:
         return len(self._documents)
 
+    def _load_embedding_model(self, model_path: Optional[Path]) -> Any:
+        if model_path is None or not model_path.exists():
+            return None
+        try:
+            from sentence_transformers import SentenceTransformer
+            logger = logging.getLogger(__name__)
+            logger.info('Loading embedding model from %s', model_path)
+            return SentenceTransformer(str(model_path), device='cpu')
+        except Exception:
+            return None
+
+    def _build_embedding_function(self) -> Any:
+        if self._embedding_model is None:
+            return None
+        model = self._embedding_model
+
+        class _LocalEmbeddingFunction:
+            def __init__(self, m):
+                self._model = m
+            def __call__(self, texts: list[str]) -> list[list[float]]:
+                return self._model.encode(texts, show_progress_bar=False).tolist()
+
+        return _LocalEmbeddingFunction(model)
+
     def _create_collection(self):
         if self._vector_backend != 'chroma' or chromadb is None:
             return None
         client = chromadb.PersistentClient(path=str(self._chroma_path))
         self._client = client
-        return client.get_or_create_collection(name=self._collection_name, metadata={'hnsw:space': 'cosine'})
+        ef = self._embedding_fn
+        return client.get_or_create_collection(
+            name=self._collection_name,
+            metadata={'hnsw:space': 'cosine'},
+            embedding_function=ef,
+        )
 
     def _load_documents(self) -> list[dict[str, Any]]:
         if self._collection is not None:
@@ -213,15 +247,14 @@ class RagEngine:
                 collection_ids.append(chunk_id)
                 collection_documents.append(text)
                 collection_metadatas.append(metadata)
-                collection_embeddings.append(self._embed_text(text))
+                if self._embedding_fn is None:
+                    collection_embeddings.append(self._embed_text(text))
 
         if self._collection is not None and collection_ids:
-            self._collection.upsert(
-                ids=collection_ids,
-                documents=collection_documents,
-                metadatas=collection_metadatas,
-                embeddings=collection_embeddings,
-            )
+            kwargs = dict(ids=collection_ids, documents=collection_documents, metadatas=collection_metadatas)
+            if self._embedding_fn is None:
+                kwargs['embeddings'] = collection_embeddings
+            self._collection.upsert(**kwargs)
         else:
             self._persist_documents()
 
@@ -432,11 +465,12 @@ class RagEngine:
         candidate_documents: list[dict[str, Any]]
         if self._collection is not None:
             requested = max((limit or self._top_k) * 4, self._top_k * 4)
-            result = self._collection.query(
-                query_embeddings=[self._embed_text(final_query)],
-                n_results=requested,
-                include=['documents', 'metadatas', 'distances'],
-            )
+            query_kwargs = dict(n_results=requested, include=['documents', 'metadatas', 'distances'])
+            if self._embedding_fn is None:
+                query_kwargs['query_embeddings'] = [self._embed_text(final_query)]
+            else:
+                query_kwargs['query_texts'] = [final_query]
+            result = self._collection.query(**query_kwargs)
             candidate_documents = []
             ids = (result.get('ids') or [[]])[0]
             texts = (result.get('documents') or [[]])[0]

@@ -72,12 +72,13 @@ class AppConfig:
             directory.strip().lower()
             for directory in os.getenv(
                 "RAG_EXCLUDE_DIRS",
-                ".git,__pycache__,.pytest_cache,.venv,venv,node_modules,model,llm_model,data,simg_sh_hpcc",
+                ".git,__pycache__,.pytest_cache,.venv,venv,node_modules,model,llm_model,embding_mod,data,simg_sh_hpcc,generate_upload",
             ).split(",")
             if directory.strip()
         }
         self.chunk_size = int(os.getenv("CHUNK_SIZE", "1800"))
         self.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "160"))
+        self.embedding_model_path = self._resolve_embedding_model_path(os.getenv('EMBED_MODEL_PATH', '').strip())
         self.embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
         self.vector_backend = (os.getenv("VECTOR_BACKEND", "chroma") or "chroma").strip().lower()
         self.max_session_messages = max(2, int(os.getenv("RAG_SESSION_MESSAGES", "6")))
@@ -95,14 +96,8 @@ class AppConfig:
             "yes",
             "y",
         }
-        self.qwen_gguf_path = self._resolve_project_path(
-            os.getenv('QWEN_GGUF_PATH', ''),
-            'qwn_kk_fine_model/Qwen_Qwen3.5-2B-Q5_K_S.gguf',
-        )
-        self.qwen_fallback_gguf_path = self._resolve_project_path(
-            os.getenv('QWEN_FALLBACK_GGUF_PATH', ''),
-            'qwn_kk_fine_model/Qwen_Qwen3.5-2B-Q5_K_S.gguf',
-        )
+        self.qwen_gguf_path = self._resolve_gguf_path(os.getenv('QWEN_GGUF_PATH', ''))
+        self.qwen_fallback_gguf_path = self._resolve_gguf_path(os.getenv('QWEN_FALLBACK_GGUF_PATH', ''))
         self.qwen_model_id = os.getenv('QWEN_MODEL_ID', '').strip()
         self.llm_backend = (os.getenv('LLM_BACKEND', 'llama_server') or 'llama_server').strip().lower()
         self.llama_server_path = self._resolve_llama_server_path(os.getenv('LLAMA_SERVER_PATH', '').strip())
@@ -175,6 +170,32 @@ class AppConfig:
         if candidate.is_absolute() or (len(cleaned) >= 2 and cleaned[1] == ':'):
             return candidate
         return self.project_root / candidate
+
+    def _resolve_gguf_path(self, raw_path: str) -> Path:
+        cleaned = self._sanitize_path(raw_path)
+        if cleaned:
+            candidate = self._resolve_project_path(cleaned, cleaned)
+            if candidate.exists():
+                return candidate
+        model_dir = self.project_root / 'model'
+        if model_dir.is_dir():
+            ggufs = sorted(model_dir.glob('*.gguf'))
+            if ggufs:
+                return ggufs[0]
+        return self.project_root / 'model' / 'model.gguf'
+
+    def _resolve_embedding_model_path(self, raw_path: str) -> Path:
+        cleaned = self._sanitize_path(raw_path)
+        if cleaned:
+            candidate = self._resolve_project_path(cleaned, cleaned)
+            if candidate.is_dir() and (candidate / 'config.json').exists():
+                return candidate
+        emb_dir = self.project_root / 'embding_mod'
+        if emb_dir.is_dir():
+            for sub in sorted(emb_dir.iterdir()):
+                if sub.is_dir() and (sub / 'config.json').exists():
+                    return sub
+        return emb_dir
 
     def _resolve_llama_server_path(self, raw_path: str) -> Path:
         candidates = []
