@@ -87,17 +87,33 @@ export THREADS="${THREADS:-4}"
 export KEEPALIVE="${KEEPALIVE:-5}"
 export TIMEOUT="${TIMEOUT:-240}"
 
+broker_python() {
+    local candidate
+    for candidate in "${HPCC_BROKER_PYTHON:-}" python3.12 python3.11 python3.10 python3.9 python3.8 python3.7 python3; do
+        [[ -n "$candidate" ]] || continue
+        if command -v "$candidate" >/dev/null 2>&1; then
+            printf '%s' "$candidate"
+            return 0
+        fi
+    done
+    echo 'Python 3.7+ is required for hpcc_main.pyz.' >&2
+    return 1
+}
+
+BROKER_PYTHON="$(broker_python)"
+export BROKER_PYTHON
+
 BROKER_ARTIFACT=""
 BROKER_CMD=()
 if [[ -f "$SCRIPT_DIR/hpcc_main.pyz" ]]; then
     BROKER_ARTIFACT="$SCRIPT_DIR/hpcc_main.pyz"
-    BROKER_CMD=(python3 "$BROKER_ARTIFACT")
+    BROKER_CMD=("$BROKER_PYTHON" "$BROKER_ARTIFACT")
 elif [[ -f "$SCRIPT_DIR/hpcc_main.py" ]]; then
     BROKER_ARTIFACT="$SCRIPT_DIR/hpcc_main.py"
-    BROKER_CMD=(python3 "$BROKER_ARTIFACT")
+    BROKER_CMD=("$BROKER_PYTHON" "$BROKER_ARTIFACT")
 elif [[ -f "$ROOT_DIR/hpcc_main.py" ]]; then
     BROKER_ARTIFACT="$ROOT_DIR/hpcc_main.py"
-    BROKER_CMD=(python3 "$BROKER_ARTIFACT")
+    BROKER_CMD=("$BROKER_PYTHON" "$BROKER_ARTIFACT")
 fi
 if [[ -z "$BROKER_ARTIFACT" ]]; then
     echo "Missing bundled broker artifact. Expected $SCRIPT_DIR/hpcc_main.pyz or $SCRIPT_DIR/hpcc_main.py." >&2
@@ -123,8 +139,13 @@ if ! RUNTIME_BIN="$(bundle_runtime_bin)"; then
 fi
 
 QWEN_MODEL_DIR="${QWEN_MODEL_DIR:-}"
-if [[ -z "$QWEN_MODEL_DIR" && -d "$ROOT_DIR/rag/qwn_kk_fine_model" ]]; then
-    QWEN_MODEL_DIR="$ROOT_DIR/rag/qwn_kk_fine_model"
+if [[ -z "$QWEN_MODEL_DIR" ]]; then
+    for candidate in "$SCRIPT_DIR/rag/model" "$ROOT_DIR/rag/model" "$ROOT_DIR/rag/qwn_kk_fine_model"; do
+        if [[ -d "$candidate" ]]; then
+            QWEN_MODEL_DIR="$candidate"
+            break
+        fi
+    done
 fi
 
 MAIN_HTML_SOURCE_DIR=''
@@ -325,6 +346,9 @@ PORT="$(resolve_requested_port 'Dashboard' "$PORT" "$HPCC_PORT_CONFLICT_POLICY")
 export PORT
 RAG_PORT="${RAG_PORT:-5100}"
 RAG_PORT="$(resolve_requested_port 'RAG' "$RAG_PORT" "$HPCC_PORT_CONFLICT_POLICY")"
+while [[ "$RAG_PORT" == "$PORT" ]]; do
+    RAG_PORT="$(resolve_requested_port 'RAG' "$((RAG_PORT + 1))" shift)"
+done
 export RAG_PORT
 
 PUBLIC_HOST="$(detect_public_host)"

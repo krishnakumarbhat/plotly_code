@@ -18,7 +18,10 @@ runtime_bin() {
 }
 
 IMAGE_PATH="$SCRIPT_DIR/rag.simg"
-if [[ ! -f "$IMAGE_PATH" && -f "$BUNDLE_ROOT/generate_upload/rag/rag.simg" ]]; then
+if [[ ! -f "$IMAGE_PATH" && -f "$BUNDLE_ROOT/rag.simg" ]]; then
+    IMAGE_PATH="$BUNDLE_ROOT/rag.simg"
+    echo "Using $IMAGE_PATH"
+elif [[ ! -f "$IMAGE_PATH" && -f "$BUNDLE_ROOT/generate_upload/rag/rag.simg" ]]; then
     IMAGE_PATH="$BUNDLE_ROOT/generate_upload/rag/rag.simg"
     echo "Using $IMAGE_PATH"
 elif [[ ! -f "$IMAGE_PATH" ]]; then
@@ -39,6 +42,8 @@ resolve_model_path() {
     local candidate
     for candidate in \
         "${QWEN_MODEL_DIR:-}" \
+        "$PROJECT_ROOT/rag/model" \
+        "$BUNDLE_ROOT/rag/model" \
         "$PROJECT_ROOT/rag/qwn_kk_fine_model" \
         "$BUNDLE_ROOT/rag/qwn_kk_fine_model" \
         "$PROJECT_ROOT/qwn_kk_fine_model" \

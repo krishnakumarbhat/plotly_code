@@ -1,5 +1,5 @@
-import os, platform, shutil, subprocess, sys, json, hashlib
-from pathlib import Path
+import os, platform, shutil, subprocess, sys, json, hashlib, socket, threading, time
+from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parent
 GEN = ROOT / 'generate_upload'
@@ -81,6 +81,12 @@ def _sha256(path):
     return h.hexdigest()
 
 
+def _rel_key(path) -> str:
+    if isinstance(path, Path):
+        return path.as_posix()
+    return str(path).replace('\\', '/')
+
+
 def _read_meta():
     if META.exists():
         try:
@@ -149,7 +155,7 @@ def build_simg(img_rel):
         _tmp_img = Path(_build_dir) / dst.name
         subprocess.run(
             [runtime, 'build', '--fakeroot', '--tmpdir', '/tmp', str(_tmp_img), str(def_path)],
-            check=True, env=build_env,
+            check=True, env=build_env, cwd=str(ROOT),
         )
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(_tmp_img, dst)
@@ -255,7 +261,6 @@ def generate():
     _fix_shell_scripts()
     _ensure_rag_sh()
     _write_readme()
-    _save_upload_hashes()
     print(f'Generate complete: {GEN}')
 
 
@@ -422,7 +427,7 @@ def _save_upload_hashes():
     for f in GEN.rglob('*'):
         if f.is_dir() or f.name.startswith('.'):
             continue
-        rel = str(f.relative_to(GEN))
+        rel = _rel_key(f.relative_to(GEN))
         if _is_model_binary(f):
             meta['upload'][rel] = '__name_only__'
         else:
@@ -445,14 +450,21 @@ def _load_env():
     return env
 
 
-def _sftp_ensure_dir(sftp, path):
-    parts = path.strip('/').split('/')
+def _sftp_ensure_dir(sftp, path, known_dirs=None):
+    normalized = str(PurePosixPath(path))
+    if known_dirs is not None and normalized in known_dirs:
+        return
+    parts = normalized.strip('/').split('/')
     for i in range(1, len(parts) + 1):
         p = '/' + '/'.join(parts[:i])
+        if known_dirs is not None and p in known_dirs:
+            continue
         try:
             sftp.stat(p)
         except FileNotFoundError:
             sftp.mkdir(p)
+        if known_dirs is not None:
+            known_dirs.add(p)
 
 
 def upload():
@@ -469,50 +481,47 @@ def upload():
     password = env.get('netid_password', '')
     krakow_path = env.get('krakow_path', '')
     southfield_path = env.get('southfield_path', '')
-    host = env.get('host', '')
+    host = env.get('host', '') or env.get('HOST', '')
     port = int(env.get('port', '22'))
+    timeout_s = int(env.get('sftp_timeout', '120'))
 
-    if not host:
-        if krakow_path:
-            host = '10.214.45.45'
-        elif southfield_path:
-            host = '10.192.224.131'
-    if not netid or not password or not host:
-        print('ERROR: .env must set netid, netid_password, and host (or krakow_path/southfield_path)')
+    krakow_host = env.get('krakow_host', '') or env.get('KRAKOW_HOST', '') or '10.214.45.45'
+    southfield_host = env.get('southfield_host', '') or env.get('SOUTHFIELD_HOST', '') or '10.192.224.131'
+
+    if not netid or not password or not (krakow_path or southfield_path):
+        print('ERROR: .env must set netid, netid_password, and krakow_path and/or southfield_path')
         raise SystemExit(1)
 
-    remote_root = krakow_path or southfield_path
-    print(f'Upload target: {netid}@{host}:{port}')
-    print(f'Remote root: {remote_root}')
+    targets = []
+    if krakow_path:
+        targets.append(('krakow', krakow_host if southfield_path else (host or krakow_host), krakow_path))
+    if southfield_path:
+        targets.append(('southfield', southfield_host if krakow_path else (host or southfield_host), southfield_path))
 
     # Runtime data dirs that must NOT be overwritten (exist cluster-side with real data)
     _RUNTIME_EXCLUDE_DIRS = {'store/db', 'store/logs', 'store/rag/vector_store', 'store'}
 
     import paramiko
     meta = _read_meta()
-    stored = meta.get('upload', {})
+    stored = {_rel_key(k): v for k, v in meta.get('upload', {}).items()}
     new_hashes = {}
     changed = 0
     skipped = 0
     excluded = 0
 
-    print('Connecting via SFTP...', end=' ', flush=True)
-    transport = paramiko.Transport((host, port))
-    transport.connect(username=netid, password=password)
-    sftp = paramiko.SFTPClient.from_transport(transport)
-    _sftp_ensure_dir(sftp, remote_root)
-    print('connected')
-
     files_to_upload = []
+    eligible_files = []
     for f in sorted(GEN.rglob('*')):
         if f.is_dir() or f.name.startswith('.'):
             continue
-        rel = str(f.relative_to(GEN))
+        rel = _rel_key(f.relative_to(GEN))
         # Skip runtime data dirs (cluster has real data that must persist)
         if any(rel.startswith(ex + '/') or rel == ex for ex in _RUNTIME_EXCLUDE_DIRS):
             excluded += 1
             continue
         if _is_model_binary(f):
+            new_hashes[rel] = '__name_only__'
+            eligible_files.append((rel, f, '__name_only__'))
             if rel in stored:
                 skipped += 1
                 continue
@@ -520,70 +529,157 @@ def upload():
             continue
         sha = _sha256(f)
         new_hashes[rel] = sha
+        eligible_files.append((rel, f, sha))
         if rel in stored and stored[rel] == sha:
             skipped += 1
             continue
         files_to_upload.append((rel, f, sha))
 
+    if not files_to_upload and meta.get('upload_state') != 'remote':
+        print('Upload metadata is not confirmed from a successful remote sync; forcing a full upload once.')
+        files_to_upload = eligible_files
+        skipped = 0
+
     total = len(files_to_upload)
     if total == 0:
         print(f'All files unchanged ({skipped} skipped, {excluded} runtime dirs excluded)')
-    else:
-        print(f'Uploading {total} changed files ({skipped} unchanged, {excluded} runtime dirs excluded)...')
+        meta['upload'] = new_hashes
+        _save_meta(meta)
+        return
 
-    import threading
+    print(f'Uploading {total} changed files ({skipped} unchanged, {excluded} runtime dirs excluded)...')
 
-    def _upload_file(rel, local_path):
-        remote = f'{remote_root}/{rel}'
-        try:
-            _sftp_ensure_dir(sftp, str(Path(remote).parent))
-            sftp.put(str(local_path), remote)
-            return rel, True, None
-        except Exception as e:
-            return rel, False, str(e)
-
-    MAX_WORKERS = 4
-    results = []
-    sem = threading.Semaphore(MAX_WORKERS)
-
-    def _worker(rel, local_path):
-        sem.acquire()
-        try:
-            r = _upload_file(rel, local_path)
-        finally:
-            sem.release()
-        results.append(r)
-
-    threads = []
-    for rel, f, sha in files_to_upload:
-        t = threading.Thread(target=_worker, args=(rel, f), daemon=True)
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    successes = 0
     failures = []
-    for rel, ok, err in results:
-        if ok:
-            successes += 1
-            print(f'  OK: {rel}')
-            changed += 1
-        else:
-            failures.append(f'{rel}: {err}')
-            print(f'  FAIL: {rel}: {err}')
+    failures_lock = threading.Lock()
+    changed_lock = threading.Lock()
 
-    sftp.close()
-    transport.close()
+    def _progress_callback(target_name, index, total_files, local_path, remote_path, size, started):
+        last_logged_at = started
+        last_logged_bytes = 0
+
+        def _callback(sent, total_bytes):
+            nonlocal last_logged_at, last_logged_bytes
+            now = time.perf_counter()
+            if sent == total_bytes or sent == 0:
+                should_log = True
+            else:
+                should_log = (now - last_logged_at >= 10.0) or (sent - last_logged_bytes >= 32 * 1024 * 1024)
+            if not should_log:
+                return
+            elapsed = max(now - started, 0.001)
+            pct = (sent / total_bytes * 100.0) if total_bytes else 100.0
+            rate_mib = (sent / elapsed) / (1024 * 1024)
+            print(
+                f'[{target_name}] [{index}/{total_files}] PROGRESS '
+                f'local={local_path} remote={remote_path} '
+                f'sent={sent}/{total_bytes or size}B pct={pct:.1f}% '
+                f'elapsed={elapsed:.2f}s rate={rate_mib:.2f}MiB/s',
+                flush=True,
+            )
+            last_logged_at = now
+            last_logged_bytes = sent
+
+        return _callback
+
+    def _connect_target(target_name, target_host, remote_root):
+        print(f'[{target_name}] Upload target: {netid}@{target_host}:{port}')
+        print(f'[{target_name}] Remote root: {remote_root}')
+        print(f'[{target_name}] Connecting via SFTP...', end=' ', flush=True)
+        sock = socket.create_connection((target_host, port), timeout=timeout_s)
+        transport = paramiko.Transport(sock)
+        transport.connect(username=netid, password=password)
+        transport.set_keepalive(30)
+        sftp = paramiko.SFTPClient.from_transport(
+            transport,
+            window_size=64 * 1024 * 1024,
+            max_packet_size=4 * 1024 * 1024,
+        )
+        sftp.get_channel().settimeout(timeout_s)
+        ensured_dirs = {'/'}
+        _sftp_ensure_dir(sftp, remote_root, ensured_dirs)
+        print('connected')
+        return transport, sftp, ensured_dirs
+
+    def _upload_target(target_name, target_host, remote_root):
+        nonlocal changed
+        transport = None
+        sftp = None
+        ensured_dirs = None
+        try:
+            transport, sftp, ensured_dirs = _connect_target(target_name, target_host, remote_root)
+            for index, (rel, local_path, sha) in enumerate(files_to_upload, start=1):
+                remote_path = str(PurePosixPath(remote_root) / rel)
+                remote_dir = str(PurePosixPath(remote_path).parent)
+                size = local_path.stat().st_size
+                started = time.perf_counter()
+                stage = 'ensure_dir'
+                print(
+                    f'[{target_name}] [{index}/{total}] START '
+                    f'local={local_path} remote={remote_path} size={size}B',
+                    flush=True,
+                )
+                try:
+                    _sftp_ensure_dir(sftp, remote_dir, ensured_dirs)
+                    stage = 'put'
+                    sftp.put(
+                        str(local_path),
+                        remote_path,
+                        callback=_progress_callback(target_name, index, total, local_path, remote_path, size, started),
+                        confirm=True,
+                    )
+                    stage = 'verify'
+                    remote_attr = sftp.stat(remote_path)
+                    elapsed = time.perf_counter() - started
+                    with changed_lock:
+                        changed += 1
+                    print(
+                        f'[{target_name}] [{index}/{total}] DONE '
+                        f'local={local_path} remote={remote_path} '
+                        f'size={size}B remote_size={getattr(remote_attr, "st_size", "?")}B '
+                        f'elapsed={elapsed:.2f}s',
+                        flush=True,
+                    )
+                except Exception as exc:
+                    elapsed = time.perf_counter() - started
+                    msg = (
+                        f'[{target_name}] [{index}/{total}] FAIL stage={stage} '
+                        f'local={local_path} remote={remote_path} size={size}B '
+                        f'elapsed={elapsed:.2f}s error={exc}'
+                    )
+                    print(msg, flush=True)
+                    with failures_lock:
+                        failures.append(msg)
+        except Exception as exc:
+            msg = f'[{target_name}] FAIL stage=connect remote_root={remote_root} error={exc}'
+            print(msg, flush=True)
+            with failures_lock:
+                failures.append(msg)
+        finally:
+            if sftp is not None:
+                sftp.close()
+            if transport is not None:
+                transport.close()
+
+    target_threads = []
+    for target_name, target_host, remote_root in targets:
+        target_thread = threading.Thread(
+            target=_upload_target,
+            args=(target_name, target_host, remote_root),
+            daemon=True,
+        )
+        target_thread.start()
+        target_threads.append(target_thread)
+
+    for target_thread in target_threads:
+        target_thread.join()
 
     if failures:
         print(f'ERROR: {len(failures)} uploads failed:')
         for f in failures:
             print(f'  {f}')
     else:
-        new_hashes.update({k: v for k, v in stored.items() if v == '__name_only__'})
         meta['upload'] = new_hashes
+        meta['upload_state'] = 'remote'
         _save_meta(meta)
 
     print(f'Upload complete: {changed} uploaded, {skipped} unchanged, {excluded} runtime dirs excluded')
