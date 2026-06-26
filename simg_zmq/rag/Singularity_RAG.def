@@ -39,6 +39,12 @@ From: docker.io/python:3.10-slim
 
     chmod -R 755 /app
 
+    # cleanup build artifacts to shrink image
+    rm -rf /tmp/llama.cpp
+    apt-get remove -y build-essential cmake git
+    apt-get autoremove -y && apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
 %files
     rag/app /app/rag/app
     rag/main.py /app/rag/main.py

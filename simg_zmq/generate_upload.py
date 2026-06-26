@@ -22,7 +22,7 @@ SIMGG_SRC = {
     'kpi/int_plot/intplot_kpi.simg': [ROOT / 'KPI' / 'intplot_kpi' / 'singularity_interactiveplot.def', ROOT / 'KPI' / 'intplot_kpi'],
 }
 
-SCRIPTS = ['bundle_common.sh', 'cleanup_memory.sh', 'hpcc_runtime.env', 'kpi_runtime_launcher.sh']
+SCRIPTS = ['bundle_common.sh', 'cleanup_memory.sh', 'kpi_runtime_launcher.sh']
 BUNDLE_DIRS = ['main_html', 'Hyperlink_tool', 'KPI']
 
 
@@ -261,7 +261,31 @@ def generate():
     _fix_shell_scripts()
     _ensure_rag_sh()
     _write_readme()
+    _verify_critical_files()
     print(f'Generate complete: {GEN}')
+
+
+_CRITICAL_BUNDLE_FILES = [
+    'bundle_src/Hyperlink_tool/code/html_online/static/viewer.html',
+    'bundle_src/Hyperlink_tool/code/html_online/main.py',
+    'bundle_src/main_html/app.py',
+    'bundle_src/KPI',
+    'run_hpcc.sh',
+    'hpcc_main.pyz',
+]
+
+def _verify_critical_files() -> None:
+    missing = []
+    for rel in _CRITICAL_BUNDLE_FILES:
+        if not (GEN / rel).exists():
+            missing.append(rel)
+    if missing:
+        print('WARNING: critical files missing in output:')
+        for path in missing:
+            print(f'  MISSING: {path}')
+        print('  Check that source files exist in the workspace before re-running.')
+    else:
+        print(f'  verified {len(_CRITICAL_BUNDLE_FILES)} critical files')
 
 
 _MODEL_BINARY_EXT = {'.gguf', '.safetensors', '.bin', '.pt', '.pth'}
@@ -627,6 +651,9 @@ def upload():
                         callback=_progress_callback(target_name, index, total, local_path, remote_path, size, started),
                         confirm=True,
                     )
+                    if rel.endswith('.sh') or local_path.suffix.lower() == '.sh':
+                        stage = 'chmod'
+                        sftp.chmod(remote_path, 0o755)
                     stage = 'verify'
                     remote_attr = sftp.stat(remote_path)
                     elapsed = time.perf_counter() - started

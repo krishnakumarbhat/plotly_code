@@ -205,7 +205,6 @@ class AppConfig:
         candidates.extend(
             [
                 self.project_root / 'tools' / 'llama.cpp' / 'llama-server',
-                self.project_root / 'tools' / 'llama.cpp-vulkan' / 'llama-server.exe',
                 self.project_root / 'tools' / 'llama.cpp' / 'llama-server.exe',
             ]
         )
