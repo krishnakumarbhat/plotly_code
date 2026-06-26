@@ -30,7 +30,6 @@ class RagEngine:
         collection_name: str,
         vector_backend: str,
         vector_store_json_path: str,
-        embedding_model_path: str,
         qwen_gguf_path: str,
         qwen_fallback_gguf_path: str,
         qwen_model_id: str,
@@ -76,8 +75,6 @@ class RagEngine:
         self._llm_n_gpu_layers = max(0, int(llm_n_gpu_layers or 0))
         self._llama_server_process: Optional[subprocess.Popen] = None
         self._llama_server_lock = threading.Lock()
-        self._embedding_model = self._load_embedding_model(Path(embedding_model_path).expanduser() if embedding_model_path else None)
-        self._embedding_fn = self._build_embedding_function()
         self._client = None
         self._collection = self._create_collection()
         self._documents = self._load_documents()
@@ -86,40 +83,15 @@ class RagEngine:
     def document_count(self) -> int:
         return len(self._documents)
 
-    def _load_embedding_model(self, model_path: Optional[Path]) -> Any:
-        if model_path is None or not model_path.exists():
-            return None
-        try:
-            from sentence_transformers import SentenceTransformer
-            logger = logging.getLogger(__name__)
-            logger.info('Loading embedding model from %s', model_path)
-            return SentenceTransformer(str(model_path), device='cpu')
-        except Exception:
-            return None
-
-    def _build_embedding_function(self) -> Any:
-        if self._embedding_model is None:
-            return None
-        model = self._embedding_model
-
-        class _LocalEmbeddingFunction:
-            def __init__(self, m):
-                self._model = m
-            def __call__(self, texts: list[str]) -> list[list[float]]:
-                return self._model.encode(texts, show_progress_bar=False).tolist()
-
-        return _LocalEmbeddingFunction(model)
-
     def _create_collection(self):
         if self._vector_backend != 'chroma' or chromadb is None:
             return None
         client = chromadb.PersistentClient(path=str(self._chroma_path))
         self._client = client
-        ef = self._embedding_fn
         return client.get_or_create_collection(
             name=self._collection_name,
             metadata={'hnsw:space': 'cosine'},
-            embedding_function=ef,
+            embedding_function=None,
         )
 
     def _load_documents(self) -> list[dict[str, Any]]:
@@ -247,13 +219,10 @@ class RagEngine:
                 collection_ids.append(chunk_id)
                 collection_documents.append(text)
                 collection_metadatas.append(metadata)
-                if self._embedding_fn is None:
-                    collection_embeddings.append(self._embed_text(text))
+                collection_embeddings.append(self._embed_text(text))
 
         if self._collection is not None and collection_ids:
-            kwargs = dict(ids=collection_ids, documents=collection_documents, metadatas=collection_metadatas)
-            if self._embedding_fn is None:
-                kwargs['embeddings'] = collection_embeddings
+            kwargs = dict(ids=collection_ids, documents=collection_documents, metadatas=collection_metadatas, embeddings=collection_embeddings)
             self._collection.upsert(**kwargs)
         else:
             self._persist_documents()
@@ -287,6 +256,33 @@ class RagEngine:
         }
 
     def _embed_text(self, text: str) -> list[float]:
+        embeddings = self._llama_embed_text(text)
+        if embeddings:
+            return embeddings
+        return self._hash_embed_text(text)
+
+    def _llama_embed_text(self, text: str) -> Optional[list[float]]:
+        if not self._llama_server_base_url:
+            return None
+        url = self._llama_server_base_url + '/v1/embeddings'
+        payload = json.dumps({'input': text, 'model': 'default'}).encode('utf-8')
+        request = urllib.request.Request(
+            url, data=payload, headers={'Content-Type': 'application/json'}, method='POST'
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=5) as response:
+                body = json.loads(response.read().decode('utf-8'))
+        except Exception:
+            return None
+        data = body.get('data') or []
+        if not data:
+            return None
+        embedding = data[0].get('embedding')
+        if embedding and len(embedding) == self._embedding_dimension:
+            return embedding
+        return None
+
+    def _hash_embed_text(self, text: str) -> list[float]:
         vector = [0.0] * self._embedding_dimension
         tokens = self._tokenize(text)
         if not tokens:
@@ -465,11 +461,7 @@ class RagEngine:
         candidate_documents: list[dict[str, Any]]
         if self._collection is not None:
             requested = max((limit or self._top_k) * 4, self._top_k * 4)
-            query_kwargs = dict(n_results=requested, include=['documents', 'metadatas', 'distances'])
-            if self._embedding_fn is None:
-                query_kwargs['query_embeddings'] = [self._embed_text(final_query)]
-            else:
-                query_kwargs['query_texts'] = [final_query]
+            query_kwargs = dict(n_results=requested, include=['documents', 'metadatas', 'distances'], query_embeddings=[self._embed_text(final_query)])
             result = self._collection.query(**query_kwargs)
             candidate_documents = []
             ids = (result.get('ids') or [[]])[0]

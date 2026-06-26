@@ -237,7 +237,7 @@ def generate():
         dst = GEN / 'rag'
         if dst.exists():
             shutil.rmtree(dst)
-        shutil.copytree(ROOT / 'rag', dst, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', 'model', 'embding_mod', 'tools', 'data'))
+        shutil.copytree(ROOT / 'rag', dst, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', 'model', 'tools', 'data'))
         print('  copied rag/ (app code only)')
 
     if (ROOT / 'resources.py').is_file():
@@ -251,7 +251,6 @@ def generate():
         print('  copied jira/')
 
     _bundle_model_dir(ROOT / 'rag' / 'model', GEN / 'rag' / 'model', '*.gguf')
-    _bundle_model_dir(ROOT / 'rag' / 'embding_mod', GEN / 'rag' / 'embding_mod')
 
     for sub in ['db', 'logs', 'rag/vector_store']:
         (GEN / 'store' / sub).mkdir(parents=True, exist_ok=True)

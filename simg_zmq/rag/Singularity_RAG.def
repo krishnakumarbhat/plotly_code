@@ -29,7 +29,7 @@ From: docker.io/python:3.10-slim
     cmake -S /tmp/llama.cpp -B /tmp/llama.cpp/build -DBUILD_SHARED_LIBS=OFF -DLLAMA_BUILD_SERVER=ON
     cmake --build /tmp/llama.cpp/build --config Release -j"$(nproc)"
 
-    mkdir -p /app/rag/data /app/rag/tools/llama.cpp
+    mkdir -p /app/rag/tools/llama.cpp
     if [ -f /tmp/llama.cpp/build/bin/llama-server ]; then \
         cp /tmp/llama.cpp/build/bin/llama-server /app/rag/tools/llama.cpp/llama-server; \
     else \

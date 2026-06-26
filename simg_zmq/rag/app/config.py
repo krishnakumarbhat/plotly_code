@@ -28,7 +28,7 @@ class AppConfig:
         self.project_root = Path(__file__).resolve().parents[1]
         _load_env_file(self.project_root / '.env')
         self.workspace_root = self.project_root.parent
-        default_data_dir = self._default_cache_root() / 'rag'
+        default_data_dir = self.workspace_root / '.store' / 'rag'
         self.data_dir = Path(self._sanitize_path(os.getenv('RAG_DATA_DIR', str(default_data_dir))))
         self.sqlite_path = Path(
             self._sanitize_path(os.getenv('RAG_SQLITE_PATH', str(self.data_dir / 'rag_logs.db')))
@@ -72,13 +72,12 @@ class AppConfig:
             directory.strip().lower()
             for directory in os.getenv(
                 "RAG_EXCLUDE_DIRS",
-                ".git,__pycache__,.pytest_cache,.venv,venv,node_modules,model,llm_model,embding_mod,data,simg_sh_hpcc,generate_upload",
+                ".git,__pycache__,.pytest_cache,.venv,venv,node_modules,model,llm_model,.store,simg_sh_hpcc,generate_upload",
             ).split(",")
             if directory.strip()
         }
         self.chunk_size = int(os.getenv("CHUNK_SIZE", "1800"))
         self.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "160"))
-        self.embedding_model_path = self._resolve_embedding_model_path(os.getenv('EMBED_MODEL_PATH', '').strip())
         self.embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
         self.vector_backend = (os.getenv("VECTOR_BACKEND", "chroma") or "chroma").strip().lower()
         self.max_session_messages = max(2, int(os.getenv("RAG_SESSION_MESSAGES", "6")))
@@ -183,19 +182,6 @@ class AppConfig:
             if ggufs:
                 return ggufs[0]
         return self.project_root / 'model' / 'model.gguf'
-
-    def _resolve_embedding_model_path(self, raw_path: str) -> Path:
-        cleaned = self._sanitize_path(raw_path)
-        if cleaned:
-            candidate = self._resolve_project_path(cleaned, cleaned)
-            if candidate.is_dir() and (candidate / 'config.json').exists():
-                return candidate
-        emb_dir = self.project_root / 'embding_mod'
-        if emb_dir.is_dir():
-            for sub in sorted(emb_dir.iterdir()):
-                if sub.is_dir() and (sub / 'config.json').exists():
-                    return sub
-        return emb_dir
 
     def _resolve_llama_server_path(self, raw_path: str) -> Path:
         candidates = []
