@@ -3,6 +3,7 @@
 Consolidated resource allocation defaults per cluster and tool.
 Edit this file to change default resources, partitions, accounts, etc.
 """
+import os
 from env_utils import get_env, RuntimeEnv
 
 ENV = get_env()
@@ -11,37 +12,37 @@ if hasattr(ENV, 'runtime') and ENV.runtime == RuntimeEnv.SOUTHFIELD:
     CLUSTER = 'southfield'
 
 KRAKOW = {
-    'host': '10.214.45.45',
-    'partition': 'plcyf-com',
-    'account': 'RNA-SDV-SRR7',
-    'qos': '',
-    'data_base': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA',
+    'host': os.environ.get('KRAKOW_HOST', '10.214.45.45'),
+    'partition': os.environ.get('KRAKOW_PARTITION', 'plcyf-com'),
+    'account': os.environ.get('KRAKOW_SLURM_ACCOUNT', ''),
+    'qos': os.environ.get('KRAKOW_QOS', ''),
+    'data_base': os.environ.get('KRAKOW_DATA_BASE', ''),
     'scratch': '/scratch',
-    'deploy_root': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3',
-    'model_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/rag/model',
-    'simg_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3/simg',
-    'html_db_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3/html_db',
-    'cache_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3/.cache_html',
-    'store_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3/store',
-    'scripts_dir': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/4-Checkout/all_services_3/scripts',
-    'log_dir': '/scratch/logs',
+    'deploy_root': os.environ.get('KRAKOW_DEPLOY_ROOT', ''),
+    'model_dir': os.environ.get('KRAKOW_MODEL_DIR', ''),
+    'simg_dir': os.environ.get('KRAKOW_SIMG_DIR', ''),
+    'html_db_dir': os.environ.get('KRAKOW_HTML_DB_DIR', ''),
+    'cache_dir': os.environ.get('KRAKOW_CACHE_DIR', ''),
+    'store_dir': os.environ.get('KRAKOW_STORE_DIR', ''),
+    'scripts_dir': os.environ.get('KRAKOW_SCRIPTS_DIR', ''),
+    'log_dir': os.environ.get('KRAKOW_LOG_DIR', '/scratch/logs'),
 }
 
 SOUTHFIELD = {
-    'host': '10.192.224.131',
-    'partition': 'defq',
-    'account': 'radarcore',
-    'qos': '',
-    'data_base': '/mnt/usmidet/projects/RADARCORE/2-Sim/USER_DATA/ouymc',
+    'host': os.environ.get('SOUTHFIELD_HOST', '10.192.224.131'),
+    'partition': os.environ.get('SOUTHFIELD_PARTITION', 'defq'),
+    'account': os.environ.get('SOUTHFIELD_SLURM_ACCOUNT', ''),
+    'qos': os.environ.get('SOUTHFIELD_QOS', ''),
+    'data_base': os.environ.get('SOUTHFIELD_DATA_BASE', ''),
     'scratch': '/scratch',
-    'deploy_root': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3',
-    'model_dir': '/mnt/usmidet/projects/RADARCORE/rag/model',
-    'simg_dir': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3/simg',
-    'html_db_dir': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3/html_db',
-    'cache_dir': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3/.cache_html',
-    'store_dir': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3/store',
-    'scripts_dir': '/mnt/usmidet/projects/RADARCORE/2-Sim/all_services_3/scripts',
-    'log_dir': '/scratch/logs',
+    'deploy_root': os.environ.get('SOUTHFIELD_DEPLOY_ROOT', ''),
+    'model_dir': os.environ.get('SOUTHFIELD_MODEL_DIR', ''),
+    'simg_dir': os.environ.get('SOUTHFIELD_SIMG_DIR', ''),
+    'html_db_dir': os.environ.get('SOUTHFIELD_HTML_DB_DIR', ''),
+    'cache_dir': os.environ.get('SOUTHFIELD_CACHE_DIR', ''),
+    'store_dir': os.environ.get('SOUTHFIELD_STORE_DIR', ''),
+    'scripts_dir': os.environ.get('SOUTHFIELD_SCRIPTS_DIR', ''),
+    'log_dir': os.environ.get('SOUTHFIELD_LOG_DIR', '/scratch/logs'),
 }
 
 TOOLS = {

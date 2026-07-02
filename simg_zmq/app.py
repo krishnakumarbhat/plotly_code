@@ -47,8 +47,10 @@ def main():
             print(f"Warning: Could not initialize database: {e}")
     
     # Get configuration from environment
+    from main_html.utils import find_free_port
     host = os.environ.get('HOST', '0.0.0.0')
-    port = int(os.environ.get('PORT', 5002))
+    port_env = os.environ.get('PORT', '')
+    port = int(port_env) if port_env.isdigit() else find_free_port(5005)
     debug = os.environ.get('FLASK_DEBUG', '0') == '1' or os.environ.get('FLASK_ENV') == 'development'
     
     print("=" * 60)

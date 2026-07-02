@@ -412,7 +412,7 @@ def _write_readme():
 deploy_root/
 ├── run_hpcc.sh            <- Launcher
 ├── hpcc_main.pyz          <- Broker (TCP 9100)
-├── main_html.simg         <- Flask web app (port 5002)
+├── main_html.simg         <- Flask web app (port 5005, auto-increments if taken)
 ├── rag.simg               <- RAG service (port 5100)
 ├── kpi/
 │   ├── can/can_kpi.simg

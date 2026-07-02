@@ -4050,8 +4050,11 @@ if __name__ == '__main__':
             logger.debug('OperationalError details: %s', exc)
             sys.exit(1)
     
+    from utils import find_free_port
+    port_env = os.environ.get('PORT', '')
+    port = int(port_env) if port_env.isdigit() else find_free_port(5005)
     app.run(
         host='0.0.0.0',
-        port=5002,
+        port=port,
         debug=app.config.get('DEBUG', False)
     )

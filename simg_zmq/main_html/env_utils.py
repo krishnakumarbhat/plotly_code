@@ -263,7 +263,8 @@ def get_cluster_paths(cluster: str = None) -> dict:
                  If None, auto-detects from environment.
     
     Returns:
-        Dict with 'data_base', 'scratch', 'user_data' paths
+        Dict with cluster configuration. Project-specific paths are read
+        from environment variables so they work across different projects.
     """
     env = get_env()
     
@@ -277,21 +278,42 @@ def get_cluster_paths(cluster: str = None) -> dict:
     
     if cluster == 'krakow':
         return {
-            'data_base': '/net/8k3/e0fs01/irods/PLKRA-PROJECTS/RNA-SDV-SRR7/2-Sim/USER_DATA',
+            'data_base': (os.environ.get('KRAKOW_DATA_BASE') or '').strip(),
             'scratch': '/scratch',
-            'host': '10.214.45.45'
+            'host': '10.214.45.45',
+            'deploy_root': (os.environ.get('KRAKOW_DEPLOY_ROOT') or '').strip(),
+            'model_dir': (os.environ.get('KRAKOW_MODEL_DIR') or '').strip(),
+            'simg_dir': (os.environ.get('KRAKOW_SIMG_DIR') or '').strip(),
+            'html_db_dir': (os.environ.get('KRAKOW_HTML_DB_DIR') or '').strip(),
+            'cache_dir': (os.environ.get('KRAKOW_CACHE_DIR') or '').strip(),
+            'store_dir': (os.environ.get('KRAKOW_STORE_DIR') or '').strip(),
+            'scripts_dir': (os.environ.get('KRAKOW_SCRIPTS_DIR') or '').strip(),
         }
     elif cluster == 'southfield':
         return {
-            'data_base': '/mnt/usmidet/projects/RADARCORE/2-Sim/USER_DATA/ouymc',
+            'data_base': (os.environ.get('SOUTHFIELD_DATA_BASE') or '').strip(),
             'scratch': '/scratch',
-            'host': '10.192.224.131'
+            'host': '10.192.224.131',
+            'deploy_root': (os.environ.get('SOUTHFIELD_DEPLOY_ROOT') or '').strip(),
+            'model_dir': (os.environ.get('SOUTHFIELD_MODEL_DIR') or '').strip(),
+            'simg_dir': (os.environ.get('SOUTHFIELD_SIMG_DIR') or '').strip(),
+            'html_db_dir': (os.environ.get('SOUTHFIELD_HTML_DB_DIR') or '').strip(),
+            'cache_dir': (os.environ.get('SOUTHFIELD_CACHE_DIR') or '').strip(),
+            'store_dir': (os.environ.get('SOUTHFIELD_STORE_DIR') or '').strip(),
+            'scripts_dir': (os.environ.get('SOUTHFIELD_SCRIPTS_DIR') or '').strip(),
         }
     else:
         return {
             'data_base': '/data',
             'scratch': '/tmp',
-            'host': 'localhost'
+            'host': 'localhost',
+            'deploy_root': '',
+            'model_dir': '',
+            'simg_dir': '',
+            'html_db_dir': '',
+            'cache_dir': '',
+            'store_dir': '',
+            'scripts_dir': '',
         }
 
 

@@ -3,6 +3,7 @@ Utility functions for HPC Flask Application
 Includes Slurm job submission, file browser, and helper functions
 """
 import os
+import socket
 import subprocess
 import uuid
 import re
@@ -13,6 +14,18 @@ from typing import Optional, Dict, List, Tuple
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def find_free_port(start: int = 5005, max_attempts: int = 50) -> int:
+    """Find the first free TCP port starting from `start`, incrementing until one is free."""
+    for port in range(start, start + max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('', port))
+                return port
+            except OSError:
+                continue
+    raise RuntimeError(f'No free port found in range {start}-{start + max_attempts - 1}')
 
 
 def slurm_is_available() -> bool:

@@ -35,9 +35,13 @@ def _get_data_base_path() -> str:
     if env_path:
         return env_path
     
-    # Get cluster-specific path
+    # Get cluster-specific path (empty if not configured for this project)
     cluster_paths = get_cluster_paths()
-    return cluster_paths['data_base']
+    path = cluster_paths.get('data_base', '') or ''
+    if path:
+        return path
+    
+    return '/data'
 
 
 def _get_scratch_dir() -> str:
