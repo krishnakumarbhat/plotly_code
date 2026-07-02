@@ -145,9 +145,15 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-light border mt-4 mb-4">
-                            <strong>Execution note</strong>
-                            <p class="mb-0">The form sends a socket request to hpcc_main.py. The broker records the input path, output path, requested resources, command, and log file location in SQLite before spawning the selected container.</p>
+                        <div class="alert alert-light border mt-4 mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Execution note</strong>
+                                <p class="mb-0">The form sends a socket request to hpcc_main.py. The broker records the input path, output path, requested resources, command, and log file location in SQLite before spawning the selected container.</p>
+                            </div>
+                            <div class="form-check form-switch mb-0 ms-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="create_jira" name="create_jira" value="1">
+                                <label class="form-check-label" for="create_jira">Create JIRA ticket on failure</label>
+                            </div>
                         </div>
 
                         <div class="d-flex flex-wrap gap-2">

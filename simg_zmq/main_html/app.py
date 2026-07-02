@@ -622,6 +622,30 @@ def runtime_map():
     )
 
 
+@app.route('/html/resim_run_submit', methods=['POST'])
+@login_required
+def resim_run_submit():
+    """Submit a resim run job from the Runtime Map page."""
+    return submit_tool_job('resim_run')
+
+
+@app.route('/api/detect_project')
+@login_required
+def api_detect_project():
+    """Detect project and cluster from a file path."""
+    from utils import extract_project_from_path, cluster_from_path
+    path = request.args.get('path', '').strip()
+    if not path:
+        return jsonify({'project': None, 'project_root': None, 'cluster': None})
+    cluster = cluster_from_path(path)
+    project_name, project_root = extract_project_from_path(path)
+    return jsonify({
+        'project': project_name,
+        'project_root': project_root,
+        'cluster': cluster,
+    })
+
+
 # ============================================================================
 # HYPERLINK VIEWER - INTEGRATED HTML_ONLINE APP
 # ============================================================================
@@ -2772,6 +2796,38 @@ def _windows_path_to_wsl_path(path: str) -> str:
     return path
 
 
+def _create_jira_ticket_for_job(job: 'JobHistory', log_path: str) -> None:
+    """Create a JIRA ticket for a completed job if configured."""
+    params = job.parameters or {}
+    if not params.get('create_jira'):
+        return
+
+    from jira_integration import JiraIntegration
+    jira = JiraIntegration()
+    if not jira._enabled:
+        logger.warning('JIRA not configured, skipping ticket creation')
+        return
+
+    assignee = (params.get('jira_assignee') or '').strip()
+    notes = (params.get('jira_notes') or '').strip()
+    input_txt = (params.get('input_txt') or job.input_path or '').strip()
+    simg_path = (params.get('simg_path') or '').strip()
+
+    key = jira.create_resim_ticket(
+        input_txt=input_txt,
+        simg_path=simg_path,
+        log_path=log_path,
+        notes=notes,
+        assignee=assignee,
+        job_id=job.id,
+    )
+    if key:
+        logger.info('Created JIRA ticket %s for job %s', key, job.id)
+        params['jira_ticket_key'] = key
+        job.parameters = params
+        db.session.commit()
+
+
 def _run_local_job_background(job_id: int, cmd, cwd: str, log_path: str, env=None):
     """Run a tool command locally in the background and update JobHistory."""
     def _safe_read_text(path: str, limit: int = 4096) -> str:
@@ -2923,6 +2979,14 @@ def _run_local_job_background(job_id: int, cmd, cwd: str, log_path: str, env=Non
                 display_path = _container_path_to_host_path(log_path)
                 job.error_message = f'Process exit code {rc}. See log: {display_path}'
             db.session.commit()
+
+            # Create JIRA ticket if requested
+            try:
+                params = job.parameters or {}
+                if params.get('create_jira'):
+                    _create_jira_ticket_for_job(job, log_path)
+            except Exception:
+                logger.exception('JIRA ticket creation failed for job %s', job.id)
     except Exception as exc:
         logger.exception('Local job runner failed')
         try:
@@ -2990,6 +3054,19 @@ def submit_tool_job(tool_name: str):
             flash('Inputs JSON file is required', 'error')
             return redirect(request.referrer or url_for('dashboard'))
         
+    elif tool_name == 'resim_run':
+        input_txt = parameters.get('input_txt', '').strip()
+        input_path = input_txt
+        config_xml = ''
+        output_path = ''
+        if not input_txt:
+            flash('Input file (input.txt) is required', 'error')
+            return redirect(request.referrer or url_for('dashboard'))
+        simg_path = parameters.get('simg_path', '').strip()
+        if not simg_path:
+            flash('Simg file path is required', 'error')
+            return redirect(request.referrer or url_for('dashboard'))
+        
     else:
         # Default behavior for other tools
         input_path = parameters.get('input_path', '').strip()
@@ -3007,7 +3084,7 @@ def submit_tool_job(tool_name: str):
         'interactive_plot': 'interactive_plot.simg',
         'kpi': 'kpi.simg',
         'dc_html': 'dc_html.simg',
-        'hyperlink_tool': 'all_services.simg'
+        'hyperlink_tool': 'all_services.simg',
     }
     
     singularity_image = os.path.join(
@@ -3152,7 +3229,8 @@ def submit_tool_job(tool_name: str):
         'interactive_plot': {'memory': '64G', 'cpus': 8, 'time_limit': '04:00:00'},
         'kpi': {'memory': '32G', 'cpus': 8, 'time_limit': '02:00:00'},
         'dc_html': {'memory': '16G', 'cpus': 4, 'time_limit': '01:00:00'},
-        'hyperlink_tool': {'memory': '8G', 'cpus': 2, 'time_limit': '00:30:00'}
+        'hyperlink_tool': {'memory': '8G', 'cpus': 2, 'time_limit': '00:30:00'},
+        'resim_run': {'memory': '16G', 'cpus': 4, 'time_limit': '03:00:00'},
     }
     resource_config = resource_configs.get(tool_name, {'memory': '16G', 'cpus': 4, 'time_limit': '01:00:00'})
 
@@ -3205,6 +3283,22 @@ def submit_tool_job(tool_name: str):
                 tool_cmd = f"singularity run {bind_str} {shlex.quote(singularity_image)} {shlex.quote(input_hdf)} {shlex.quote(output_hdf)} {shlex.quote(output_path)}"
         elif tool_name == 'dc_html':
             tool_cmd = f"singularity run {bind_str} {shlex.quote(singularity_image)} {shlex.quote(config_xml)} {shlex.quote(input_path)} {shlex.quote(output_path)}"
+        elif tool_name == 'resim_run':
+            from utils import extract_project_from_path
+            input_txt = (parameters.get('input_txt') or '').strip()
+            simg_path = (parameters.get('simg_path') or '').strip()
+            project_name, project_root = extract_project_from_path(input_txt)
+            if not project_root:
+                project_root = os.path.dirname(input_txt)
+            if not project_name:
+                project_name = 'default'
+            account = project_name
+            tool_cmd = (
+                f"cd {shlex.quote(project_root)} && "
+                f"cp -n rResim_Gen7.sh . 2>/dev/null; "
+                f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
+            )
+            partition = 'highPrio'
         else:
             job.status = 'FAILED'
             job.completed_at = datetime.utcnow()

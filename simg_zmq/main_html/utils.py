@@ -32,6 +32,33 @@ def cluster_from_path(path: str) -> Optional[str]:
     return None
 
 
+def extract_project_from_path(path: str) -> Tuple[Optional[str], Optional[str]]:
+    """Extract project name and project root directory from a file path.
+
+    Supports:
+      - Krakow:  /net/.../PLKRA-PROJECTS/<PROJECT>/
+      - Southfield: /mnt/.../projects/<PROJECT>/  (case-insensitive)
+
+    Returns (project_name, project_root_dir) or (None, None).
+    """
+    if not path:
+        return None, None
+
+    norm = path.replace('\\', '/')
+
+    m = re.search(r'(/net/.+?)PLKRA-PROJECTS/([^/]+)', norm, re.IGNORECASE)
+    if m:
+        root = m.group(1) + 'PLKRA-PROJECTS/' + m.group(2)
+        return m.group(2), root
+
+    m = re.search(r'(/mnt/.+?)projects/([^/]+)', norm, re.IGNORECASE)
+    if m:
+        root = m.group(1) + 'projects/' + m.group(2)
+        return m.group(2), root
+
+    return None, None
+
+
 def verify_ssh_login(host: str, username: str, password: str, timeout_s: int = 12) -> Tuple[bool, str]:
     """Verify SSH credentials by attempting a short Paramiko connection."""
     try:

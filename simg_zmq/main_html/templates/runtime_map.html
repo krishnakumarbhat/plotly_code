@@ -170,6 +170,89 @@
         </div>
     </div>
 
+    <div class="card runtime-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <span class="section-label">Resim Run</span>
+                <h3 class="mb-0">Launch a resimulation job</h3>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#resimFormBody" aria-expanded="true">
+                <i class="bi bi-chevron-up" id="resimToggleIcon"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="resimFormBody">
+            <div class="card-body">
+                <p class="lead-copy">Provide the <code>input.txt</code> and <code>.simg</code> paths. The system detects the project and submits via <strong>srun --partition=highPrio</strong>.</p>
+                <form method="POST" action="{{ url_for('resim_run_submit') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Input file (input.txt)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="input_txt" id="input_txt" placeholder="/net/.../PLKRA-PROJECTS/.../input.txt" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="openFileBrowser('input_txt')">Browse</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Simg file</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="simg_path" id="simg_path" placeholder="/net/.../*.simg" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="openFileBrowser('simg_path')">Browse</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2" id="detectedInfo" style="display:none;">
+                        <div class="col-md-4">
+                            <div class="alert alert-light border mb-0 py-2">
+                                <small class="text-muted d-block">Cluster</small>
+                                <strong id="detectedCluster">—</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-light border mb-0 py-2">
+                                <small class="text-muted d-block">Project / account</small>
+                                <strong id="detectedProject">—</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="alert alert-light border mb-0 py-2">
+                                <small class="text-muted d-block">Partition</small>
+                                <strong>highPrio</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 mt-3 align-items-center">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-play-fill"></i> Run Resim</button>
+                        <button type="button" class="btn btn-outline-dark" id="detectProjectBtn"><i class="bi bi-search"></i> Detect</button>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="create_jira" name="create_jira" value="1">
+                            <label class="form-check-label" for="create_jira">Create JIRA ticket</label>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2" id="jiraFields" style="display:none;">
+                        <div class="col-md-6">
+                            <label class="form-label">JIRA assignee</label>
+                            <input type="text" class="form-control" name="jira_assignee" placeholder="username">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Additional notes</label>
+                            <input type="text" class="form-control" name="jira_notes" placeholder="Optional context for the ticket">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Cluster password</label>
+                            <input type="password" class="form-control" name="cluster_password" placeholder="Required for /net or /mnt paths">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="runtime-map-grid">
         <div class="card runtime-card flow-shell">
             <div class="card-header d-flex justify-content-between align-items-center gap-3">
@@ -1278,6 +1361,39 @@ document.getElementById('launchToolBtn').addEventListener('click', async () => {
     } catch (error) {
         setStatus(error.message, 'error');
     }
+});
+
+// ── Resim Run form ───────────────────────────────────────────────────
+function detectProject() {
+    const inputTxt = document.getElementById('input_txt').value.trim();
+    if (!inputTxt) {
+        document.getElementById('detectedInfo').style.display = 'none';
+        return;
+    }
+    fetch(`/api/detect_project?path=${encodeURIComponent(inputTxt)}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('detectedInfo').style.display = 'block';
+            document.getElementById('detectedCluster').textContent = data.cluster || '—';
+            document.getElementById('detectedProject').textContent = data.project || '—';
+        })
+        .catch(() => {
+            document.getElementById('detectedInfo').style.display = 'none';
+        });
+}
+
+document.getElementById('input_txt').addEventListener('input', detectProject);
+document.getElementById('simg_path').addEventListener('input', detectProject);
+document.getElementById('detectProjectBtn').addEventListener('click', detectProject);
+
+document.getElementById('create_jira').addEventListener('change', function() {
+    document.getElementById('jiraFields').style.display = this.checked ? 'flex' : 'none';
+});
+
+document.querySelector('[data-bs-target="#resimFormBody"]').addEventListener('click', function() {
+    const icon = document.getElementById('resimToggleIcon');
+    icon.classList.toggle('bi-chevron-up');
+    icon.classList.toggle('bi-chevron-down');
 });
 </script>
 {% endblock %}

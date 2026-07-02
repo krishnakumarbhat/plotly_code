@@ -88,6 +88,117 @@ class JiraIntegration:
             return key
         return None
 
+    def create_resim_ticket(
+        self,
+        input_txt: str,
+        simg_path: str,
+        log_path: str = '',
+        notes: str = '',
+        assignee: str = '',
+        job_id: int = 0,
+    ) -> Optional[str]:
+        """Create a JIRA ticket for a resim run result."""
+        desc = self._build_resim_description(input_txt, simg_path, log_path, notes, job_id)
+        summary = f'[Resim Run] {Path(input_txt).name} - Job #{job_id}'
+        ticket_key = self._create_ticket(summary, desc)
+
+        if ticket_key and assignee:
+            self._assign_ticket(ticket_key, assignee)
+        return ticket_key
+
+    def _build_resim_description(self, input_txt: str, simg_path: str,
+                                  log_path: str, notes: str, job_id: int) -> str:
+        now = datetime.now().isoformat()
+        parts = [
+            'Resimulation Run Report',
+            '',
+            f'Job ID: {job_id}',
+            f'Generated: {now}',
+            f'Input file: {input_txt}',
+            f'SIMG image: {simg_path}',
+            f'Log file: {log_path or "N/A"}',
+            '',
+        ]
+        if notes:
+            parts.append(f'Additional notes from user:')
+            parts.append(f'{notes}')
+            parts.append('')
+
+        gemma_analysis = self._call_gemma_for_resim(input_txt, simg_path, log_path)
+        if gemma_analysis:
+            parts.append('Gemma AI Analysis:')
+            parts.append('')
+            parts.append(gemma_analysis)
+            parts.append('')
+
+        parts.append('This ticket was auto-generated from the HPCC Runtime Console.')
+        parts.append('Review the analysis above and the logs for details.')
+        return '\n'.join(parts)
+
+    def _call_gemma_for_resim(self, input_txt: str, simg_path: str, log_path: str) -> str:
+        """Call gemma_4 model via llama.cpp server for resim analysis."""
+        try:
+            import requests
+        except ImportError:
+            return ''
+
+        url = f'{LLAMA_SERVER_URL}/v1/chat/completions'
+        payload = {
+            'model': 'local',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': (
+                        'You are a resimulation analysis assistant. You will receive '
+                        'details about a resimulation run. Summarize what happened, '
+                        'identify any potential issues or anomalies, and suggest next steps. '
+                        'Be concise and technical. Focus on: input data quality, '
+                        'simulation parameters, output expectations, and performance characteristics.'
+                    ),
+                },
+                {
+                    'role': 'user',
+                    'content': (
+                        f'Resimulation run completed.\n'
+                        f'Input file: {input_txt}\n'
+                        f'SIMG image: {simg_path}\n'
+                        f'Log path: {log_path}\n\n'
+                        f'Provide a brief technical summary of what this resimulation run '
+                        f'entails and what to check in the results.'
+                    ),
+                },
+            ],
+            'temperature': 0.1,
+            'max_tokens': 512,
+            'stream': False,
+        }
+
+        try:
+            resp = requests.post(url, json=payload, timeout=120)
+            resp.raise_for_status()
+            body = resp.json()
+            choices = body.get('choices') or []
+            if choices:
+                msg = choices[0].get('message') or {}
+                content = msg.get('content') or ''
+                return content.strip()
+        except Exception as e:
+            logger.warning('Gemma resim analysis call failed: %s', e)
+        return ''
+
+    def _assign_ticket(self, ticket_key: str, assignee: str) -> bool:
+        """Assign a JIRA ticket to a user."""
+        url = f'{self.base_url}/rest/api/2/issue/{ticket_key}/assignee'
+        data = {'name': assignee}
+        try:
+            resp = requests.put(url, headers=self._headers(), json=data, timeout=30)
+            resp.raise_for_status()
+            logger.info('Assigned %s to %s', ticket_key, assignee)
+            return True
+        except Exception as e:
+            logger.error('Failed to assign ticket %s: %s', ticket_key, e)
+            return False
+
     def find_low_accuracy_logs(self, accuracy_dict: Dict[str, float]) -> List[str]:
         return [k for k, v in accuracy_dict.items() if v < 60]
 
