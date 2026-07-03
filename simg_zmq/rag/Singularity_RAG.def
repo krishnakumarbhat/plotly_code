@@ -24,6 +24,7 @@ From: docker.io/python:3.10-slim
     . /opt/venv/bin/activate
     pip install --upgrade pip setuptools wheel
     pip install --no-cache-dir -r /app/rag/requirements.txt
+    pip install --no-cache-dir opencv-python-headless Pillow
 
     git clone --depth 1 https://github.com/ggerganov/llama.cpp.git /tmp/llama.cpp
     cmake -S /tmp/llama.cpp -B /tmp/llama.cpp/build -DBUILD_SHARED_LIBS=OFF -DLLAMA_BUILD_SERVER=ON
@@ -49,6 +50,7 @@ From: docker.io/python:3.10-slim
     rag/app /app/rag/app
     rag/main.py /app/rag/main.py
     rag/run.py /app/rag/run.py
+    rag/vlm_process.py /app/rag/vlm_process.py
     rag/requirements.txt /app/rag/requirements.txt
 
 %runscript

@@ -820,7 +820,7 @@ async function generateVlmDescription(force) {
   }
 
   setVlmBusy(true);
-  setVlmStatus('Generating a summary from the current video...', 'busy');
+  setVlmStatus('Submitting VLM analysis job to cluster...', 'busy');
   try {
     const resp = await fetch(apiPath('api/vlm/process'), {
       method: 'POST',
@@ -834,16 +834,59 @@ async function generateVlmDescription(force) {
     if (!data.success) {
       throw new Error(data.error || 'Failed to generate description');
     }
-    if (typeof data.description === 'string') {
-      entry.comment_content = data.description;
+
+    // Fast path: .txt already existed on cluster
+    if (data.status === 'skipped' || data.status === 'processed') {
+      if (typeof data.description === 'string') {
+        entry.comment_content = data.description;
+      }
+      await loadExistingComment(entry);
+      setVlmStatus(
+        data.status === 'skipped'
+          ? 'A summary already existed for this video. The existing text was kept.'
+          : 'Summary generated and saved to the log comment file.',
+        'success'
+      );
+      setVlmBusy(false);
+      return;
     }
-    await loadExistingComment(entry);
-    setVlmStatus(
-      data.status === 'skipped'
-        ? 'A summary already existed for this video. The existing text was kept.'
-        : 'Summary generated and saved to the log comment file.',
-      'success'
-    );
+
+    // Async path: job submitted to Slurm, poll for completion
+    if (data.status === 'submitted' && data.job_id) {
+      setVlmStatus('Job submitted to Slurm. Waiting for compute resources...', 'busy');
+      const jobId = data.job_id;
+      const maxPolls = 60; // 5 minutes
+      for (let i = 0; i < maxPolls; i++) {
+        await new Promise(r => setTimeout(r, 5000));
+        try {
+          const statusResp = await fetch(apiPath('api/vlm/job/' + jobId));
+          const statusData = await statusResp.json();
+          if (statusData.status === 'completed') {
+            // Reload the comment — the .txt file should now exist locally
+            await loadExistingComment(entry);
+            if (entry.comment_content) {
+              setVlmStatus('Summary generated successfully on the cluster.', 'success');
+            } else {
+              setVlmStatus('Job completed. Refresh the page to see the summary.', 'success');
+            }
+            setVlmBusy(false);
+            return;
+          }
+          if (statusData.status === 'failed' || statusData.status === 'cancelled' || statusData.status === 'timeout') {
+            throw new Error('Cluster job ' + statusData.status + ': ' + (statusData.error || ''));
+          }
+          // still running — update message periodically
+          if (i === 2) setVlmStatus('Allocating 64 GB node for VLM analysis...', 'busy');
+          if (i === 6) setVlmStatus('Running Gemma-4 VLM inference on the cluster...', 'busy');
+        } catch (pollErr) {
+          if (pollErr.message && pollErr.message.includes('Cluster job')) throw pollErr;
+          // network glitch — keep polling
+        }
+      }
+      throw new Error('Timed out waiting for cluster job. Check back later (Job ID: ' + jobId + ').');
+    }
+
+    throw new Error(data.error || 'Unexpected response from server');
   } catch (error) {
     setVlmStatus('Error generating summary: ' + error.message, 'error');
   } finally {

@@ -16,7 +16,7 @@ DEF_MAP = {
 
 SIMGG_SRC = {
     'main_html.simg':          [ROOT / 'Singularity.def', ROOT / 'main_html', ROOT / 'Hyperlink_tool', ROOT / 'KPI'],
-    'rag.simg':                [ROOT / 'rag' / 'Singularity_RAG.def', ROOT / 'rag'],
+    'rag.simg':                [ROOT / 'rag' / 'Singularity_RAG.def', ROOT / 'rag', ROOT / 'rag' / 'vlm_process.py'],
     'kpi/can/can_kpi.simg':    [ROOT / 'KPI' / 'can_kpi' / 'can_singularity_KPI.def', ROOT / 'KPI' / 'can_kpi'],
     'kpi/udp/udp_kpi.simg':    [ROOT / 'KPI' / 'UDP_KPI' / 'Singularity_KPI.def', ROOT / 'KPI' / 'UDP_KPI'],
     'kpi/int_plot/intplot_kpi.simg': [ROOT / 'KPI' / 'intplot_kpi' / 'singularity_interactiveplot.def', ROOT / 'KPI' / 'intplot_kpi'],
@@ -67,7 +67,11 @@ def _run_in_wsl(args=None):
     wsl_path = f'/mnt/{drive}{str(ROOT)[2:].replace(chr(92), "/")}/{Path(__file__).name}'
     cmd = [wsl, '-d', 'Ubuntu', '--', 'python3', wsl_path] + (args or ['generate'])
     print(f'Running in WSL: {" ".join(cmd)}', flush=True)
-    return subprocess.call(cmd) == 0
+    ret = subprocess.call(cmd)
+    if ret != 0:
+        print(f'ERROR: WSL build failed (exit {ret}). Fix the build error and try again.', flush=True)
+        raise SystemExit(1)
+    return True
 
 
 _auto_wsl()
@@ -149,14 +153,28 @@ def build_simg(img_rel):
         raise SystemExit(1)
     build_env = os.environ.copy()
     build_env['APPTAINER_TMPDIR'] = '/tmp'
+    # Use gzip compression to avoid mksquashfs SIGSEGV on WSL (zstd default can run out of memory)
+    build_env['APPTAINER_SQUASHFS_COMPRESSION'] = 'gzip'
+    build_env['SINGULARITY_SQUASHFS_COMPRESSION'] = 'gzip'
     # Build in native Linux /tmp to avoid mksquashfs crash on /mnt/c/ (Windows 9P mount)
     import tempfile as _tf
     with _tf.TemporaryDirectory(dir='/tmp') as _build_dir:
         _tmp_img = Path(_build_dir) / dst.name
-        subprocess.run(
+        result = subprocess.run(
             [runtime, 'build', '--fakeroot', '--tmpdir', '/tmp', str(_tmp_img), str(def_path)],
-            check=True, env=build_env, cwd=str(ROOT),
+            capture_output=True, text=True, env=build_env, cwd=str(ROOT),
         )
+        if result.returncode != 0:
+            print(f'  ERROR: {runtime} build failed (exit {result.returncode})')
+            if result.stdout:
+                print(f'  stdout:\n{result.stdout}')
+            if result.stderr:
+                print(f'  stderr:\n{result.stderr}')
+            print(f'  Check:')
+            print(f'    - Is docker/podman running?  (apptainer needs it to pull the base image)')
+            print(f'    - Is there enough disk space in /tmp?  (build uses squashfs)')
+            print(f'    - On WSL, are you building from Linux /tmp, not /mnt/c?')
+            raise SystemExit(1)
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(_tmp_img, dst)
     print(f'  done: {img_rel}')

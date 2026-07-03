@@ -1449,7 +1449,8 @@ def hyperlink_get_comment():
 
 @app.route('/hyperlink/api/vlm/process', methods=['POST'])
 def hyperlink_vlm_process():
-    """Generate or refresh a text description for one Hyperlink video."""
+    """Generate a text description for a video via Slurm job on the cluster
+    (runs Gemma-4 VLM inside rag.simg on a compute node)."""
     try:
         if not _hyperlink_ai_enabled():
             return jsonify({
@@ -1460,30 +1461,62 @@ def hyperlink_vlm_process():
 
         data = request.get_json() or {}
         force = bool(data.get('force', False))
-        video_path = (data.get('video_path') or data.get('path') or '').strip()
-        _, _, video_dir = _hyperlink_get_user_dirs()
 
-        vlm_module = _load_hyperlink_vlm_module()
-        process_video_with_vlm = getattr(vlm_module, 'process_video_with_vlm', None)
-        process_videos_with_vlm = getattr(vlm_module, 'process_videos_with_vlm', None)
-        if process_video_with_vlm is None or process_videos_with_vlm is None:
-            raise ImportError('Hyperlink VLM module is missing required entrypoints')
+        user_key = _hyperlink_get_user_key()
+        sess = _hyperlink_get_live_session(user_key)
+        if not sess or not sess.get('ssh'):
+            return jsonify({
+                'success': False,
+                'status': 'disconnected',
+                'error': 'Not connected to a cluster. Please connect first.',
+            }), 409
 
-        if video_path:
-            abs_video_path = _hyperlink_resolve_video_abs_path(video_path)
-            result = process_video_with_vlm(abs_video_path, video_dir, force=force)
-            return jsonify(result), (200 if result.get('success') else 500)
+        remote_video_path = (data.get('video_path') or session.get('hyperlink_remote_video_path') or '').strip()
+        if not remote_video_path:
+            return jsonify({
+                'success': False,
+                'status': 'no_video',
+                'error': 'No remote video path available.',
+            }), 400
 
-        processed, skipped, errors = process_videos_with_vlm(video_dir, force=force)
-        return jsonify({
-            'success': errors == 0,
-            'status': 'processed',
-            'processed': processed,
-            'skipped': skipped,
-            'errors': errors,
-        }), (200 if errors == 0 else 500)
+        from vlm_client import VlmJobClient
+        client = VlmJobClient(sess['ssh'])
+        result = client.process_video(remote_video_path, force=force, poll=False)
+
+        # If .txt already existed on cluster, try to download it to local cache
+        if result.get('status') == 'skipped':
+            _, _, video_dir = _hyperlink_get_user_dirs()
+            local_txt = os.path.join(video_dir, os.path.basename(result['text_path']))
+            try:
+                sftp = sess['sftp']
+                sftp.get(result['text_path'], local_txt)
+            except Exception:
+                pass
+            if result.get('description'):
+                return jsonify(result), 200
+            return jsonify(result), 200
+
+        return jsonify(result), (200 if result.get('success') else 500)
     except Exception as e:
+        logger.exception('VLM process error')
         return jsonify({'success': False, 'status': 'error', 'error': str(e)}), 500
+
+
+@app.route('/hyperlink/api/vlm/job/<job_id>', methods=['GET'])
+def hyperlink_vlm_job_status(job_id: str):
+    """Check the status of a VLM Slurm job."""
+    try:
+        user_key = _hyperlink_get_user_key()
+        sess = _hyperlink_get_live_session(user_key)
+        if not sess or not sess.get('ssh'):
+            return jsonify({'status': 'disconnected', 'error': 'Cluster session lost'}), 409
+
+        from vlm_client import VlmJobClient
+        client = VlmJobClient(sess['ssh'])
+        state = client.check_job(job_id)
+        return jsonify({'job_id': job_id, 'status': state})
+    except Exception as e:
+        return jsonify({'status': 'error', 'error': str(e)}), 500
 
 
 @app.route('/hyperlink/api/cluster/servers', methods=['GET'])
@@ -1529,13 +1562,13 @@ def hyperlink_cluster_status():
 
 @app.route('/hyperlink/api/vlm/status', methods=['GET'])
 def hyperlink_vlm_status():
-    model_dir = (
-        os.environ.get('HPCC_HYPERLINK_VLM_MODEL_DIR', '').strip()
-        or os.environ.get('HYPERLINK_VLM_MODEL_DIR', '').strip()
-    )
+    user_key = _hyperlink_get_user_key()
+    sess = _hyperlink_get_live_session(user_key)
+    connected = bool(sess and sess.get('ssh'))
     return jsonify({
         'enabled': _hyperlink_ai_enabled(),
-        'model_dir': model_dir,
+        'connected': connected,
+        'backend': 'gemma-4-vl (rag.simg via Slurm)',
         'net_id': current_user.net_id if current_user.is_authenticated else '',
     })
 
