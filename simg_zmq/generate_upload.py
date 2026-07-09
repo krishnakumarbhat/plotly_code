@@ -1,4 +1,5 @@
 import os, platform, shutil, subprocess, sys, json, hashlib, socket, threading, time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parent
@@ -18,8 +19,8 @@ SIMGG_SRC = {
     'main_html.simg':          [ROOT / 'Singularity.def', ROOT / 'main_html', ROOT / 'Hyperlink_tool', ROOT / 'KPI'],
     'rag.simg':                [ROOT / 'rag' / 'Singularity_RAG.def', ROOT / 'rag', ROOT / 'rag' / 'vlm_process.py'],
     'kpi/can/can_kpi.simg':    [ROOT / 'KPI' / 'can_kpi' / 'can_singularity_KPI.def', ROOT / 'KPI' / 'can_kpi'],
-    'kpi/udp/udp_kpi.simg':    [ROOT / 'KPI' / 'UDP_KPI' / 'Singularity_KPI.def', ROOT / 'KPI' / 'UDP_KPI'],
-    'kpi/int_plot/intplot_kpi.simg': [ROOT / 'KPI' / 'intplot_kpi' / 'singularity_interactiveplot.def', ROOT / 'KPI' / 'intplot_kpi'],
+    'kpi/udp/udp_kpi.simg':    [ROOT / 'KPI' / 'UDP_KPI' / 'Singularity_KPI.def', ROOT / 'KPI' / 'UDP_KPI', ROOT / 'KPI' / 'intplot_kpi' / 'InteractivePlot'],
+    'kpi/int_plot/intplot_kpi.simg': [ROOT / 'KPI' / 'intplot_kpi' / 'singularity_interactiveplot.def', ROOT / 'KPI' / 'intplot_kpi', ROOT / 'KPI' / 'UDP_KPI'],
 }
 
 SCRIPTS = ['bundle_common.sh', 'cleanup_memory.sh', 'kpi_runtime_launcher.sh']
@@ -27,6 +28,12 @@ BUNDLE_DIRS = ['main_html', 'Hyperlink_tool', 'KPI']
 
 
 print('generate_upload.py starting...', flush=True)
+
+
+def _p(*args, **kw):
+    """Print with flush=True by default."""
+    kw.setdefault('flush', True)
+    print(*args, **kw)
 
 
 def _auto_wsl():
@@ -54,7 +61,7 @@ def _auto_wsl():
     drive = ROOT.drive[0].lower()
     wsl_path = f'/mnt/{drive}{str(ROOT)[2:].replace(chr(92), "/")}/{Path(__file__).name}'
     cmd = [wsl, '-d', 'Ubuntu', '--', 'python3', wsl_path] + sys.argv[1:]
-    print(f'Re-executing in WSL: {" ".join(cmd)}', flush=True)
+    _p(f'Re-executing in WSL: {" ".join(cmd)}')
     sys.exit(subprocess.call(cmd))
 
 
@@ -66,7 +73,7 @@ def _run_in_wsl(args=None):
     drive = ROOT.drive[0].lower()
     wsl_path = f'/mnt/{drive}{str(ROOT)[2:].replace(chr(92), "/")}/{Path(__file__).name}'
     cmd = [wsl, '-d', 'Ubuntu', '--', 'python3', wsl_path] + (args or ['generate'])
-    print(f'Running in WSL: {" ".join(cmd)}', flush=True)
+    _p(f'Running in WSL: {" ".join(cmd)}')
     ret = subprocess.call(cmd)
     if ret != 0:
         print(f'ERROR: WSL build failed (exit {ret}). Fix the build error and try again.', flush=True)
@@ -123,63 +130,103 @@ def _deps_hash(paths):
     return h.hexdigest()
 
 
+_meta_lock = threading.Lock()
+
+
 def _check_runtime():
     return shutil.which('apptainer') or shutil.which('singularity') or ''
 
 
 def build_simg(img_rel):
     dst = GEN / img_rel
-    meta = _read_meta()
-    deps = SIMGG_SRC.get(img_rel, [])
-    current_dep_hash = _deps_hash(deps)
-    prev_dep_hash = meta.get('build', {}).get(img_rel, {}).get('deps_hash', '')
-    if dst.exists() and current_dep_hash == prev_dep_hash:
-        print(f'  up-to-date: {img_rel}')
-        return False
+    with _meta_lock:
+        meta = _read_meta()
+        deps = SIMGG_SRC.get(img_rel, [])
+        current_dep_hash = _deps_hash(deps)
+        prev_dep_hash = meta.get('build', {}).get(img_rel, {}).get('deps_hash', '')
+        if dst.exists() and current_dep_hash == prev_dep_hash:
+            _p(f'  up-to-date: {img_rel}')
+            return False
     def_path = DEF_MAP.get(img_rel)
     if not def_path or not def_path.exists():
         alt = ROOT / 'Singularity.def'
         def_path = alt if alt.exists() else None
     if not def_path:
-        print(f'  ERROR: no .def for {img_rel}')
+        _p(f'  ERROR: no .def for {img_rel}')
         raise SystemExit(1)
-    print(f'  building {img_rel}...')
+    _p(f'  building {img_rel}...')
     dst.parent.mkdir(parents=True, exist_ok=True)
     runtime = _check_runtime()
     if not runtime:
-        print(f'  ERROR: apptainer/singularity not found — cannot build {img_rel}')
-        print(f'  Run this command from WSL (Ubuntu) where apptainer is installed.')
-        print(f'  Or install WSL: wsl --install -d Ubuntu')
+        _p(f'  ERROR: apptainer/singularity not found — cannot build {img_rel}')
+        _p(f'  Run this command from WSL (Ubuntu) where apptainer is installed.')
+        _p(f'  Or install WSL: wsl --install -d Ubuntu')
         raise SystemExit(1)
     build_env = os.environ.copy()
     build_env['APPTAINER_TMPDIR'] = '/tmp'
+    build_env['APPTAINER_CACHEDIR'] = '/tmp'
+    build_env['SINGULARITY_TMPDIR'] = '/tmp'
+    build_env['SINGULARITY_CACHEDIR'] = '/tmp'
     # Use gzip compression to avoid mksquashfs SIGSEGV on WSL (zstd default can run out of memory)
     build_env['APPTAINER_SQUASHFS_COMPRESSION'] = 'gzip'
     build_env['SINGULARITY_SQUASHFS_COMPRESSION'] = 'gzip'
-    # Build in native Linux /tmp to avoid mksquashfs crash on /mnt/c/ (Windows 9P mount)
-    import tempfile as _tf
+    # Build entirely on Linux tmpfs to avoid mksquashfs crash on /mnt/c/ (Windows 9P mount)
+    import tempfile as _tf, shutil as _shutil
     with _tf.TemporaryDirectory(dir='/tmp') as _build_dir:
+        _linux_root = Path(_build_dir) / 'src'
+        _linux_root.mkdir()
+        # Copy Singularity.def
+        _shutil.copy2(def_path, _linux_root / def_path.name)
+        _def_linux = _linux_root / def_path.name
+        # Copy all source dependencies and app.py into the Linux temp root.
+        # Sort so directories come first (avoids conflicts when a dir dep is
+        # followed by an individual file that lives inside that same directory).
+        _sorted_deps = sorted(deps, key=lambda d: (0 if d.is_dir() else 1))
+        for dep in _sorted_deps:
+            _rel = dep.relative_to(ROOT) if dep.is_relative_to(ROOT) else dep.name
+            _dest = _linux_root / _rel
+            if dep.is_dir():
+                _shutil.copytree(dep, _dest, symlinks=True, dirs_exist_ok=True,
+                                 ignore=lambda d, f: ['.git', '__pycache__', '.pytest_cache'])
+            else:
+                _dest.parent.mkdir(parents=True, exist_ok=True)
+                _shutil.copy2(dep, _dest)
+        _app_py = ROOT / 'app.py'
+        if _app_py.exists():
+            _shutil.copy2(_app_py, _linux_root / 'app.py')
         _tmp_img = Path(_build_dir) / dst.name
-        result = subprocess.run(
-            [runtime, 'build', '--fakeroot', '--tmpdir', '/tmp', str(_tmp_img), str(def_path)],
-            capture_output=True, text=True, env=build_env, cwd=str(ROOT),
+        proc = subprocess.Popen(
+            [runtime, 'build', '--fakeroot', '--disable-cache', '--tmpdir', '/tmp',
+             '--mksquashfs-args', '-mem 4G -processors 1 -no-exports -no-sparse',
+             str(_tmp_img), str(_def_linux)],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=build_env, cwd=str(_linux_root), bufsize=1,
         )
-        if result.returncode != 0:
-            print(f'  ERROR: {runtime} build failed (exit {result.returncode})')
-            if result.stdout:
-                print(f'  stdout:\n{result.stdout}')
-            if result.stderr:
-                print(f'  stderr:\n{result.stderr}')
-            print(f'  Check:')
-            print(f'    - Is docker/podman running?  (apptainer needs it to pull the base image)')
-            print(f'    - Is there enough disk space in /tmp?  (build uses squashfs)')
-            print(f'    - On WSL, are you building from Linux /tmp, not /mnt/c?')
+        stdout_lines = []
+        for line in proc.stdout:
+            _p(f'  [{img_rel}] {line}', end='')
+            stdout_lines.append(line)
+        proc.wait()
+        result_stdout = ''.join(stdout_lines)
+        result_stderr = ''
+        result_returncode = proc.returncode
+        if result_returncode != 0:
+            _p(f'  ERROR: {runtime} build failed (exit {result_returncode})')
+            if result_stdout:
+                _p(f'  stdout:\n{result_stdout}')
+            if result_stderr:
+                _p(f'  stderr:\n{result_stderr}')
+            _p(f'  Check:')
+            _p(f'    - Is docker/podman running?  (apptainer needs it to pull the base image)')
+            _p(f'    - Is there enough disk space in /tmp?  (build uses squashfs)')
+            _p(f'    - Try: wsl --shutdown, then restart your terminal')
             raise SystemExit(1)
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(_tmp_img, dst)
-    print(f'  done: {img_rel}')
-    meta.setdefault('build', {})[img_rel] = {'deps_hash': current_dep_hash}
-    _save_meta(meta)
+    _p(f'  done: {img_rel}')
+    with _meta_lock:
+        meta = _read_meta()
+        meta.setdefault('build', {})[img_rel] = {'deps_hash': current_dep_hash}
+        _save_meta(meta)
     return True
 
 
@@ -191,9 +238,9 @@ def build_pyz():
     current_hash = _sha256(src) if src.exists() else ''
     prev_hash = meta.get('build', {}).get('hpcc_main.pyz', {}).get('src_hash', '')
     if dst.exists() and current_hash and current_hash == prev_hash:
-        print(f'  up-to-date: hpcc_main.pyz')
+        _p(f'  up-to-date: hpcc_main.pyz')
         return
-    print('  building hpcc_main.pyz...')
+    _p('  building hpcc_main.pyz...')
     dst.parent.mkdir(parents=True, exist_ok=True)
     try:
         # Build a real ZIP archive compatible with Python 3.6-3.13+
@@ -223,14 +270,25 @@ def _build_compatible_zipapp(src: Path, dst: Path):
 def generate():
     runtime = _check_runtime()
     if not runtime:
-        print('ERROR: apptainer/singularity is required')
+        _p('ERROR: apptainer/singularity is required')
         print('On Windows, run from WSL (Ubuntu) where apptainer is installed.')
         print('Or install: wsl --install -d Ubuntu')
         raise SystemExit(1)
     built_any = False
-    for img_rel in BUILD_ORDER:
-        if build_simg(img_rel):
-            built_any = True
+    errors = []
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        f2i = {executor.submit(build_simg, img_rel): img_rel for img_rel in BUILD_ORDER}
+        for future in as_completed(f2i):
+            img_rel = f2i[future]
+            try:
+                if future.result():
+                    built_any = True
+            except BaseException:
+                errors.append(img_rel)
+    if errors:
+        for e in errors:
+            _p(f'  FAILED: {e}')
+        raise SystemExit(1)
     if not built_any:
         print('  all simgs up-to-date')
 
@@ -272,14 +330,14 @@ def generate():
 
     for sub in ['db', 'logs', 'rag/vector_store']:
         (GEN / 'store' / sub).mkdir(parents=True, exist_ok=True)
-    print('  created store/')
+    _p('  created store/')
 
     _write_launcher()
     _fix_shell_scripts()
     _ensure_rag_sh()
     _write_readme()
     _verify_critical_files()
-    print(f'Generate complete: {GEN}')
+    _p(f'Generate complete: {GEN}')
 
 
 _CRITICAL_BUNDLE_FILES = [
@@ -394,7 +452,7 @@ echo "[$(date -Iseconds 2>/dev/null || date)] Starting HPCC bundle" | tee -a "$L
 '''
     (GEN / 'run_hpcc.sh').write_text(launcher, encoding='utf-8')
     (GEN / 'run_hpcc.sh').chmod(0o755)
-    print('  wrote run_hpcc.sh')
+    _p('  wrote run_hpcc.sh')
 
 
 def _fix_shell_scripts():
@@ -419,7 +477,7 @@ def _ensure_rag_sh():
     rag_sh.parent.mkdir(parents=True, exist_ok=True)
     rag_sh.write_text('#!/usr/bin/env bash\nset -euo pipefail\n# RAG auto-start placeholder\necho "RAG service not bundled"\nexit 0\n')
     rag_sh.chmod(0o755)
-    print('  created rag/run_rag.sh (placeholder)')
+    _p('  created rag/run_rag.sh (placeholder)')
 
 
 def _write_readme():
@@ -459,7 +517,7 @@ Edit `resources.py` to change partitions, accounts.
 - Port 5100, auto-starts with main_html
 '''
     (GEN / 'README_deploy.md').write_text(text, encoding='utf-8')
-    print('  wrote README_deploy.md')
+    _p('  wrote README_deploy.md')
 
 
 def _save_upload_hashes():
@@ -560,6 +618,10 @@ def upload():
         if any(rel.startswith(ex + '/') or rel == ex for ex in _RUNTIME_EXCLUDE_DIRS):
             excluded += 1
             continue
+        if f.suffix == '.gguf':
+            # GGUF files are not uploaded automatically; handled by _gguf_deploy_check()
+            excluded += 1
+            continue
         if _is_model_binary(f):
             new_hashes[rel] = '__name_only__'
             eligible_files.append((rel, f, '__name_only__'))
@@ -588,7 +650,7 @@ def upload():
         _save_meta(meta)
         return
 
-    print(f'Uploading {total} changed files ({skipped} unchanged, {excluded} runtime dirs excluded)...')
+    _p(f'Uploading {total} changed files ({skipped} unchanged, {excluded} runtime dirs excluded)...')
 
     failures = []
     failures_lock = threading.Lock()
@@ -726,9 +788,61 @@ def upload():
         meta['upload_state'] = 'remote'
         _save_meta(meta)
 
-    print(f'Upload complete: {changed} uploaded, {skipped} unchanged, {excluded} runtime dirs excluded')
+    _p(f'Upload complete: {changed} uploaded, {skipped} unchanged, {excluded} runtime dirs excluded')
     if failures:
         raise SystemExit(1)
+
+
+def _gguf_deploy_check() -> bool:
+    """Check GGUF file changes and print manual deploy instructions."""
+    gguf_files = sorted(GEN.rglob('*.gguf'))
+    if not gguf_files:
+        print('  No GGUF files in bundle.')
+        return False
+
+    meta = _read_meta()
+    changed = []
+
+    for path in gguf_files:
+        rel = _rel_key(path.relative_to(GEN))
+        current_hash = _sha256(path)
+        prev = meta.get('gguf', {}).get(rel, {}).get('sha256', '')
+        if current_hash != prev:
+            changed.append((rel, path, current_hash))
+
+    for rel, _, h in changed:
+        meta.setdefault('gguf', {})[rel] = {'sha256': h}
+    for path in gguf_files:
+        rel = _rel_key(path.relative_to(GEN))
+        if rel not in {c[0] for c in changed}:
+            meta.setdefault('gguf', {})[rel] = {'sha256': _sha256(path)}
+    _save_meta(meta)
+
+    env = _load_env()
+    southfield_base = env.get('southfield_path', '')
+    krakow_base = env.get('krakow_path', '')
+
+    print()
+    print(f'GGUF file changed: {"YES" if changed else "NO"}')
+    print()
+
+    for rel, path, _ in changed:
+        print('Local GGUF file:')
+        print(f'  {path}')
+        print()
+        print('Southfield destination:')
+        sf_dest = str(PurePosixPath(southfield_base) / 'rag' / 'model' / rel) if southfield_base else 'N/A'
+        print(f'  {sf_dest}')
+        print()
+        print('Krakow destination:')
+        kr_dest = str(PurePosixPath(krakow_base) / 'rag' / 'model' / rel) if krakow_base else 'N/A'
+        print(f'  {kr_dest}')
+        print()
+
+    print('Automatic upload is disabled.')
+    print('Please copy the GGUF file manually to the above destination(s).')
+    print()
+    return bool(changed)
 
 
 def main():
@@ -740,14 +854,17 @@ def main():
         print('=== Uploading to cluster ===')
         upload()
     elif mode == 'deploy':
-        print('=== Deploy: generate + upload ===')
+        print('=== Deploy: generate + GGUF check + upload ===')
         if platform.system() == 'Windows':
             print('  Running generate in WSL (apptainer)...')
             _run_in_wsl(['generate'])
+            print('  Checking GGUF files...')
+            _gguf_deploy_check()
             print('  Running upload from Windows (paramiko)...')
             upload()
         else:
             generate()
+            _gguf_deploy_check()
             upload()
     else:
         print(f'Usage: {sys.argv[0]} [generate|upload|deploy]')

@@ -629,6 +629,135 @@ def resim_run_submit():
     return submit_tool_job('resim_run')
 
 
+@app.route('/api/resim_run_submit', methods=['POST'])
+@login_required
+def api_resim_run_submit():
+    """AJAX endpoint for Resim Run submission without redirect."""
+    from utils import extract_project_from_path, cluster_from_path
+    data = request.get_json(silent=True) or {}
+    input_txt = (data.get('input_txt') or '').strip()
+    simg_path = (data.get('simg_path') or '').strip()
+    create_jira = data.get('create_jira') in (True, '1', 'true')
+    jira_board = (data.get('jira_board') or '').strip() or 'FHW'
+    jira_assignee = (data.get('jira_assignee') or '').strip()
+    jira_notes = (data.get('jira_notes') or '').strip()
+
+    if not input_txt:
+        return jsonify({'ok': False, 'error': 'Input file (input.txt) path is required.'}), 400
+    if not simg_path:
+        return jsonify({'ok': False, 'error': 'Simg file path is required.'}), 400
+
+    cluster_txt = cluster_from_path(input_txt)
+    cluster_simg = cluster_from_path(simg_path)
+    if not cluster_txt:
+        return jsonify({'ok': False, 'error': 'Input file path must start with /net/ (Krakow) or /mnt/ (Southfield).'}), 400
+    if not cluster_simg:
+        return jsonify({'ok': False, 'error': 'Simg file path must start with /net/ (Krakow) or /mnt/ (Southfield).'}), 400
+    if cluster_txt != cluster_simg:
+        return jsonify({'ok': False, 'error': f'Both files must be in the same partition. Input is on {cluster_txt}, simg is on {cluster_simg}.'}), 400
+
+    project_name, project_root = extract_project_from_path(input_txt)
+    if not project_name:
+        project_name = 'default'
+    if not project_root:
+        project_root = os.path.dirname(input_txt)
+
+    job = JobHistory(
+        user_id=current_user.id,
+        tool_name='resim_run',
+        input_path=input_txt,
+        input_filename=os.path.basename(input_txt),
+        output_path=project_root,
+        parameters={
+            'input_txt': input_txt,
+            'simg_path': simg_path,
+            'create_jira': create_jira,
+            'jira_board': jira_board,
+            'jira_assignee': jira_assignee,
+            'jira_notes': jira_notes,
+            'project': project_name,
+            'project_root': project_root,
+        },
+        status='QUEUED',
+    )
+    db.session.add(job)
+    db.session.commit()
+
+    exec_mode = (os.environ.get('HPC_TOOLS_EXECUTION_MODE') or 'auto').strip().lower()
+    is_windows = sys.platform.startswith('win')
+    use_slurm = (exec_mode == 'slurm') or (exec_mode == 'auto' and (not is_windows) and slurm_is_available())
+
+    if not use_slurm:
+        job.status = 'FAILED'
+        job.completed_at = datetime.utcnow()
+        job.error_message = 'Local execution not supported for resim_run.'
+        db.session.commit()
+        return jsonify({'ok': False, 'error': 'Slurm is required for Resim Run submissions.'}), 400
+
+    import shlex
+    launcher = (os.environ.get('HPC_TOOLS_SLURM_LAUNCHER') or 'srun').strip().lower()
+    have_srun = shutil.which('srun') is not None
+
+    if launcher == 'srun' and have_srun:
+        partition = 'highPrio'
+        account = project_name
+        resource_config = {'memory': '16G', 'cpus': 4, 'time_limit': '03:00:00'}
+        exclude_nodes = (os.environ.get('HPC_TOOLS_SLURM_EXCLUDE_NODES') or 'plcyf-com-prod-log01,plcyf-com-prod-log02').strip()
+        singularity_module = (app.config.get('SINGULARITY_MODULE') or 'singularity/3.11.4').strip()
+
+        log_dir = project_root
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except Exception:
+            log_dir = '/tmp'
+        log_path = os.path.join(log_dir, f'slurm_resim_run_{job.id}.log')
+
+        tool_cmd = (
+            f"cd {shlex.quote(project_root)} && "
+            f"cp -n rResim_Gen7.sh . 2>/dev/null; "
+            f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
+        )
+        remote_shell = (
+            "set -euo pipefail; "
+            "if type module >/dev/null 2>&1; then module load slurm >/dev/null 2>&1 || true; "
+            f"module load {shlex.quote(singularity_module)} >/dev/null 2>&1 || true; fi; "
+            "echo 'HOSTNAME: '$(hostname); "
+            "echo 'DATE: '$(date); "
+            "echo 'SLURM_JOB_ID: '${SLURM_JOB_ID:-}; "
+            f"{tool_cmd}"
+        )
+        srun_cmd = [
+            'srun',
+            '-N', '1',
+            '-n', '1',
+            f"--partition={partition}",
+            f"--mem={resource_config.get('memory')}",
+            f"--cpus-per-task={resource_config.get('cpus')}",
+            f"--time={resource_config.get('time_limit')}",
+            f"--job-name=resim_run_{job.id}",
+        ]
+        if account:
+            srun_cmd.append(f"--account={account}")
+        if exclude_nodes:
+            srun_cmd.append(f"--exclude={exclude_nodes}")
+        srun_cmd += ['bash', '-lc', remote_shell]
+
+        t = threading.Thread(
+            target=_run_local_job_background,
+            args=(job.id, srun_cmd, '/', log_path, None),
+            daemon=True,
+        )
+        t.start()
+
+        job.status = 'QUEUED'
+        job.output_log_path = log_path
+        db.session.commit()
+
+        return jsonify({'ok': True, 'message': 'Submitted', 'job_id': job.id})
+
+    return jsonify({'ok': False, 'error': 'srun is not available on this system.'}), 400
+
+
 @app.route('/api/detect_project')
 @login_required
 def api_detect_project():
@@ -2217,6 +2346,12 @@ def _build_runtime_kpi_submission(form_source) -> dict:
         execution_label = 'UDP KPI'
 
     primary_input = json_path or input_hdf
+    jira_fields = {
+        'create_jira': form_source.get('create_jira') in ('1', 'true', True),
+        'jira_board': (form_source.get('jira_board') or 'FHW').strip(),
+        'jira_assignee': (form_source.get('jira_assignee') or '').strip(),
+        'jira_notes': (form_source.get('jira_notes') or '').strip(),
+    }
     return {
         'execution_target': execution_target,
         'input_mode': input_mode,
@@ -2226,6 +2361,7 @@ def _build_runtime_kpi_submission(form_source) -> dict:
         'execution_label': execution_label,
         'primary_target': primary_target,
         'interactive_plot_mode': interactive_plot_mode,
+        'jira_fields': jira_fields,
     }
 
 
@@ -2486,7 +2622,7 @@ def _coerce_runtime_resources(resources: dict, fallback_tool_key: str) -> dict:
     return merged
 
 
-def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, job_tool_name: str, input_path: str, execution_label: str = ''):
+def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, job_tool_name: str, input_path: str, execution_label: str = '', jira_fields: Optional[dict] = None):
     payload = _build_runtime_submit_payload(tool_key, mode, paths, resources)
     result = broker_client.submit_job(payload)
     resolved_execution_label = execution_label or tool_key
@@ -2501,6 +2637,25 @@ def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, j
     if isinstance(runtime_job, dict) and runtime_job.get('log_path'):
         runtime_console.setdefault('source_log_path', runtime_job['log_path'])
 
+    job_params = {
+        'runtime_job_id': result['job_id'],
+        'execution_target': tool_key,
+        'execution_label': resolved_execution_label,
+        'mode': mode,
+        'paths': paths,
+        'resources': resources,
+        'runtime_console': runtime_console,
+        'requested_by': (runtime_job or {}).get('requested_by', current_user.net_id),
+        'request_fingerprint': (runtime_job or {}).get('request_fingerprint', ''),
+        'execution_path': (runtime_job or {}).get('execution_path', ''),
+        'tool_version': (runtime_job or {}).get('tool_version', ''),
+        'db_version': (runtime_job or {}).get('db_version', ''),
+        'runtime_artifacts': (runtime_job or {}).get('artifacts', []),
+        'runtime_status_detail': result.get('status_detail', ''),
+    }
+    if jira_fields:
+        job_params.update(jira_fields)
+
     job = JobHistory(
         user_id=current_user.id,
         tool_name=job_tool_name,
@@ -2508,22 +2663,7 @@ def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, j
         input_filename=extract_hdf_filename(input_path),
         output_path=result.get('output_path', ''),
         output_log_path=(runtime_job or {}).get('mirror_log_path') or result.get('log_path', ''),
-        parameters={
-            'runtime_job_id': result['job_id'],
-            'execution_target': tool_key,
-            'execution_label': resolved_execution_label,
-            'mode': mode,
-            'paths': paths,
-            'resources': resources,
-            'runtime_console': runtime_console,
-            'requested_by': (runtime_job or {}).get('requested_by', current_user.net_id),
-            'request_fingerprint': (runtime_job or {}).get('request_fingerprint', ''),
-            'execution_path': (runtime_job or {}).get('execution_path', ''),
-            'tool_version': (runtime_job or {}).get('tool_version', ''),
-            'db_version': (runtime_job or {}).get('db_version', ''),
-            'runtime_artifacts': (runtime_job or {}).get('artifacts', []),
-            'runtime_status_detail': result.get('status_detail', ''),
-        },
+        parameters=job_params,
         status='QUEUED',
     )
     db.session.add(job)
@@ -2531,7 +2671,7 @@ def _queue_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, j
     return job, result, resolved_execution_label
 
 
-def _submit_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, job_tool_name: str, input_path: str, execution_label: str = ''):
+def _submit_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, job_tool_name: str, input_path: str, execution_label: str = '', jira_fields: Optional[dict] = None):
     job, result, resolved_execution_label = _queue_runtime_job(
         tool_key,
         mode,
@@ -2540,6 +2680,7 @@ def _submit_runtime_job(tool_key: str, mode: str, paths: dict, resources: dict, 
         job_tool_name,
         input_path,
         execution_label,
+        jira_fields=jira_fields or {},
     )
     if result.get('status_detail'):
         flash(result['status_detail'], 'warning')
@@ -2686,6 +2827,7 @@ def submit_runtime_kpi_job():
             'kpi',
             submission['primary_input'],
             submission['execution_label'],
+            jira_fields=submission.get('jira_fields'),
         )
     except Exception as exc:
         logger.exception('Failed to submit runtime KPI job')
@@ -2845,6 +2987,7 @@ def _create_jira_ticket_for_job(job: 'JobHistory', log_path: str) -> None:
     notes = (params.get('jira_notes') or '').strip()
     input_txt = (params.get('input_txt') or job.input_path or '').strip()
     simg_path = (params.get('simg_path') or '').strip()
+    board = (params.get('jira_board') or '').strip() or 'FHW'
 
     key = jira.create_resim_ticket(
         input_txt=input_txt,
@@ -2853,6 +2996,8 @@ def _create_jira_ticket_for_job(job: 'JobHistory', log_path: str) -> None:
         notes=notes,
         assignee=assignee,
         job_id=job.id,
+        board=board,
+        story_points=1,
     )
     if key:
         logger.info('Created JIRA ticket %s for job %s', key, job.id)

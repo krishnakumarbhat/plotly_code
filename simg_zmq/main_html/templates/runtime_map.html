@@ -157,6 +157,22 @@
 {% endblock %}
 
 {% block content %}
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="resimSubmissionToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="resimToastMessage">
+                Submitted
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+    <div id="resimErrorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="resimErrorToastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
 <div class="container-fluid px-4 pb-5">
     <div class="hero-panel mb-4">
         <div class="hero-copy">
@@ -183,7 +199,7 @@
         <div class="collapse show" id="resimFormBody">
             <div class="card-body">
                 <p class="lead-copy">Provide the <code>input.txt</code> and <code>.simg</code> paths. The system detects the project and submits via <strong>srun --partition=highPrio</strong>.</p>
-                <form method="POST" action="{{ url_for('resim_run_submit') }}">
+                <form id="resimRunForm">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Input file (input.txt)</label>
@@ -223,7 +239,7 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-3 mt-3 align-items-center">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-play-fill"></i> Run Resim</button>
+                        <button type="submit" class="btn btn-primary" id="runResimBtn"><i class="bi bi-play-fill"></i> Run Resim</button>
                         <button type="button" class="btn btn-outline-dark" id="detectProjectBtn"><i class="bi bi-search"></i> Detect</button>
                         <div class="form-check form-switch mb-0">
                             <input class="form-check-input" type="checkbox" role="switch" id="create_jira" name="create_jira" value="1">
@@ -232,20 +248,17 @@
                     </div>
 
                     <div class="row g-3 mt-2" id="jiraFields" style="display:none;">
-                        <div class="col-md-6">
-                            <label class="form-label">JIRA assignee</label>
-                            <input type="text" class="form-control" name="jira_assignee" placeholder="username">
+                        <div class="col-md-4">
+                            <label class="form-label">JIRA board</label>
+                            <input type="text" class="form-control" name="jira_board" id="jira_board" placeholder="FHW (default)">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label class="form-label">Assignee</label>
+                            <input type="text" class="form-control" name="jira_assignee" id="jira_assignee" placeholder="Optional - nearest match auto-assigned">
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label">Additional notes</label>
-                            <input type="text" class="form-control" name="jira_notes" placeholder="Optional context for the ticket">
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <label class="form-label">Cluster password</label>
-                            <input type="password" class="form-control" name="cluster_password" placeholder="Required for /net or /mnt paths">
+                            <input type="text" class="form-control" name="jira_notes" id="jira_notes" placeholder="Optional context for the ticket">
                         </div>
                     </div>
                 </form>
@@ -1381,6 +1394,89 @@ function detectProject() {
             document.getElementById('detectedInfo').style.display = 'none';
         });
 }
+
+function showResimToast(message, isError) {
+    const toastEl = isError ? document.getElementById('resimErrorToast') : document.getElementById('resimSubmissionToast');
+    const msgEl = isError ? document.getElementById('resimErrorToastMessage') : document.getElementById('resimToastMessage');
+    msgEl.textContent = message;
+    const toast = new bootstrap.Toast(toastEl, { delay: isError ? 5000 : 3000 });
+    toast.show();
+}
+
+function validateResimPaths(inputTxt, simgPath) {
+    if (!inputTxt) {
+        showResimToast('Input file (input.txt) path is required.', true);
+        return false;
+    }
+    if (!simgPath) {
+        showResimToast('Simg file path is required.', true);
+        return false;
+    }
+    const isNetTxt = inputTxt.startsWith('/net/');
+    const isMntTxt = inputTxt.startsWith('/mnt/');
+    const isNetSimg = simgPath.startsWith('/net/');
+    const isMntSimg = simgPath.startsWith('/mnt/');
+    if (!isNetTxt && !isMntTxt) {
+        showResimToast('Input file path must start with /net/ (Krakow) or /mnt/ (Southfield).', true);
+        return false;
+    }
+    if (!isNetSimg && !isMntSimg) {
+        showResimToast('Simg file path must start with /net/ (Krakow) or /mnt/ (Southfield).', true);
+        return false;
+    }
+    if ((isNetTxt && isMntSimg) || (isMntTxt && isNetSimg)) {
+        showResimToast('Both files must be in the same partition (/net or /mnt).', true);
+        return false;
+    }
+    return true;
+}
+
+document.getElementById('resimRunForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const inputTxt = document.getElementById('input_txt').value.trim();
+    const simgPath = document.getElementById('simg_path').value.trim();
+    const createJira = document.getElementById('create_jira').checked;
+    const jiraBoard = document.getElementById('jira_board').value.trim();
+    const jiraAssignee = document.getElementById('jira_assignee').value.trim();
+    const jiraNotes = document.getElementById('jira_notes').value.trim();
+
+    if (!validateResimPaths(inputTxt, simgPath)) {
+        return;
+    }
+
+    const submitBtn = document.getElementById('runResimBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+
+    try {
+        const response = await fetch('/api/resim_run_submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                input_txt: inputTxt,
+                simg_path: simgPath,
+                create_jira: createJira,
+                jira_board: jiraBoard || 'FHW',
+                jira_assignee: jiraAssignee,
+                jira_notes: jiraNotes,
+            }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            showResimToast(data.error || 'Submission failed.', true);
+            return;
+        }
+        showResimToast('Submitted');
+        setTimeout(() => {
+            showResimToast('You can check the run status in the Runtime Console tab.', false);
+        }, 1000);
+    } catch (error) {
+        showResimToast('Network error: ' + error.message, true);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-play-fill"></i> Run Resim';
+    }
+});
 
 document.getElementById('input_txt').addEventListener('input', detectProject);
 document.getElementById('simg_path').addEventListener('input', detectProject);

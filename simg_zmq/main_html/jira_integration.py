@@ -20,7 +20,7 @@ class JiraIntegration:
         self.user = os.environ.get('JIRA_USER', '')
         self.api_token = os.environ.get('JIRA_API_TOKEN', '')
         self.default_project = os.environ.get('JIRA_DEFAULT_PROJECT', '')
-        self.default_board_id = os.environ.get('JIRA_DEFAULT_BOARD_ID', '')
+        self.default_board = os.environ.get('JIRA_DEFAULT_BOARD', 'FHW')
         self._enabled = bool(self.base_url and (self.pat or (self.user and self.api_token)))
         if not self._enabled:
             logger.warning('Jira not configured: set JIRA_BASE_URL and JIRA_PAT (or JIRA_USER + JIRA_API_TOKEN)')
@@ -36,6 +36,18 @@ class JiraIntegration:
             'Content-Type': 'application/json',
         }
 
+    def _get(self, url: str) -> Optional[Dict[str, Any]]:
+        if not self._enabled:
+            return None
+        try:
+            import requests
+            resp = requests.get(url, headers=self._headers(), timeout=30)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as e:
+            logger.error(f'Jira API GET error: {e}')
+            return None
+
     def _post(self, url: str, data: dict) -> Optional[Dict[str, Any]]:
         if not self._enabled:
             return None
@@ -47,6 +59,32 @@ class JiraIntegration:
         except Exception as e:
             logger.error(f'Jira API error: {e}')
             return None
+
+    def find_users(self, query: str = '') -> List[Dict[str, str]]:
+        """Search Jira users by query string."""
+        if not self._enabled:
+            return []
+        search_url = f'{self.base_url}/rest/api/2/user/search?username={query}&maxResults=20'
+        result = self._get(search_url)
+        if isinstance(result, list):
+            return [{'name': u.get('name', ''), 'displayName': u.get('displayName', ''), 'emailAddress': u.get('emailAddress', '')} for u in result]
+        return []
+
+    def find_nearest_user(self, name: str) -> Optional[str]:
+        """Find the nearest matching Jira user by name or return None."""
+        if not name or not self._enabled:
+            return None
+        users = self.find_users(name)
+        if users:
+            return users[0].get('name') or users[0].get('displayName', '')
+        # Try broader search
+        users = self.find_users('')
+        if users:
+            lower_name = name.lower()
+            for u in users:
+                if lower_name in u.get('name', '').lower() or lower_name in u.get('displayName', '').lower():
+                    return u.get('name') or u.get('displayName', '')
+        return None
 
     def create_kpi_ticket(
         self,
@@ -63,24 +101,25 @@ class JiraIntegration:
         description = self._build_ticket_description(accuracy_score, log_path, hdf_path, debug_analysis)
         name = details_dict.get('name', sensor_id or 'unknown')
         summary = f'[KPI Alert] Low accuracy: {accuracy_score:.1f}% - {name}'
-        return self._create_ticket(summary, description)
+        return self._create_ticket(summary, description, story_points=1, board=self.default_board)
 
     def create_rag_description(self, html_path: str, rag_answer: str) -> Optional[str]:
         summary = f'[RAG Report] Analysis from {os.path.basename(html_path)}'
-        return self._create_ticket(summary, rag_answer)
+        return self._create_ticket(summary, rag_answer, story_points=1, board=self.default_board)
 
-    def _create_ticket(self, summary: str, description: str) -> Optional[str]:
+    def _create_ticket(self, summary: str, description: str, story_points: int = 1, board: str = 'FHW') -> Optional[str]:
         if not self._enabled:
             return None
         url = f'{self.base_url}/rest/api/2/issue'
-        data = {
-            'fields': {
-                'project': {'key': self.default_project},
-                'summary': summary,
-                'description': description,
-                'issuetype': {'name': 'Task'},
-            }
+        fields = {
+            'project': {'key': self.default_project},
+            'summary': summary,
+            'description': description,
+            'issuetype': {'name': 'Task'},
         }
+        if story_points is not None:
+            fields['customfield_10016'] = story_points
+        data = {'fields': fields}
         result = self._post(url, data)
         if result:
             key = result.get('key', '')
@@ -96,14 +135,18 @@ class JiraIntegration:
         notes: str = '',
         assignee: str = '',
         job_id: int = 0,
+        board: str = 'FHW',
+        story_points: int = 1,
     ) -> Optional[str]:
         """Create a JIRA ticket for a resim run result."""
         desc = self._build_resim_description(input_txt, simg_path, log_path, notes, job_id)
         summary = f'[Resim Run] {Path(input_txt).name} - Job #{job_id}'
-        ticket_key = self._create_ticket(summary, desc)
+        ticket_key = self._create_ticket(summary, desc, story_points=story_points, board=board)
 
         if ticket_key and assignee:
-            self._assign_ticket(ticket_key, assignee)
+            resolved = self.find_nearest_user(assignee)
+            if resolved:
+                self._assign_ticket(ticket_key, resolved)
         return ticket_key
 
     def _build_resim_description(self, input_txt: str, simg_path: str,

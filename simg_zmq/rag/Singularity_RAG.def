@@ -17,32 +17,43 @@ From: docker.io/python:3.10-slim
     export LLAMA_SERVER_PATH=${LLAMA_SERVER_PATH:-/app/rag/tools/llama.cpp/llama-server}
 
 %post
-    apt-get update && apt-get install -y --no-install-recommends ca-certificates build-essential cmake git \
+    apt-get update && apt-get install -y --no-install-recommends ca-certificates wget \
         && rm -rf /var/lib/apt/lists/*
 
     python -m venv /opt/venv
     . /opt/venv/bin/activate
     pip install --upgrade pip setuptools wheel
+    # Install CPU-only PyTorch FIRST — prevents pulling 2.7 GB of nvidia-* CUDA
+    # packages that sentence-transformers would otherwise bring in.
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
     pip install --no-cache-dir -r /app/rag/requirements.txt
     pip install --no-cache-dir opencv-python-headless Pillow
 
-    git clone --depth 1 https://github.com/ggerganov/llama.cpp.git /tmp/llama.cpp
-    cmake -S /tmp/llama.cpp -B /tmp/llama.cpp/build -DBUILD_SHARED_LIBS=OFF -DLLAMA_BUILD_SERVER=ON
-    cmake --build /tmp/llama.cpp/build --config Release -j"$(nproc)"
-
+    # Download pre-built llama-server (b9860) instead of compiling from source
     mkdir -p /app/rag/tools/llama.cpp
-    if [ -f /tmp/llama.cpp/build/bin/llama-server ]; then \
-        cp /tmp/llama.cpp/build/bin/llama-server /app/rag/tools/llama.cpp/llama-server; \
-    else \
-        cp /tmp/llama.cpp/build/bin/Release/llama-server /app/rag/tools/llama.cpp/llama-server; \
+    LLAMA_RELEASE=b9860
+    wget -q "https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_RELEASE}/llama-${LLAMA_RELEASE}-bin-ubuntu-x64.tar.gz" \
+        -O /tmp/llama.tar.gz
+    mkdir -p /tmp/llama-extract
+    tar -xzf /tmp/llama.tar.gz -C /tmp/llama-extract
+    LS=$(find /tmp/llama-extract -name 'llama-server' -type f | head -1)
+    if [ -z "$LS" ]; then
+        echo "ERROR: llama-server binary not found in pre-built archive" >&2
+        ls -R /tmp/llama-extract 2>/dev/null | head -20
+        exit 1
     fi
+    cp "$LS" /app/rag/tools/llama.cpp/llama-server
     chmod 755 /app/rag/tools/llama.cpp/llama-server
+    # Copy ALL shared libraries + symlinks needed by llama-server (newer
+    # releases use a thin wrapper + libllama-server-impl.so + ggml CPU libs).
+    cp -a /tmp/llama-extract/llama-b9860/*.so* /app/rag/tools/llama.cpp/
+    chmod 755 /app/rag/tools/llama.cpp/*.so*
+    rm -rf /tmp/llama.tar.gz /tmp/llama-extract
 
     chmod -R 755 /app
 
-    # cleanup build artifacts to shrink image
-    rm -rf /tmp/llama.cpp
-    apt-get remove -y build-essential cmake git
+    # cleanup
+    apt-get remove -y wget
     apt-get autoremove -y && apt-get clean
     rm -rf /var/lib/apt/lists/*
 

@@ -51,7 +51,7 @@ TOOLS = {
     'interactive_plot': {'scheduler': 'slurm', 'nodes': 1, 'ntasks': 1, 'cpus': 8,  'memory': '64G',  'time_limit': '04:00:00', 'gpu': False, 'gres': ''},
     'rag':         {'scheduler': 'slurm', 'nodes': 1, 'ntasks': 1, 'cpus': 8,  'memory': '72G',  'time_limit': '168:00:00', 'gpu': True, 'gres': 'gpu:1'},
     'main_html':   {'scheduler': 'slurm', 'nodes': 1, 'ntasks': 1, 'cpus': 4,  'memory': '16G',  'time_limit': '168:00:00', 'gpu': False, 'gres': ''},
-    'jira':        {'scheduler': 'slurm', 'nodes': 1, 'ntasks': 1, 'cpus': 2,  'memory': '8G',   'time_limit': '00:30:00', 'gpu': False, 'gres': '', 'jira_url': 'https://jira.anomaly.com', 'jira_project': 'RADAR'},
+    'jira':        {'scheduler': 'slurm', 'nodes': 1, 'ntasks': 1, 'cpus': 2,  'memory': '8G',   'time_limit': '00:30:00', 'gpu': False, 'gres': '', 'jira_url': 'https://jira.anomaly.com', 'jira_project': 'FHW'},
 }
 
 
