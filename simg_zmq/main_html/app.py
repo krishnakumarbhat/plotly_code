@@ -177,6 +177,29 @@ _HPCC_RESOURCE_BASE = {
 }
 
 
+def _tool_resources(tool_name: str) -> dict:
+    """Read resource defaults from resources.py (single source of truth)."""
+    import sys as _sys
+    _resources_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'resources.py')
+    if os.path.exists(_resources_path):
+        _dir = os.path.dirname(_resources_path)
+        if _dir not in _sys.path:
+            _sys.path.insert(0, _dir)
+        try:
+            import resources
+            return dict(resources.tool_resources(tool_name))
+        except Exception:
+            pass
+    fallback = {
+        'can_kpi': {'memory': '32G', 'cpus': 8, 'time_limit': '02:00:00'},
+        'udp_kpi': {'memory': '32G', 'cpus': 8, 'time_limit': '02:00:00'},
+        'interactive_plot': {'memory': '64G', 'cpus': 8, 'time_limit': '04:00:00'},
+        'rag': {'memory': '72G', 'cpus': 8, 'time_limit': '18:00:00', 'gpu': True, 'gres': 'gpu:1'},
+        'hyperlink_tool': {'memory': '8G', 'cpus': 2, 'time_limit': '00:30:00'},
+    }
+    return dict(fallback.get(tool_name, fallback['udp_kpi']))
+
+
 def _runtime_resources_from_tool_config(tool_name: str, *, default_memory: str, default_cpus: int, default_time_limit: str) -> dict:
     tool_config = app.config.get('TOOLS', {}).get(tool_name, {})
     return {
@@ -187,10 +210,10 @@ def _runtime_resources_from_tool_config(tool_name: str, *, default_memory: str, 
 
 
 RUNTIME_TOOL_DEFAULTS = {
-    'can_kpi': {**_HPCC_RESOURCE_BASE, **_runtime_resources_from_tool_config('kpi', default_memory='32G', default_cpus=8, default_time_limit='02:00:00')},
-    'udp_kpi': {**_HPCC_RESOURCE_BASE, **_runtime_resources_from_tool_config('kpi', default_memory='32G', default_cpus=8, default_time_limit='02:00:00')},
-    'interactive_plot': {**_HPCC_RESOURCE_BASE, **_runtime_resources_from_tool_config('interactive_plot', default_memory='64G', default_cpus=8, default_time_limit='04:00:00')},
-    'rag': {**_HPCC_RESOURCE_BASE, 'memory': '72G', 'cpus': 8, 'time_limit': '18:00:00', 'gpu': True, 'gres': 'gpu:1'},
+    'can_kpi': {**_HPCC_RESOURCE_BASE, **_tool_resources('can_kpi')},
+    'udp_kpi': {**_HPCC_RESOURCE_BASE, **_tool_resources('udp_kpi')},
+    'interactive_plot': {**_HPCC_RESOURCE_BASE, **_tool_resources('interactive_plot')},
+    'rag': {**_HPCC_RESOURCE_BASE, **_tool_resources('rag')},
 }
 ACTIVE_RUNTIME_STATUSES = {'QUEUED', 'SUBMITTED', 'PENDING', 'RUNNING'}
 PENDING_RUNTIME_STATUSES = {'QUEUED', 'SUBMITTED', 'PENDING'}
@@ -526,18 +549,6 @@ def dashboard():
 # TOOL ROUTES
 # ============================================================================
 
-@app.route('/html/dc_html', methods=['GET', 'POST'])
-@login_required
-def tool_dc_html():
-    """DC HTML Report Tool"""
-    if request.method == 'POST':
-        return submit_tool_job('dc_html')
-    
-    recent_jobs = get_user_tool_jobs('dc_html')
-    return render_template('tools/dc_html.html', 
-                         tool_name='DC HTML Report',
-                         recent_jobs=recent_jobs)
-
 
 @app.route('/html/interactive_plot', methods=['GET', 'POST'])
 @login_required
@@ -632,8 +643,9 @@ def resim_run_submit():
 @app.route('/api/resim_run_submit', methods=['POST'])
 @login_required
 def api_resim_run_submit():
-    """AJAX endpoint for Resim Run submission without redirect."""
+    """AJAX endpoint for Resim Run submission — runs .sh script as local process (no srun wrapper)."""
     from utils import extract_project_from_path, cluster_from_path
+    import shlex
     data = request.get_json(silent=True) or {}
     input_txt = (data.get('input_txt') or '').strip()
     simg_path = (data.get('simg_path') or '').strip()
@@ -662,12 +674,27 @@ def api_resim_run_submit():
     if not project_root:
         project_root = os.path.dirname(input_txt)
 
+    log_dir = project_root
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+    except Exception:
+        log_dir = '/tmp'
+    log_path = os.path.join(log_dir, f'resim_run_{uuid.uuid4().hex[:8]}.log')
+
+    cmd = [
+        'bash', '-lc',
+        f"cd {shlex.quote(project_root)} && "
+        f"cp -n rResim_Gen7.sh . 2>/dev/null; "
+        f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
+    ]
+
     job = JobHistory(
         user_id=current_user.id,
         tool_name='resim_run',
         input_path=input_txt,
         input_filename=os.path.basename(input_txt),
         output_path=project_root,
+        output_log_path=log_path,
         parameters={
             'input_txt': input_txt,
             'simg_path': simg_path,
@@ -683,79 +710,14 @@ def api_resim_run_submit():
     db.session.add(job)
     db.session.commit()
 
-    exec_mode = (os.environ.get('HPC_TOOLS_EXECUTION_MODE') or 'auto').strip().lower()
-    is_windows = sys.platform.startswith('win')
-    use_slurm = (exec_mode == 'slurm') or (exec_mode == 'auto' and (not is_windows) and slurm_is_available())
+    t = threading.Thread(
+        target=_run_local_job_background,
+        args=(job.id, cmd, '/', log_path, None),
+        daemon=True,
+    )
+    t.start()
 
-    if not use_slurm:
-        job.status = 'FAILED'
-        job.completed_at = datetime.utcnow()
-        job.error_message = 'Local execution not supported for resim_run.'
-        db.session.commit()
-        return jsonify({'ok': False, 'error': 'Slurm is required for Resim Run submissions.'}), 400
-
-    import shlex
-    launcher = (os.environ.get('HPC_TOOLS_SLURM_LAUNCHER') or 'srun').strip().lower()
-    have_srun = shutil.which('srun') is not None
-
-    if launcher == 'srun' and have_srun:
-        partition = 'highPrio'
-        account = project_name
-        resource_config = {'memory': '16G', 'cpus': 4, 'time_limit': '03:00:00'}
-        exclude_nodes = (os.environ.get('HPC_TOOLS_SLURM_EXCLUDE_NODES') or 'plcyf-com-prod-log01,plcyf-com-prod-log02').strip()
-        singularity_module = (app.config.get('SINGULARITY_MODULE') or 'singularity/3.11.4').strip()
-
-        log_dir = project_root
-        try:
-            os.makedirs(log_dir, exist_ok=True)
-        except Exception:
-            log_dir = '/tmp'
-        log_path = os.path.join(log_dir, f'slurm_resim_run_{job.id}.log')
-
-        tool_cmd = (
-            f"cd {shlex.quote(project_root)} && "
-            f"cp -n rResim_Gen7.sh . 2>/dev/null; "
-            f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
-        )
-        remote_shell = (
-            "set -euo pipefail; "
-            "if type module >/dev/null 2>&1; then module load slurm >/dev/null 2>&1 || true; "
-            f"module load {shlex.quote(singularity_module)} >/dev/null 2>&1 || true; fi; "
-            "echo 'HOSTNAME: '$(hostname); "
-            "echo 'DATE: '$(date); "
-            "echo 'SLURM_JOB_ID: '${SLURM_JOB_ID:-}; "
-            f"{tool_cmd}"
-        )
-        srun_cmd = [
-            'srun',
-            '-N', '1',
-            '-n', '1',
-            f"--partition={partition}",
-            f"--mem={resource_config.get('memory')}",
-            f"--cpus-per-task={resource_config.get('cpus')}",
-            f"--time={resource_config.get('time_limit')}",
-            f"--job-name=resim_run_{job.id}",
-        ]
-        if account:
-            srun_cmd.append(f"--account={account}")
-        if exclude_nodes:
-            srun_cmd.append(f"--exclude={exclude_nodes}")
-        srun_cmd += ['bash', '-lc', remote_shell]
-
-        t = threading.Thread(
-            target=_run_local_job_background,
-            args=(job.id, srun_cmd, '/', log_path, None),
-            daemon=True,
-        )
-        t.start()
-
-        job.status = 'QUEUED'
-        job.output_log_path = log_path
-        db.session.commit()
-
-        return jsonify({'ok': True, 'message': 'Submitted', 'job_id': job.id})
-
-    return jsonify({'ok': False, 'error': 'srun is not available on this system.'}), 400
+    return jsonify({'ok': True, 'message': 'Submitted', 'job_id': job.id})
 
 
 @app.route('/api/detect_project')
@@ -3219,19 +3181,6 @@ def submit_tool_job(tool_name: str):
         output_path = parameters.get('html_dir', '').strip()
         config_xml = ''
     
-    elif tool_name == 'dc_html':
-        # DC HTML requires XML config and JSON inputs
-        config_xml = parameters.get('config_xml', '').strip()
-        input_path = parameters.get('inputs_json', '').strip()
-        output_path = parameters.get('output_path', '').strip()
-        
-        if not config_xml:
-            flash('Configuration XML file (HTMLConfig.xml) is required', 'error')
-            return redirect(request.referrer or url_for('dashboard'))
-        if not input_path:
-            flash('Inputs JSON file is required', 'error')
-            return redirect(request.referrer or url_for('dashboard'))
-        
     elif tool_name == 'resim_run':
         input_txt = parameters.get('input_txt', '').strip()
         input_path = input_txt
@@ -3261,7 +3210,6 @@ def submit_tool_job(tool_name: str):
     singularity_images = {
         'interactive_plot': 'interactive_plot.simg',
         'kpi': 'kpi.simg',
-        'dc_html': 'dc_html.simg',
         'hyperlink_tool': 'all_services.simg',
     }
     
@@ -3363,9 +3311,6 @@ def submit_tool_job(tool_name: str):
                 return redirect(request.referrer or url_for('dashboard'))
             script = str(Path(tools_dir) / 'ResimHTMLReport.py')
             cmd = [sys.executable, script, config_xml, input_path, output_path]
-        elif tool_name == 'dc_html':
-            # DC HTML: python -m IPS.ResimHTMLReport <config_xml> <inputs_json> <output_dir>
-            cmd = [sys.executable, '-m', 'IPS.ResimHTMLReport', config_xml, input_path, output_path]
         else:
             job.status = 'FAILED'
             job.completed_at = datetime.utcnow()
@@ -3381,9 +3326,6 @@ def submit_tool_job(tool_name: str):
             # Avoid requiring the user to set $env:PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION manually.
             child_env = dict(os.environ)
             child_env['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
-        elif tool_name == 'dc_html':
-            # DC HTML needs to run from dc_html directory
-            working_dir = str(Path(tools_dir) / 'dc_html')
 
         t = threading.Thread(
             target=_run_local_job_background,
@@ -3402,15 +3344,8 @@ def submit_tool_job(tool_name: str):
     have_srun = shutil.which('srun') is not None
     have_sbatch = shutil.which('sbatch') is not None
 
-    # Tool-specific resource requirements (can be overridden by env / config later)
-    resource_configs = {
-        'interactive_plot': {'memory': '64G', 'cpus': 8, 'time_limit': '04:00:00'},
-        'kpi': {'memory': '32G', 'cpus': 8, 'time_limit': '02:00:00'},
-        'dc_html': {'memory': '16G', 'cpus': 4, 'time_limit': '01:00:00'},
-        'hyperlink_tool': {'memory': '8G', 'cpus': 2, 'time_limit': '00:30:00'},
-        'resim_run': {'memory': '16G', 'cpus': 4, 'time_limit': '03:00:00'},
-    }
-    resource_config = resource_configs.get(tool_name, {'memory': '16G', 'cpus': 4, 'time_limit': '01:00:00'})
+    # Tool-specific resource requirements — single source of truth: resources.py
+    resource_config = dict(_tool_resources(tool_name))
 
     # Log file for the launcher (srun/sbatch stdout+stderr)
     log_dir = output_path
@@ -3459,24 +3394,6 @@ def submit_tool_job(tool_name: str):
                 input_hdf = (parameters.get('input_hdf') or '').strip()
                 output_hdf = (parameters.get('output_hdf') or '').strip()
                 tool_cmd = f"singularity run {bind_str} {shlex.quote(singularity_image)} {shlex.quote(input_hdf)} {shlex.quote(output_hdf)} {shlex.quote(output_path)}"
-        elif tool_name == 'dc_html':
-            tool_cmd = f"singularity run {bind_str} {shlex.quote(singularity_image)} {shlex.quote(config_xml)} {shlex.quote(input_path)} {shlex.quote(output_path)}"
-        elif tool_name == 'resim_run':
-            from utils import extract_project_from_path
-            input_txt = (parameters.get('input_txt') or '').strip()
-            simg_path = (parameters.get('simg_path') or '').strip()
-            project_name, project_root = extract_project_from_path(input_txt)
-            if not project_root:
-                project_root = os.path.dirname(input_txt)
-            if not project_name:
-                project_name = 'default'
-            account = project_name
-            tool_cmd = (
-                f"cd {shlex.quote(project_root)} && "
-                f"cp -n rResim_Gen7.sh . 2>/dev/null; "
-                f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
-            )
-            partition = 'highPrio'
         else:
             job.status = 'FAILED'
             job.completed_at = datetime.utcnow()
@@ -3540,7 +3457,7 @@ def submit_tool_job(tool_name: str):
     script_kwargs = {
         'input_mode': input_mode,
         'html_dir': output_path,
-        'config_xml': config_xml if tool_name in ['interactive_plot', 'dc_html'] else '',
+        'config_xml': config_xml if tool_name == 'interactive_plot' else '',
         'input_hdf': parameters.get('input_hdf', '') if input_mode == 'hdf' else '',
         'output_hdf': parameters.get('output_hdf', '') if input_mode == 'hdf' else ''
     }

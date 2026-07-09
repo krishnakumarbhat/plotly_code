@@ -371,6 +371,22 @@ def extract_hdf_filename(path: str) -> str:
     return filename
 
 
+def _load_resources_for_slurm(tool_name: str) -> dict:
+    """Load resources for a tool from resources.py (single source of truth), with fallback."""
+    import sys as _sys, os as _os
+    _resources_path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'resources.py')
+    if _os.path.exists(_resources_path):
+        _dir = _os.path.dirname(_resources_path)
+        if _dir not in _sys.path:
+            _sys.path.insert(0, _dir)
+        try:
+            import resources
+            return dict(resources.tool_resources(tool_name))
+        except Exception:
+            pass
+    return {'memory': '16G', 'cpus': 4, 'time_limit': '01:00:00'}
+
+
 def generate_slurm_script(tool_name: str, input_path: str, output_path: str, 
                           singularity_image: str, **kwargs) -> str:
     """
@@ -385,35 +401,36 @@ def generate_slurm_script(tool_name: str, input_path: str, output_path: str,
     script_name = f"{tool_name}_{uuid.uuid4().hex[:8]}.sh"
     script_path = os.path.join(script_dir, script_name)
     
-    # Tool-specific configurations
+    # Tool-specific configurations — single source of truth: resources.py
+    _res = _load_resources_for_slurm(tool_name)
     tool_configs = {
         'interactive_plot': {
-            'memory': '64G',
-            'cpus': 8,
-            'time_limit': '04:00:00',
+            'memory': _res.get('memory', '64G'),
+            'cpus': _res.get('cpus', 8),
+            'time_limit': _res.get('time_limit', '04:00:00'),
             'partition': 'plcyf-com',
             'module': 'singularity/3.11.4'
         },
         'kpi': {
-            'memory': '32G',
-            'cpus': 4,
-            'time_limit': '02:00:00',
+            'memory': _res.get('memory', '32G'),
+            'cpus': _res.get('cpus', 8),
+            'time_limit': _res.get('time_limit', '02:00:00'),
             'partition': 'plcyf-com',
             'module': 'singularity/3.11.4'
         },
         'hyperlink_tool': {
-            'memory': '9G',
-            'cpus': 4,
-            'time_limit': '00:30:00',
+            'memory': _res.get('memory', '8G'),
+            'cpus': _res.get('cpus', 2),
+            'time_limit': _res.get('time_limit', '00:30:00'),
             'partition': 'plcyf-com',
             'module': 'singularity/3.11.4'
         }
     }
     
     config = tool_configs.get(tool_name, {
-        'memory': '16G',
-        'cpus': 4,
-        'time_limit': '01:00:00',
+        'memory': _res.get('memory', '16G'),
+        'cpus': _res.get('cpus', 4),
+        'time_limit': _res.get('time_limit', '01:00:00'),
         'partition': 'plcyf-com',
         'module': 'singularity/3.11.4'
     })

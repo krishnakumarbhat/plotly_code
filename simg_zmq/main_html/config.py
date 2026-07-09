@@ -116,15 +116,6 @@ class Config:
     
     # Tool Configurations with resource requirements
     TOOLS = {
-        'dc_html': {
-            'name': 'DC HTML Report',
-            'description': 'Generate HTML reports from data collection',
-            'singularity_image': 'all_services.simg',
-            'script': 'run_dc_html.sh',
-            'memory': '16G',
-            'cpus': 4,
-            'time_limit': '01:00:00'
-        },
         'interactive_plot': {
             'name': 'Interactive Plot',
             'description': 'Generate interactive HTML reports from HDF sensor data',
