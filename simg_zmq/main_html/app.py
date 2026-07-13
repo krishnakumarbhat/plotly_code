@@ -128,6 +128,27 @@ def _hyperlink_tool_base() -> str:
     return str(legacy_path)
 
 
+def _first_writable_dir(*candidates) -> str:
+    """Return the first candidate dir that exists (or can be created) AND is
+    actually writable, verified with a real probe file (NFS ACLs can allow
+    read/traverse while denying write, which os.makedirs() alone won't catch).
+    """
+    for candidate in candidates:
+        if not candidate:
+            continue
+        try:
+            os.makedirs(candidate, exist_ok=True)
+            probe = os.path.join(candidate, f'.wtest_{uuid.uuid4().hex[:8]}')
+            with open(probe, 'w') as fp:
+                fp.write('x')
+            os.remove(probe)
+            return candidate
+        except Exception:
+            continue
+    return ''
+
+
+
 def _load_hyperlink_module(module_name: str, filename: str):
     module = sys.modules.get(module_name)
     if module is None:
@@ -674,11 +695,13 @@ def api_resim_run_submit():
     if not project_root:
         project_root = os.path.dirname(input_txt)
 
-    log_dir = project_root
-    try:
-        os.makedirs(log_dir, exist_ok=True)
-    except Exception:
-        log_dir = '/tmp'
+    # Root cause of "Log file not found": project_root / input dir can be
+    # read-only for this user (e.g. another user's private NFS folder), which
+    # made open(log_path, 'w') raise before the log file ever existed. Probe
+    # real write access instead of trusting os.makedirs (a no-op on existing
+    # dirs), and fall back to the app's own guaranteed-writable cache dir.
+    fallback_log_dir = os.path.join(get_cache_dir(), 'resim_runs')
+    log_dir = _first_writable_dir(os.path.dirname(input_txt), project_root, fallback_log_dir) or fallback_log_dir
     log_path = os.path.join(log_dir, f'resim_run_{uuid.uuid4().hex[:8]}.log')
 
     cmd = [
