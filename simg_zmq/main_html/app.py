@@ -704,10 +704,11 @@ def api_resim_run_submit():
     log_dir = _first_writable_dir(os.path.dirname(input_txt), project_root, fallback_log_dir) or fallback_log_dir
     log_path = os.path.join(log_dir, f'resim_run_{uuid.uuid4().hex[:8]}.log')
 
+    resim_script_src = str(_repo_root() / 'rResim_Gen7.sh')
     cmd = [
         'bash', '-lc',
         f"cd {shlex.quote(project_root)} && "
-        f"cp -n rResim_Gen7.sh . 2>/dev/null; "
+        f"cp -n {shlex.quote(resim_script_src)} . 2>/dev/null; "
         f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
     ]
 

@@ -300,6 +300,14 @@ def generate():
             shutil.copy2(src, GEN / s)
             print(f'  copied {s}')
 
+    # Copy rResim_Gen7.sh from project root (parent directory)
+    resim_sh_src = ROOT.parent / 'rResim_Gen7.sh'
+    if resim_sh_src.exists():
+        shutil.copy2(resim_sh_src, GEN / 'rResim_Gen7.sh')
+        print('  copied rResim_Gen7.sh')
+    else:
+        print('  WARNING: rResim_Gen7.sh not found at project root')
+
     for name in BUNDLE_DIRS:
         src = ROOT / name
         dst = GEN / 'bundle_src' / name
