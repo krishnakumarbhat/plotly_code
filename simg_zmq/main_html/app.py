@@ -148,6 +148,36 @@ def _first_writable_dir(*candidates) -> str:
     return ''
 
 
+def _first_existing_file(*candidates) -> str:
+    """Return the first candidate path that exists as a regular file."""
+    for candidate in candidates:
+        if candidate and os.path.isfile(candidate):
+            return candidate
+    return candidates[0] if candidates else ''
+
+
+def _resim_script_source_path() -> str:
+    """Locate rResim_Gen7.sh across dev and deployed (Singularity) layouts.
+
+    Inside the deployed container, `_repo_root()` resolves via the
+    /app/main_html bind-mount (e.g. /app), so `_repo_root().parent` is just
+    "/" and never contains the script — that was the deployed "No such file
+    or directory" bug. HPCC_BUNDLE_ROOT/HPCC_PROJECT_ROOT are bind-mounted at
+    the SAME absolute path inside and outside the container, so they reliably
+    point at the real deploy root (where generate_upload.py copies the
+    script). Fall back to the local Windows dev layout (repo's parent dir).
+    """
+    candidates = []
+    bundle_root = (os.environ.get('HPCC_BUNDLE_ROOT') or '').strip()
+    if bundle_root:
+        candidates.append(os.path.join(bundle_root, 'rResim_Gen7.sh'))
+    project_root_env = (os.environ.get('HPCC_PROJECT_ROOT') or '').strip()
+    if project_root_env:
+        candidates.append(os.path.join(os.path.dirname(project_root_env.rstrip('/\\')), 'rResim_Gen7.sh'))
+    candidates.append(str(_repo_root().parent / 'rResim_Gen7.sh'))
+    return _first_existing_file(*candidates)
+
+
 
 def _load_hyperlink_module(module_name: str, filename: str):
     module = sys.modules.get(module_name)
@@ -704,12 +734,34 @@ def api_resim_run_submit():
     log_dir = _first_writable_dir(os.path.dirname(input_txt), project_root, fallback_log_dir) or fallback_log_dir
     log_path = os.path.join(log_dir, f'resim_run_{uuid.uuid4().hex[:8]}.log')
 
-    resim_script_src = str(_repo_root() / 'rResim_Gen7.sh')
+    resim_script_src = _resim_script_source_path()
+    if not os.path.isfile(resim_script_src):
+        return jsonify({'ok': False, 'error': f'rResim_Gen7.sh not found (looked at: {resim_script_src}).'}), 500
+
+    # Invoke the script by its absolute path instead of copying it into
+    # project_root and running "./rResim_Gen7.sh": project_root is frequently
+    # a read-only shared/NFS project dir (as here), so the copy silently
+    # failed (stderr redirected) and "./rResim_Gen7.sh" never existed there,
+    # producing "No such file or directory" even after the source path was
+    # fixed. The script only takes absolute args and does not depend on cwd.
+    #
+    # The script also shells out to `xxd -p -r` to decode embedded commands,
+    # but main_html.simg's base image (python:3.10-slim) doesn't ship xxd.
+    # generate_upload.py drops a python3-based xxd shim at
+    # $HPCC_BUNDLE_ROOT/bin/xxd — prepend it to PATH just for this run.
+    bundle_root_env = (os.environ.get('HPCC_BUNDLE_ROOT') or '').strip()
+    xxd_bin_dir = os.path.join(bundle_root_env, 'bin') if bundle_root_env else ''
+    env_prefix = f"export PATH={shlex.quote(xxd_bin_dir)}:$PATH; " if xxd_bin_dir and os.path.isdir(xxd_bin_dir) else ''
+    # The script also runs `module load slurm`, which requires the `module`
+    # bash function from /etc/profile.d/modules.sh — not guaranteed to be
+    # sourced in this subprocess's login shell, same as bundle_common.sh's
+    # bundle_load_runtime_module() does for apptainer/singularity.
+    env_prefix += 'source /etc/profile.d/modules.sh >/dev/null 2>&1 || true; '
+
     cmd = [
         'bash', '-lc',
-        f"cd {shlex.quote(project_root)} && "
-        f"cp -n {shlex.quote(resim_script_src)} . 2>/dev/null; "
-        f"./rResim_Gen7.sh {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
+        f"{env_prefix}cd {shlex.quote(project_root)} 2>/dev/null || cd {shlex.quote(log_dir)}; "
+        f"{shlex.quote(resim_script_src)} {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
     ]
 
     job = JobHistory(
@@ -736,7 +788,7 @@ def api_resim_run_submit():
 
     t = threading.Thread(
         target=_run_local_job_background,
-        args=(job.id, cmd, '/', log_path, None),
+        args=(job.id, cmd, project_root, log_path, None),
         daemon=True,
     )
     t.start()

@@ -308,6 +308,34 @@ def generate():
     else:
         print('  WARNING: rResim_Gen7.sh not found at project root')
 
+    # rResim_Gen7.sh shells out to `xxd -p -r` to decode its embedded hex
+    # commands, but the main_html.simg base image (python:3.10-slim) does not
+    # ship xxd. Rebuilding/redeploying the 1.2GB image just for one binary is
+    # expensive, so drop in a tiny xxd-compatible shim (python3 is always
+    # present) and app.py prepends its dir to PATH only for the resim run.
+    xxd_shim_dir = GEN / 'bin'
+    xxd_shim_dir.mkdir(parents=True, exist_ok=True)
+    xxd_shim_path = xxd_shim_dir / 'xxd'
+    # newline='\n' is required on Windows: write_text()'s default newline
+    # translation turns \n into \r\n, which corrupts the shebang line
+    # (`#!/usr/bin/env bash\r`) and makes the container's `env` fail with
+    # "env: 'bash\r': No such file or directory".
+    xxd_shim_path.write_text(
+        '#!/usr/bin/env bash\n'
+        '# Minimal drop-in for `xxd -p -r` (hex text -> raw bytes), since the\n'
+        '# main_html.simg base image does not ship the real xxd binary.\n'
+        'case "$1 $2" in\n'
+        '  "-p -r"|"-r -p") exec python3 -c '
+        '"import sys,binascii; sys.stdout.buffer.write(binascii.unhexlify(\'\'.join(sys.stdin.read().split())))"\n'
+        '    ;;\n'
+        '  *) echo "xxd shim: unsupported args: $*" >&2; exit 1 ;;\n'
+        'esac\n',
+        encoding='utf-8',
+        newline='\n',
+    )
+    xxd_shim_path.chmod(0o755)
+    print('  wrote bin/xxd (xxd -p -r shim)')
+
     for name in BUNDLE_DIRS:
         src = ROOT / name
         dst = GEN / 'bundle_src' / name
@@ -465,7 +493,11 @@ echo "[$(date -Iseconds 2>/dev/null || date)] Starting HPCC bundle" | tee -a "$L
 
 def _fix_shell_scripts():
     count = 0
-    for f in GEN.rglob('*.sh'):
+    candidates = list(GEN.rglob('*.sh'))
+    bin_dir = GEN / 'bin'
+    if bin_dir.is_dir():
+        candidates.extend(f for f in bin_dir.iterdir() if f.is_file())
+    for f in candidates:
         c = f.read_bytes()
         if b'\r\n' in c:
             f.write_bytes(c.replace(b'\r\n', b'\n'))
@@ -738,7 +770,7 @@ def upload():
                         callback=_progress_callback(target_name, index, total, local_path, remote_path, size, started),
                         confirm=True,
                     )
-                    if rel.endswith('.sh') or local_path.suffix.lower() == '.sh':
+                    if rel.endswith('.sh') or local_path.suffix.lower() == '.sh' or rel.startswith('bin/'):
                         stage = 'chmod'
                         sftp.chmod(remote_path, 0o755)
                     stage = 'verify'
