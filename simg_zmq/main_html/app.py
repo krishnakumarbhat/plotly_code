@@ -18,6 +18,7 @@ import signal
 import shutil
 import importlib.util
 import time
+import shlex
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional
@@ -694,7 +695,7 @@ def resim_run_submit():
 @app.route('/api/resim_run_submit', methods=['POST'])
 @login_required
 def api_resim_run_submit():
-    """AJAX endpoint for Resim Run submission — runs .sh script as local process (no srun wrapper)."""
+    """AJAX endpoint for Resim Run submission — runs .sh script via SSH as the logged-in user."""
     from utils import extract_project_from_path, cluster_from_path
     import shlex
     data = request.get_json(silent=True) or {}
@@ -738,31 +739,39 @@ def api_resim_run_submit():
     if not os.path.isfile(resim_script_src):
         return jsonify({'ok': False, 'error': f'rResim_Gen7.sh not found (looked at: {resim_script_src}).'}), 500
 
-    # Invoke the script by its absolute path instead of copying it into
-    # project_root and running "./rResim_Gen7.sh": project_root is frequently
-    # a read-only shared/NFS project dir (as here), so the copy silently
-    # failed (stderr redirected) and "./rResim_Gen7.sh" never existed there,
-    # producing "No such file or directory" even after the source path was
-    # fixed. The script only takes absolute args and does not depend on cwd.
-    #
-    # The script also shells out to `xxd -p -r` to decode embedded commands,
-    # but main_html.simg's base image (python:3.10-slim) doesn't ship xxd.
-    # generate_upload.py drops a python3-based xxd shim at
-    # $HPCC_BUNDLE_ROOT/bin/xxd — prepend it to PATH just for this run.
+    # Fetch the logged-in user's stored cluster password
+    user_password = _stored_cluster_password_for_current_user(current_user.net_id)
+    if not user_password:
+        return jsonify({'ok': False, 'error': 'No cluster password saved. Please submit a KPI/Interactive Plot job first to store your credentials.'}), 400
+
+    # Write SSH_ASKPASS script in the log directory
+    askpass_path = os.path.join(log_dir, '.ssh_askpass.sh')
+    _write_askpass_script(user_password, askpass_path)
+
+    # The script also runs `module load slurm`, which requires the `module`
+    # bash function from /etc/profile.d/modules.sh — not guaranteed to be
+    # sourced in a non-interactive subprocess. SSH login shell will have it.
+    # Also prepend xxd shim if available.
     bundle_root_env = (os.environ.get('HPCC_BUNDLE_ROOT') or '').strip()
     xxd_bin_dir = os.path.join(bundle_root_env, 'bin') if bundle_root_env else ''
     env_prefix = f"export PATH={shlex.quote(xxd_bin_dir)}:$PATH; " if xxd_bin_dir and os.path.isdir(xxd_bin_dir) else ''
-    # The script also runs `module load slurm`, which requires the `module`
-    # bash function from /etc/profile.d/modules.sh — not guaranteed to be
-    # sourced in this subprocess's login shell, same as bundle_common.sh's
-    # bundle_load_runtime_module() does for apptainer/singularity.
-    env_prefix += 'source /etc/profile.d/modules.sh >/dev/null 2>&1 || true; '
 
+    # SSH command: run as the logged-in user via their stored credentials
     cmd = [
+        'ssh',
+        f'{current_user.net_id}@127.0.0.1',
         'bash', '-lc',
         f"{env_prefix}cd {shlex.quote(project_root)} 2>/dev/null || cd {shlex.quote(log_dir)}; "
         f"{shlex.quote(resim_script_src)} {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
     ]
+
+    # Environment for SSH_ASKPASS
+    env = {
+        'SSH_ASKPASS': askpass_path,
+        'SSH_ASKPASS_REQUIRE': 'force',
+        'DISPLAY': ':0',
+        'PATH': os.environ.get('PATH', ''),
+    }
 
     job = JobHistory(
         user_id=current_user.id,
@@ -787,8 +796,8 @@ def api_resim_run_submit():
     db.session.commit()
 
     t = threading.Thread(
-        target=_run_local_job_background,
-        args=(job.id, cmd, project_root, log_path, None),
+        target=_run_ssh_job_background,
+        args=(job.id, cmd, env, log_path),
         daemon=True,
     )
     t.start()
@@ -3205,6 +3214,137 @@ def _run_local_job_background(job_id: int, cmd, cwd: str, log_path: str, env=Non
                 logger.exception('JIRA ticket creation failed for job %s', job.id)
     except Exception as exc:
         logger.exception('Local job runner failed')
+        try:
+            with app.app_context():
+                job = JobHistory.query.get(job_id)
+                if job:
+                    job.completed_at = datetime.utcnow()
+                    job.status = 'FAILED'
+                    job.error_message = str(exc)
+                    db.session.commit()
+        except Exception:
+            pass
+
+
+def _write_askpass_script(password: str, path: str) -> None:
+    """Write a chmod 0o500 script that echoes the password for SSH_ASKPASS."""
+    with open(path, 'w', encoding='utf-8') as fp:
+        fp.write('#!/bin/sh\n')
+        fp.write(f'printf %s {shlex.quote(password)}\n')
+    os.chmod(path, 0o500)
+
+
+def _run_ssh_job_background(job_id: int, cmd, env, log_path: str):
+    """Run a command via SSH as the logged-in user in the background and update JobHistory."""
+    def _safe_read_text(path: str, limit: int = 4096) -> str:
+        try:
+            with open(path, 'r', encoding='utf-8', errors='replace') as fp:
+                return fp.read(limit).strip()
+        except Exception:
+            return ''
+
+    def _write_execution_context(log_fp):
+        log_fp.write(f"HOSTNAME: {socket.gethostname()}\n")
+        log_fp.write(f"USER: {getpass.getuser()}\n")
+        log_fp.write(f"PID: {os.getpid()}\n")
+        try:
+            log_fp.write(f"PPID: {os.getppid()}\n")
+        except Exception:
+            pass
+        log_fp.write(f"PLATFORM: {platform.platform()}\n")
+        log_fp.write(f"PYTHON: {sys.executable}\n")
+
+        slurm_keys = [
+            'SLURM_JOB_ID', 'SLURM_JOB_NAME', 'SLURM_CLUSTER_NAME',
+            'SLURM_PARTITION', 'SLURM_NODELIST', 'SLURM_JOB_NODELIST',
+            'SLURM_CPUS_PER_TASK', 'SLURM_CPUS_ON_NODE',
+            'SLURM_MEM_PER_NODE', 'SLURM_MEM_PER_CPU',
+            'SLURM_SUBMIT_DIR',
+        ]
+        any_slurm = False
+        for k in slurm_keys:
+            v = os.environ.get(k)
+            if v:
+                any_slurm = True
+                log_fp.write(f"{k}: {v}\n")
+        if not any_slurm:
+            log_fp.write("SLURM: not detected in environment\n")
+
+        meminfo = _safe_read_text('/proc/meminfo', limit=2048)
+        if meminfo:
+            first_lines = '\n'.join(meminfo.splitlines()[:5])
+            log_fp.write("/proc/meminfo (first lines):\n" + first_lines + "\n")
+
+        cg_mem_max = _safe_read_text('/sys/fs/cgroup/memory.max')
+        cg_mem_cur = _safe_read_text('/sys/fs/cgroup/memory.current')
+        if cg_mem_max or cg_mem_cur:
+            if cg_mem_max:
+                log_fp.write(f"cgroup memory.max: {cg_mem_max}\n")
+            if cg_mem_cur:
+                log_fp.write(f"cgroup memory.current: {cg_mem_cur}\n")
+
+        log_fp.write("\n")
+
+    def _format_return_code(rc: int) -> str:
+        if rc is None:
+            return 'None'
+        if rc < 0:
+            sig = -rc
+            try:
+                sig_name = signal.Signals(sig).name
+            except Exception:
+                sig_name = f"SIG{sig}"
+            return f"{rc} (terminated by {sig_name})"
+        return str(rc)
+
+    try:
+        with app.app_context():
+            job = JobHistory.query.get(job_id)
+            if not job:
+                return
+            job.started_at = datetime.utcnow()
+            job.status = 'RUNNING'
+            job.output_log_path = log_path
+            db.session.commit()
+
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, 'w', encoding='utf-8', errors='replace') as log_fp:
+            log_fp.write('CMD: ' + ' '.join([str(x) for x in cmd]) + '\n')
+            log_fp.write('START: ' + datetime.utcnow().isoformat() + 'Z\n\n')
+            _write_execution_context(log_fp)
+            log_fp.flush()
+
+            proc = subprocess.Popen(
+                cmd,
+                cwd='/',
+                stdout=log_fp,
+                stderr=log_fp,
+                env=env,
+            )
+
+            rc = proc.wait()
+
+            log_fp.write(f'\nEND: {datetime.utcnow().isoformat()}Z\n')
+            log_fp.write(f'EXIT_CODE: {_format_return_code(rc)}\n')
+            log_fp.flush()
+
+        with app.app_context():
+            job = JobHistory.query.get(job_id)
+            if job:
+                job.completed_at = datetime.utcnow()
+                if rc == 0:
+                    job.status = 'COMPLETED'
+                else:
+                    job.status = 'FAILED'
+                    display_path = _container_path_to_host_path(log_path)
+                    job.error_message = f'Process exit code {rc}. See log: {display_path}'
+                db.session.commit()
+
+                params = job.parameters or {}
+                if params.get('create_jira'):
+                    _create_jira_ticket_for_job(job, log_path)
+    except Exception as exc:
+        logger.exception('SSH job runner failed')
         try:
             with app.app_context():
                 job = JobHistory.query.get(job_id)
