@@ -27,6 +27,7 @@ From: docker.io/python:3.10-slim
         curl \
         ca-certificates \
         ffmpeg \
+        openssh-client \
         && rm -rf /var/lib/apt/lists/*
 
     python -m venv /opt/venv

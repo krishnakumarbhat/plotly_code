@@ -733,7 +733,8 @@ def api_resim_run_submit():
     # dirs), and fall back to the app's own guaranteed-writable cache dir.
     fallback_log_dir = os.path.join(get_cache_dir(), 'resim_runs')
     log_dir = _first_writable_dir(os.path.dirname(input_txt), project_root, fallback_log_dir) or fallback_log_dir
-    log_path = os.path.join(log_dir, f'resim_run_{uuid.uuid4().hex[:8]}.log')
+    job_uuid = uuid.uuid4().hex[:8]
+    log_path = os.path.join(log_dir, f'resim_run_{job_uuid}.log')
 
     resim_script_src = _resim_script_source_path()
     if not os.path.isfile(resim_script_src):
@@ -744,8 +745,11 @@ def api_resim_run_submit():
     if not user_password:
         return jsonify({'ok': False, 'error': 'No cluster password saved. Please submit a KPI/Interactive Plot job first to store your credentials.'}), 400
 
-    # Write SSH_ASKPASS script in the log directory
-    askpass_path = os.path.join(log_dir, '.ssh_askpass.sh')
+    # Write SSH_ASKPASS script in the log directory. Filename must be unique
+    # per job: _write_askpass_script chmods it 0o500 (no write bit, even for
+    # the owner), so a fixed shared filename would fail with EPERM on every
+    # run after the first (open(..., 'w') needs write on the existing file).
+    askpass_path = os.path.join(log_dir, f'.ssh_askpass_{job_uuid}.sh')
     _write_askpass_script(user_password, askpass_path)
 
     # The script also runs `module load slurm`, which requires the `module`
@@ -756,12 +760,23 @@ def api_resim_run_submit():
     xxd_bin_dir = os.path.join(bundle_root_env, 'bin') if bundle_root_env else ''
     env_prefix = f"export PATH={shlex.quote(xxd_bin_dir)}:$PATH; " if xxd_bin_dir and os.path.isdir(xxd_bin_dir) else ''
 
-    # SSH command: run as the logged-in user via their stored credentials
+    # SSH command: run as the logged-in user via their stored credentials.
+    # -tt forces a remote pty (the vendor script prompts interactively, e.g.
+    # "Proceed with Default Docker Configuration (Y/N)", and also relies on
+    # isatty() for unbuffered output — without a pty its stdout is fully
+    # buffered and nothing reaches the log until the (never-ending) prompt).
+    # StrictHostKeyChecking=no/UserKnownHostsFile=/dev/null avoids an
+    # interactive "are you sure you want to continue connecting" prompt on
+    # the first-ever SSH to 127.0.0.1 for this user, which otherwise hangs
+    # forever with no tty/askpass path to answer it.
     cmd = [
-        'ssh',
+        'ssh', '-tt',
+        '-o', 'StrictHostKeyChecking=no',
+        '-o', 'UserKnownHostsFile=/dev/null',
+        '-o', 'ConnectTimeout=20',
         f'{current_user.net_id}@127.0.0.1',
         'bash', '-lc',
-        f"{env_prefix}cd {shlex.quote(project_root)} 2>/dev/null || cd {shlex.quote(log_dir)}; "
+        f"stty -echo 2>/dev/null; {env_prefix}cd {shlex.quote(project_root)} 2>/dev/null || cd {shlex.quote(log_dir)}; "
         f"{shlex.quote(resim_script_src)} {shlex.quote(input_txt)} {shlex.quote(simg_path)} highPrio"
     ]
 
@@ -798,6 +813,7 @@ def api_resim_run_submit():
     t = threading.Thread(
         target=_run_ssh_job_background,
         args=(job.id, cmd, env, log_path),
+        kwargs={'askpass_path': askpass_path},
         daemon=True,
     )
     t.start()
@@ -3234,7 +3250,33 @@ def _write_askpass_script(password: str, path: str) -> None:
     os.chmod(path, 0o500)
 
 
-def _run_ssh_job_background(job_id: int, cmd, env, log_path: str):
+_LOG_FAILURE_MARKERS = [
+    ('permission denied', 'Permission denied (likely an NFS/ACL restriction on a third-party project path).'),
+    ('no such file or directory', 'A required file/script was not found.'),
+    ('command not found', 'A required command was not found in the remote shell.'),
+    ('traceback (most recent call last)', 'The remote Python script raised an unhandled exception.'),
+]
+
+
+def _first_failure_marker_in_log(log_path: str) -> str:
+    """Return a human-readable reason if the log contains a known failure
+    signature, else ''. rResim_Gen7.sh has no `set -e` and always finishes
+    with a trivial `deactivate`, so its process exit code is 0 even when the
+    real work (source venv / run resim_main.py) failed — the exit code
+    alone cannot be trusted for this tool.
+    """
+    try:
+        with open(log_path, 'r', encoding='utf-8', errors='replace') as fp:
+            text = fp.read().lower()
+    except Exception:
+        return ''
+    for marker, reason in _LOG_FAILURE_MARKERS:
+        if marker in text:
+            return reason
+    return ''
+
+
+def _run_ssh_job_background(job_id: int, cmd, env, log_path: str, askpass_path: str = ''):
     """Run a command via SSH as the logged-in user in the background and update JobHistory."""
     def _safe_read_text(path: str, limit: int = 4096) -> str:
         try:
@@ -3314,15 +3356,33 @@ def _run_ssh_job_background(job_id: int, cmd, env, log_path: str):
             _write_execution_context(log_fp)
             log_fp.flush()
 
+            # The remote vendor script prompts interactively (e.g. "Proceed
+            # with Default Docker Configuration (Y/N)"). Feed it a stream of
+            # "y" answers via the ssh client's stdin (like `yes | ssh ...`)
+            # so any confirmation prompt is auto-answered instead of hanging
+            # forever with no one to type a response.
+            yes_proc = subprocess.Popen(['yes', 'y'], stdout=subprocess.PIPE)
             proc = subprocess.Popen(
                 cmd,
                 cwd='/',
+                stdin=yes_proc.stdout,
                 stdout=log_fp,
                 stderr=log_fp,
                 env=env,
             )
+            yes_proc.stdout.close()  # let yes_proc get SIGPIPE once proc exits
 
-            rc = proc.wait()
+            # Safety net: never let a stuck SSH/remote-prompt hang the job (and
+            # the polling UI) forever — fail cleanly instead.
+            try:
+                rc = proc.wait(timeout=1800)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                rc = proc.wait()
+                log_fp.write('\nTIMEOUT: process exceeded 1800s and was killed.\n')
+            finally:
+                yes_proc.kill()
+                yes_proc.wait()
 
             log_fp.write(f'\nEND: {datetime.utcnow().isoformat()}Z\n')
             log_fp.write(f'EXIT_CODE: {_format_return_code(rc)}\n')
@@ -3332,12 +3392,21 @@ def _run_ssh_job_background(job_id: int, cmd, env, log_path: str):
             job = JobHistory.query.get(job_id)
             if job:
                 job.completed_at = datetime.utcnow()
-                if rc == 0:
+                # rResim_Gen7.sh has no `set -e` and always ends on a trivial
+                # `deactivate`, so it exits 0 even when the real work (source
+                # venv / run resim_main.py) failed with "Permission denied"
+                # on a third-party project path — exit code alone is not
+                # trustworthy for this tool. Sniff the captured output too.
+                failure_reason = _first_failure_marker_in_log(log_path)
+                if rc == 0 and not failure_reason:
                     job.status = 'COMPLETED'
                 else:
                     job.status = 'FAILED'
                     display_path = _container_path_to_host_path(log_path)
-                    job.error_message = f'Process exit code {rc}. See log: {display_path}'
+                    if failure_reason:
+                        job.error_message = f'{failure_reason} See log: {display_path}'
+                    else:
+                        job.error_message = f'Process exit code {rc}. See log: {display_path}'
                 db.session.commit()
 
                 params = job.parameters or {}
@@ -3355,6 +3424,14 @@ def _run_ssh_job_background(job_id: int, cmd, env, log_path: str):
                     db.session.commit()
         except Exception:
             pass
+    finally:
+        # Minimize the exposure window for the plaintext-password askpass
+        # helper script (chmod 0o500, but still readable by this unix user).
+        if askpass_path:
+            try:
+                os.remove(askpass_path)
+            except Exception:
+                pass
 
 
 def submit_tool_job(tool_name: str):
