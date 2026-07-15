@@ -175,7 +175,7 @@ def _resim_script_source_path() -> str:
     project_root_env = (os.environ.get('HPCC_PROJECT_ROOT') or '').strip()
     if project_root_env:
         candidates.append(os.path.join(os.path.dirname(project_root_env.rstrip('/\\')), 'rResim_Gen7.sh'))
-    candidates.append(str(_repo_root().parent / 'rResim_Gen7.sh'))
+    candidates.append(str(_repo_root() / 'rResim_Gen7.sh'))
     return _first_existing_file(*candidates)
 
 

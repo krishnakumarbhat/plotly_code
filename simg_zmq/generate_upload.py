@@ -301,7 +301,7 @@ def generate():
             print(f'  copied {s}')
 
     # Copy rResim_Gen7.sh from project root (parent directory)
-    resim_sh_src = ROOT.parent / 'rResim_Gen7.sh'
+    resim_sh_src = ROOT / 'rResim_Gen7.sh'
     if resim_sh_src.exists():
         shutil.copy2(resim_sh_src, GEN / 'rResim_Gen7.sh')
         print('  copied rResim_Gen7.sh')
